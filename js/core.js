@@ -1,4 +1,5 @@
-var demoWeb = (function () {
+var demoWeb = (function (parent) {
+  'use strict';
 
   $.cookie.json = true;
 
@@ -29,7 +30,7 @@ var demoWeb = (function () {
     this.applicationName = name;
   };
 
-  Client.prototype.setScopes = _setScopes = function(scopes) {
+  Client.prototype.setScopes = function(scopes) {
     this.scopes = scopes;
   };
 
@@ -125,7 +126,7 @@ var demoWeb = (function () {
     var self = this;
 
     dConnect.discoverDevices(self.settings.accessToken, function(json) {
-      this.lastKnownDevices = json.services;
+      self.lastKnownDevices = json.services;
       callback.onsuccess(json);
     }, function(errorCode, errorMessage) {
       switch (errorCode) {
@@ -158,4 +159,4 @@ var demoWeb = (function () {
   }
 
   return parent;
-})();
+})({});
