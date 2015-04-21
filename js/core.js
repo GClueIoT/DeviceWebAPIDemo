@@ -18,37 +18,37 @@ var demoWeb = (function (parent) {
   $.cookie.json = true;
 
   /**
-   * Key of auth info of Client.
+   * Key of settings of Client.
    * @private
    * @const
    * @type {!string}
    */
-  var KEY_AUTH_SETTINGS = 'demoWeb.settings';
+  var KEY_SETTINGS = 'demoWeb.settings';
 
   /**
-   * Loads auth info of Client from Cookie.
+   * Loads settings of Client from Cookie.
    * @private
    * @param {!demoWeb.Client} client
    */
   var _loadSettings = function(client) {
-    client.settings = $.cookie(KEY_AUTH_SETTINGS) || {
-      clientId: Date.now().toString(),
+    client.settings = $.cookie(KEY_SETTINGS) || {
+      sessionKey: Date.now().toString(),
       accessToken: undefined
     };
   };
 
   /**
-   * Stores auth info of Client to Cookie.
+   * Stores settings of Client to Cookie.
    * @private
    * @param {!demoWeb.Client} client
    */
   var _storeSettings = function(client) {
-    $.cookie(KEY_AUTH_SETTINGS, client.settings);
+    $.cookie(KEY_SETTINGS, client.settings);
   };
 
   /**
    * Constructor of Client.
-   * Loads its auth info from Cookie when an instance is constructed.
+   * Loads its settings from Cookie when an instance is constructed.
    * @public
    * @class Client
    * @memberof demoWeb
@@ -123,7 +123,6 @@ var demoWeb = (function (parent) {
     var self = this;
 
     dConnect.authorization(self.scopes, self.applicationName, function(clientId, accessToken) {
-      self.settings.clientId = clientId;
       self.settings.accessToken = accessToken;
       _storeSettings(self)
       callback.onsuccess();
@@ -304,7 +303,7 @@ var demoWeb = (function (parent) {
    * @param {function} callback
    */
   Client.prototype.connectWebSocket = function(callback) {
-    dConnect.connectWebSocket(this.settings.clientId, callback);
+    dConnect.connectWebSocket(this.settings.sessionKey, callback);
   };
 
   /**
