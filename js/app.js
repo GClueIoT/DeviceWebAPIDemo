@@ -29,17 +29,17 @@ var _demos = {
 angular.module('demoweb', ['ngRoute'])
   .config(['$routeProvider', function($routeProvider) {
     $routeProvider
-    .when('/', {templateUrl: 'content-list.html'})
-    .when('/launch', {templateUrl: 'content-launch.html'})
+    .when('/', {templateUrl: 'app/content-list.html'})
+    .when('/launch', {templateUrl: 'app/content-launch.html'})
     .when('/settings', {
-      templateUrl: 'content-settings-all.html',
+      templateUrl: 'app/content-settings-all.html',
       controller: 'settingsCtrl'
     })
     .when('/settings/:demoName', {
-      templateUrl: 'content-settings.html',
+      templateUrl: 'app/content-settings.html',
       controller: 'settingsCtrl'
     })
-    .when('/light', {templateUrl: 'content-light.html'})
+    .when('/light', {templateUrl: 'app/content-light.html'})
     .otherwise({redirectTo: '/'});
   }])
   .controller('demoCtrl', ['$scope', '$location', function($scope, $location) {
@@ -125,7 +125,7 @@ angular.module('demoweb', ['ngRoute'])
       _client.startManager();
     };
   }])
-  .controller('settingsCtrl', ['$scope', '$routeParams', function($scope, $routeParams) {
+  .controller('settingsCtrl', ['$scope', '$routeParams', '$location', function($scope, $routeParams, $location) {
     var plugins = _client.getPlugins(),
         demoName = $routeParams.demoName,
         i, p;
@@ -175,9 +175,10 @@ angular.module('demoweb', ['ngRoute'])
         location.href = 'market://details?id=' + p.packageName;
       }
     };
-    $scope.nextPath = '/light';
 
-    $scope.print = function(text) {
-      console.log('print: ' + text);
+    $scope.next = function() {
+      var path = _demos[demoName].path;
+      console.log('path: ' + path);
+      $location.path(path);
     };
   }]);
