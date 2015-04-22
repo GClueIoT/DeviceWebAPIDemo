@@ -9,20 +9,36 @@ _client.setScopes([
 _client.setReleasedPlugins([
   {
     packageName: "org.deviceconnect.android.deviceplugin.hue",
-    name: "hue"
+    name: "hue",
+    supports: ['light']
   },
   {
     packageName: "org.deviceconnect.android.deviceplugin.sphero",
-    name: "Sphero"
-  },
+    name: "Sphero",
+    supports: ['light']
+  }
 ]);
+
+var _demos = {
+  light: {
+    profiles: ['light'],
+    path: '/light'
+  }
+};
 
 angular.module('demoweb', ['ngRoute'])
   .config(['$routeProvider', function($routeProvider) {
     $routeProvider
     .when('/', {templateUrl: 'content-list.html'})
     .when('/launch', {templateUrl: 'content-launch.html'})
-    .when('/settings', {templateUrl: 'content-settings.html'})
+    .when('/settings', {
+      templateUrl: 'content-settings-all.html',
+      controller: 'settingsCtrl'
+    })
+    .when('/settings/:demoName', {
+      templateUrl: 'content-settings.html',
+      controller: 'settingsCtrl'
+    })
     .when('/light', {templateUrl: 'content-light.html'})
     .otherwise({redirectTo: '/'});
   }])
@@ -36,19 +52,46 @@ angular.module('demoweb', ['ngRoute'])
         $location.path('/launch');
       }
     });
+
+    $scope.settingAll = function() {
+      _client.discoverPlugins({
+        onsuccess: function(plugins) {
+          $scope.$apply(function() {
+            $location.path('/settings');
+          });
+        },
+
+        onerror: function(errorCode, errorMessage) {
+          console.log('transit - discoverPlugins: errorCode=' + errorCode + ' errorMessage=' + errorMessage);
+        }
+      });
+    };
   }])
   .controller('demoListCtrl', ['$scope', '$location', function($scope, $location) {
-    $scope.transit = function(nextPath) {
+    $scope.transit = function(demoName) {
       _client.discoverDevices({
         onsuccess: function(json) {
           var devices;
           console.log('found devices: ', json.services);
 
           devices = json.services.filter(function(service) {
-            var relatedScopes = service.scopes.filter(function(scope) {
-              return scope === 'light';
-            });
-            return relatedScopes.length > 0;
+            var profiles = _demos[demoName].profiles,
+                scopes = service.scopes,
+                i, j, found;
+            for (i = 0; i < profiles.length; i++) {
+              found = false;
+              loop:
+              for (j = 0; j < scopes.length; j++) {
+                if (profiles[i] === scopes[j]) {
+                  found = true;
+                  break loop;
+                }
+              }
+              if (!found) {
+                return false;
+              }
+            }
+            return true;
           });
           console.log('filtered devices: ', devices);
 
@@ -56,7 +99,7 @@ angular.module('demoweb', ['ngRoute'])
             _client.discoverPlugins({
               onsuccess: function(plugins) {
                 $scope.$apply(function() {
-                  $location.path('/settings');
+                  $location.path('/settings/' + demoName);
                 });
               },
 
@@ -65,15 +108,14 @@ angular.module('demoweb', ['ngRoute'])
               }
             });
           } else {
-            console.log('nextPath: ' + nextPath);
             $scope.$apply(function() {
-              $location.path(nextPath);
+              $location.path(_demos[demoName].path);
             });
           }
         },
 
         onerror: function(errorCode, errorMessage) {
-          $location.path('/settings');
+          $location.path('/settings/' + demoName);
         }
       });
     };
@@ -83,19 +125,41 @@ angular.module('demoweb', ['ngRoute'])
       _client.startManager();
     };
   }])
-  .controller('settingsCtrl', ['$scope', function($scope) {
+  .controller('settingsCtrl', ['$scope', '$routeParams', function($scope, $routeParams) {
     var plugins = _client.getPlugins(),
+        demoName = $routeParams.demoName,
         i, p;
 
-    console.log('plugins: ', plugins);
+    console.log('settings demoName: ' + demoName);
+    if (demoName) {
+      plugins = plugins.filter(function(p) {
+        var profiles = _demos[demoName].profiles,
+            scopes = p.supports,
+            i, j, found;
+        for (i = 0; i < profiles.length; i++) {
+          found = false;
+          loop:
+          for (j = 0; j < scopes.length; j++) {
+            if (profiles[i] === scopes[j]) {
+              found = true;
+              break loop;
+            }
+          }
+          if (!found) {
+            return false;
+          }
+        }
+        return true;
+      })
+    }
+
     for (i = 0; i < plugins.length; i++) {
       p = plugins[i];
       p.operation = (p.installed === true) ? '設定' : 'インストール';
-      p.action = (p.installed === true) ? "wakeup('" + p.id + "')" : "goToStore('" + p.packageName + "')";
     }
+
     $scope.plugins = plugins;
     $scope.wakeup = function(index) {
-      console.log("wakeup: " + index);
       var p = plugins[index];
       if (p.installed === true) {
         _client.openSettingWindow({
@@ -108,7 +172,7 @@ angular.module('demoweb', ['ngRoute'])
           }
         });
       } else {
-        location.href = "market://details?id=" + p.packageName;
+        location.href = 'market://details?id=' + p.packageName;
       }
     };
     $scope.nextPath = '/light';
