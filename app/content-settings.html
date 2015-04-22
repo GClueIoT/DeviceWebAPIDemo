@@ -1,0 +1,9 @@
+<div ng-controller="settingsCtrl">
+  <ul style="margin: 0em 1em" class="list-group">
+    <li ng-repeat="plugin in plugins" class="list-group-item">{{plugin.name}} <button ng-click="wakeup($index)">{{plugin.operation}}</button></li>
+  </ul>
+
+  <footer class="footer">
+    <div class="container"><button ng-click="transit('{{ nextPath }}')" class="btn btn-default" style="width:100%;margin-top:15px;">次へ</button></div>
+  </footer>
+</div>
