@@ -18,37 +18,37 @@ var demoWeb = (function (parent) {
   $.cookie.json = true;
 
   /**
-   * Key of settings of Client.
+   * Key of auth info of Client.
    * @private
    * @const
    * @type {!string}
    */
-  var KEY_SETTINGS = 'demoWeb.settings';
+  var KEY_AUTH_SETTINGS = 'demoWeb.settings';
 
   /**
-   * Loads settings of Client from Cookie.
+   * Loads auth info of Client from Cookie.
    * @private
    * @param {!demoWeb.Client} client
    */
   var _loadSettings = function(client) {
-    client.settings = $.cookie(KEY_SETTINGS) || {
-      sessionKey: Date.now().toString(),
+    client.settings = $.cookie(KEY_AUTH_SETTINGS) || {
+      clientId: Date.now().toString(),
       accessToken: undefined
     };
   };
 
   /**
-   * Stores settings of Client to Cookie.
+   * Stores auth info of Client to Cookie.
    * @private
    * @param {!demoWeb.Client} client
    */
   var _storeSettings = function(client) {
-    $.cookie(KEY_SETTINGS, client.settings);
+    $.cookie(KEY_AUTH_SETTINGS, client.settings);
   };
 
   /**
    * Constructor of Client.
-   * Loads its settings from Cookie when an instance is constructed.
+   * Loads its auth info from Cookie when an instance is constructed.
    * @public
    * @class Client
    * @memberof demoWeb
@@ -56,6 +56,8 @@ var demoWeb = (function (parent) {
   var Client = function() {
     _loadSettings(this);
     this.lastKnownDevices = [];
+    this.releasedPlugins = [];
+    this.installedPlugins = [];
   };
   parent.Client = Client;
 
@@ -95,12 +97,34 @@ var demoWeb = (function (parent) {
     this.releasedPlugins = plugins;
   };
 
-  Client.prototype.getAllPlugins = function() {
-    var list = [];
-    for (var i = 0; i < this.installedPlugins; i++) {
-      var plugin = this.installedPlugins[i];
-      plugin.installed = true;
+  Client.prototype.setInstalledPlugins = function(plugins) {
+    this.installedPlugins = plugins;
+  };
+
+  Client.prototype.getPlugins = function() {
+    var list = [],
+        i,
+        self = this;
+    
+    function isInstalled(packageName) {
+      var i;
+      for (i = 0; i < self.installedPlugins.length; i++) {
+        if (packageName === self.installedPlugins[i].packageName) {
+          return true;
+        }
+      }
+      return false;
     }
+
+    for (i = 0; i < self.installedPlugins.length; i++) {
+      list.push(self.installedPlugins[i]);
+    }
+    for (i = 0; i < self.releasedPlugins.length; i++) {
+      if (!isInstalled(self.releasedPlugins[i].packageName)) {
+        list.push(self.releasedPlugins[i]);
+      }
+    }
+    return list;
   };
 
   /**
@@ -123,6 +147,7 @@ var demoWeb = (function (parent) {
     var self = this;
 
     dConnect.authorization(self.scopes, self.applicationName, function(clientId, accessToken) {
+      self.settings.clientId = clientId;
       self.settings.accessToken = accessToken;
       _storeSettings(self)
       callback.onsuccess();
@@ -130,6 +155,28 @@ var demoWeb = (function (parent) {
       callback.onerror(errorCode, errorMessage);
     });
   };
+
+  Client.prototype.checkAvailability = function(callback) {
+    dConnect.checkDeviceConnect(function(version) {
+      callback.onsuccess(version);
+    }, function(errorCode, errorMessage) {
+      callback.onerror(errorCode, errorMessage);
+    });
+  }
+
+  Client.prototype.startManager = function() {
+    dConnect.startManager();
+  };
+
+  Client.prototype.openSettingWindow = function(opt) {
+    var builder = new dConnect.URIBuilder();
+    builder.setProfile('system');
+    builder.setInterface('device');
+    builder.setAttribute('wakeup');
+    builder.addParameter('pluginId', opt.pluginId);
+
+    dConnect.put(builder.build(), null, null, opt.onsuccess, opt.onerror);
+  }
 
   /**
    * Request to devices managed by GotAPI server.
@@ -238,19 +285,28 @@ var demoWeb = (function (parent) {
    */
 
   /**
-   * Discovers plugins installed on the host device currently.
+   * Discovers released plugins.
    * @public
    * @memberof demoWeb.Client
    * @param {demoWeb.Client.PluginDiscoveryCallback} callback
    */
   Client.prototype.discoverPlugins = function(callback) {
-    var builder = new dConnect.URIBuilder();
+    var self = this,
+        builder = new dConnect.URIBuilder();
+    
     builder.setProfile('system');
-    if (this.settings.accessToken) {
-      builder.setAccessToken(this.settings.accessToken);
+    if (self.settings.accessToken) {
+      builder.setAccessToken(self.settings.accessToken);
     }
     dConnect.get(builder.build(), null, function(json) {
-      callback.onsuccess(json);
+      var plugins = json.plugins,
+          i;
+      for (i = 0; i < plugins.length; i++) {
+        plugins[i].installed = true;
+      }
+      self.setInstalledPlugins(plugins);
+
+      callback.onsuccess(self.getPlugins());
     }, function(errorCode, errorMessage) {
       callback.onerror(errorCode, errorMessage);
     });
@@ -303,7 +359,7 @@ var demoWeb = (function (parent) {
    * @param {function} callback
    */
   Client.prototype.connectWebSocket = function(callback) {
-    dConnect.connectWebSocket(this.settings.sessionKey, callback);
+    dConnect.connectWebSocket(this.settings.clientId, callback);
   };
 
   /**
