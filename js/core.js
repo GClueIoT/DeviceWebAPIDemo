@@ -189,6 +189,7 @@ var demoWeb = (function (parent) {
    * @prop {?string} attribute
    * @prop {?string} accessToken
    * @prop {!object[]} devices 
+   * @prop {!object[]} params
    * @prop {function} onsuccess
    * @prop {function} onerror
    * @prop {function} oncomplete
@@ -217,6 +218,9 @@ var demoWeb = (function (parent) {
       builder.setAttribute(req.attribute);
     }
     builder.setAccessToken(this.settings.accessToken);
+    for (var key in req.params) {
+      builder.addParameter(key, req.params[key]);
+    }
 
     
     var callbacks = [];

@@ -1,0 +1,26 @@
+<link rel="stylesheet" href="./app/css/content-light-select.css" />
+<div ng-controller="SelectLightController">
+  <div id="btn-group" align="center">
+    <div id="unregister" class="btn btn-default" ng-click="unregisterAll()">全解除</div>
+    <div id="register" class="btn btn-default" ng-click="registerAll()">全選択</div>
+  </div>
+  <ul class="list-group">
+    <li class="list-group-item" ng-repeat="light in list.lights">
+      <div class="checkbox">
+        <label>
+          <input type="checkbox">{{light.name}}
+        </label>
+      </div>
+    </li>
+  </ul>
+  <div class="footer">
+    <div class="btn-group btn-group-justified" role="group" aria-label="footer">
+      <div class="btn-group" role="group">
+        <button id="light-cancel" type="button" class="btn btn-default" ng-click="cancel()">キャンセル</button>
+      </div>
+      <div class="btn-group" role="group">
+        <button id="light-cancel" type="button" class="btn btn-default" ng-click="ok()">決定</button>
+      </div>
+    </div>
+  </div>
+</div>

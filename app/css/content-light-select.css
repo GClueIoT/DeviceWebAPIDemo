@@ -1,0 +1,40 @@
+input[type=checkbox] {
+  background-image: url("../../img/check_a_off.png");
+}
+
+.list-group-item {
+  border-color: #49B4DC;
+}
+
+#btn-group {
+  margin-bottom: 24px;
+}
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 48px;
+  background-color: #49B4DC;
+}
+
+#light-cancel {
+  background-color: #49B4DC;
+  border-color: #49B4DC;
+  color: #FFFFFF;
+  height: 48px;
+}
+
+#light-cancel:active {
+  background-color: #39A4D3;
+}
+
+#light-ok {
+  background-color: #49B4DC;
+  border-color: #49B4DC;
+  color: #FFFFFF;
+  height: 48px;
+}
+#light-ok:active {
+  background-color: #39A4D3;
+}
