@@ -29,8 +29,14 @@ var _demos = {
 angular.module('demoweb', ['ngRoute'])
   .config(['$routeProvider', function($routeProvider) {
     $routeProvider
-    .when('/', {templateUrl: 'app/content-list.html'})
-    .when('/launch', {templateUrl: 'app/content-launch.html'})
+    .when('/', {
+      templateUrl: 'app/content-list.html',
+      controller: 'demoListCtrl'
+    })
+    .when('/launch', {
+      templateUrl: 'app/content-launch.html',
+      controller: 'launchCtrl'
+    })
     .when('/settings', {
       templateUrl: 'app/content-settings-all.html',
       controller: 'settingsCtrl'
@@ -48,7 +54,6 @@ angular.module('demoweb', ['ngRoute'])
         $location.path('/');
       },
       onerror: function(errorCode, errorMessage) {
-        alert('error: ' + errorMessage);
         $location.path('/launch');
       }
     });
@@ -68,6 +73,7 @@ angular.module('demoweb', ['ngRoute'])
     };
   }])
   .controller('demoListCtrl', ['$scope', '$location', function($scope, $location) {
+    $scope.title = 'デモ一覧';
     $scope.transit = function(demoName) {
       _client.discoverDevices({
         onsuccess: function(json) {
@@ -121,11 +127,13 @@ angular.module('demoweb', ['ngRoute'])
     };
   }])
   .controller('launchCtrl', ['$scope', function($scope) {
+    $scope.title = 'システム起動確認';
     $scope.startManager = function() {
       _client.startManager();
     };
   }])
   .controller('settingsCtrl', ['$scope', '$routeParams', '$location', function($scope, $routeParams, $location) {
+    $scope.title = 'デバイス設定一覧';
     var plugins = _client.getPlugins(),
         demoName = $routeParams.demoName,
         i, p;

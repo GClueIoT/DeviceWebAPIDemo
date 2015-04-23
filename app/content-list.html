@@ -1,3 +1,26 @@
-<ul ng-controller="demoListCtrl" style="padding: 0em 1em" class="list-group">
-  <li class="list-group-item btn btn-default" ng-click="transit('light')">ライト制御</li>
-</ul>
+<nav class="navbar navbar-default">
+  <img type="button" ng-click="settingAll()" class="btn-settings" src="img/Gear_off.png">
+  <a class="navbar-brand" href="#/">{{ title }}</a>
+</nav>
+
+<table class="demo-list">
+  <tr>
+    <td class="demo" ng-click="transit('light')">
+      <img class="logo" src="img/Appli_light.png">
+      <span class="demo-name">ライト</span>
+    </td>
+    <td class="nodemo"></td>
+  </tr>
+  <tr>
+    <td class="nodemo"></td>
+    <td class="nodemo"></td>
+  </tr>
+  <tr>
+    <td class="nodemo"></td>
+    <td class="nodemo"></td>
+  </tr>
+  <tr>
+    <td class="nodemo"></td>
+    <td class="nodemo"></td>
+  </tr>
+</table>

@@ -1,9 +1,14 @@
-<div>
-  <ul style="margin: 0em 1em" class="list-group">
-    <li ng-repeat="plugin in plugins" class="list-group-item">{{plugin.name}} <button ng-click="wakeup($index)">{{plugin.operation}}</button></li>
-  </ul>
+<nav class="navbar navbar-default">
+  <a class="navbar-brand" href="#/">{{ title }}</a>
+</nav>
 
-  <footer class="footer">
-    <div class="container"><button ng-click="next()" class="btn btn-default" style="width:100%;margin-top:15px;">次へ</button></div>
-  </footer>
-</div>
+<table width="100%">
+  <tr ng-repeat="plugin in plugins" class="row">
+    <td>{{plugin.name}}</td>
+    <td><button class="btn-operation" ng-click="wakeup($index)">{{plugin.operation}}</button></td>
+  </tr>
+</table>
+
+<footer>
+  <table><tr><td class="button" ng-click="next()">次へ</td></tr></table>
+</footer>
