@@ -77,11 +77,11 @@ var app = angular.module('demoweb', ['ngRoute'])
     $scope.title = 'デモ一覧';
     $scope.transit = function(demoName) {
       _client.discoverDevices({
-        onsuccess: function(json) {
-          var devices;
-          console.log('found devices: ', json.services);
-
-          devices = json.services.filter(function(service) {
+        onsuccess: function(services) {
+          var devices = services.filter(function(service) {
+            if (!service.scopes) {
+              return false;
+            }
             var profiles = _demos[demoName].profiles,
                 scopes = service.scopes,
                 i, j, found;
@@ -145,6 +145,9 @@ var app = angular.module('demoweb', ['ngRoute'])
         var profiles = _demos[demoName].profiles,
             scopes = p.supports,
             i, j, found;
+        if (!scopes) {
+          return false;
+        }
         for (i = 0; i < profiles.length; i++) {
           found = false;
           loop:
