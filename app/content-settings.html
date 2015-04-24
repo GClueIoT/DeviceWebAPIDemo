@@ -2,12 +2,14 @@
   <a class="navbar-brand" href="#/">{{ title }}</a>
 </nav>
 
-<table width="100%">
-  <tr ng-repeat="plugin in plugins" class="row">
-    <td>{{plugin.name}}</td>
-    <td><button class="btn-operation" ng-click="wakeup($index)">{{plugin.operation}}</button></td>
-  </tr>
-</table>
+<content>
+  <table width="100%">
+    <tr ng-repeat="plugin in plugins" class="row">
+      <td>{{plugin.name}}</td>
+      <td><button class="btn-operation" ng-click="wakeup($index)">{{plugin.operation}}</button></td>
+    </tr>
+  </table>
+</content>
 
 <footer>
   <table><tr><td class="button" ng-click="next()">次へ</td></tr></table>
