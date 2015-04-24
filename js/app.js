@@ -79,7 +79,7 @@ var app = angular.module('demoweb', ['ngRoute'])
     $scope.title = 'デモ一覧';
     $scope.transit = function(demoName) {
       demoWebClient.discoverDevices({
-        onsuccess: function(json) {
+        onsuccess: function(services) {
           var devices = services.filter(function(service) {
             if (!service.scopes) {
               return false;
