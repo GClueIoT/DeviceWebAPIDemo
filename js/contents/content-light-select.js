@@ -1,7 +1,17 @@
 (function () {
   'use strict';
 
-  function discoverLight($scope) {
+  function containLightService(lights, serviceId, lightId) {
+    for (var i = 0; i < lights.length; i++) {
+      var light = lights[i];
+      if (light.serviceId === serviceId && light.light.lightId == lightId) {
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  function discoverLight($scope, lightService) {
     var devices = _client.getLastKnownDevices();
     var serviceIds = [];
     for (var i = 0; i < devices.length; i++) {
@@ -31,10 +41,15 @@
           var lights = lightMap[serviceId];
           for (var i in lights) {
             var light = lights[i];
+            var checked = false;
+            if (containLightService(lightService.lights, serviceId, light.lightId)) {
+              checked = true;
+            }
             lightIds.push({
               'name': light.name,
               'serviceId': serviceId,
-              'light': light
+              'light': light,
+              'checked': checked
             });
           }
         }
@@ -44,13 +59,17 @@
           'lights' : lightIds
         }
         $scope.$apply();
+        var $checkboxs = $('[name=light-checkbox]');
+        $checkboxs.map(function(index, el) {
+          el.checked = lightIds[index].checked;
+        });
       }
     });
   }
 
-  var SelectLightController = function($scope, $location, lightData) {
+  var SelectLightController = function($scope, $location, lightService) {
     $scope.title = '使用するライトを選択してください';
-    discoverLight($scope);
+    discoverLight($scope, lightService);
 
     $scope.settingAll = function() {
       $location.path('/settings');
@@ -65,10 +84,12 @@
       $location.path('/light');
     }
     $scope.ok = function() {
-      lightData.removeAll();
-      var $checked = $('[name=light-checkbox]:checked');
+      lightService.removeAll();
+      var $checked = $('[name=light-checkbox]');
       var valList = $checked.map(function(index, el) {
-        lightData.addLight($scope.list.lights[index]);
+        if (el.checked) {
+          lightService.addLight($scope.list.lights[index]);
+        }
         return $scope.list.lights[index];
       });
       $location.path('/light');
@@ -76,5 +97,5 @@
   };
 
   app.controller('SelectLightController', 
-      ['$scope', '$location', 'lightData', SelectLightController]);
+      ['$scope', '$location', 'lightService', SelectLightController]);
 })();

@@ -378,9 +378,7 @@ var demoWeb = (function (parent) {
     var self = this;
 
     dConnect.discoverDevices(self.settings.accessToken, function(json) {
-      console.log("before: " + JSON.stringify(self.lastKnownDevices));
       self.cleanupLastKnownDevices(json.services);
-      console.log("after: " + JSON.stringify(self.lastKnownDevices));
 
       var count = 0;
       var length = json.services.length;

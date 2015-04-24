@@ -195,7 +195,7 @@ var app = angular.module('demoweb', ['ngRoute'])
     };
   }]);
 
-app.service('lightData', ['$rootScope', function($rootScope) {
+app.service('lightService', ['$rootScope', function($rootScope) {
   var service = {
     lights: [],
     addLight: function (light) {

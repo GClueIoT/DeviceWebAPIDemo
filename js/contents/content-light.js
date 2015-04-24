@@ -14,12 +14,12 @@
   /**
    * 選択された色。
    */
-  var selectColor = "#FFFFFF";
+  var selectColor = "FFFFFF";
 
   /**
    * 選択された光強度。
    */
-  var selectBrightness = 1;
+  var selectBrightness = 1.0;
 
   /**
    * 送信状態を保持する。
@@ -271,7 +271,9 @@
    */
   function moveSelectColor(x, y) {
     selectColor = getColor(x, y);
-    test(true);
+    if (lightPower) {
+      test(true);
+    }
   }
 
   /**
@@ -282,10 +284,16 @@
    */
   function moveSelectBrightness(brightness) {
     selectBrightness =  brightness / 100.0;
-    test(true);
+    if (lightPower) {
+      test(true);
+    }
   }
 
   function test(power) {
+    if (!lightList || lightList.length == 0) {
+      return;
+    }
+
     if (sendStateFlag) {
       return;
     }
@@ -396,18 +404,58 @@
     return builder.build();
   }
 
-  var LightController = function ($scope, $location, lightData) {
-    lightList = lightData.lights;
+  function turnOnLights(force) {
+    if (!lightList || lightList.length == 0) {
+      return;
+    }
+
+    if (!lightPower || force) {
+      lightPower = true;
+      test(true);
+      $('#turn-off').css({
+        'background-color': '#49B4DC',
+        'color': '#FFFFFF'
+      });
+      $('#turn-on').css({
+        'background-color': '#FFFFFF',
+        'color': '#CCCCCC'
+      });
+    }
+  }
+  
+  function turnoffLights(force) {
+    if (lightPower || force) {
+      lightPower = false;
+      test(false);
+      $('#turn-on').css({
+        'background-color': '#49B4DC',
+        'color': '#FFFFFF'
+      });
+      $('#turn-off').css({
+        'background-color': '#FFFFFF',
+        'color': '#CCCCCC'
+      });
+    }
+  }
+  
+  var LightController = function ($scope, $location, lightService) {
+    lightList = lightService.lights;
 
     $scope.title = 'ライト制御';
     initColorPicker();
 
+    selectColor = "FFFFFF";
+    selectBrightness = 1.0;
+
     if (lightList.length == 1) {
       $scope.deviceName = lightList[0].name;
+      turnOnLights(true)
     } else if (lightList.length > 1) {
       $scope.deviceName = lightList[0].name + " その他(" + (lightList.length - 1) + ")";
+      turnOnLights(true)
     } else {
       $scope.deviceName = "デバイス未設定";
+      turnoffLights(true);
     }
 
     $scope.lightOn = "On";
@@ -419,35 +467,13 @@
       $location.path('/light/select');
     }
     $scope.turnOn = function() {
-      if (!lightPower) {
-        lightPower = true;
-        test(true);
-        $('#turn-off').css({
-          'background-color': '#49B4DC',
-          'color': '#FFFFFF'
-        });
-        $('#turn-on').css({
-          'background-color': '#FFFFFF',
-          'color': '#CCCCCC'
-        });
-      }
+      turnOnLights(false);
     }
     $scope.turnOff = function() {
-      if (lightPower) {
-        lightPower = false;
-        test(false);
-        $('#turn-on').css({
-          'background-color': '#49B4DC',
-          'color': '#FFFFFF'
-        });
-        $('#turn-off').css({
-          'background-color': '#FFFFFF',
-          'color': '#CCCCCC'
-        });
-      }
+      turnoffLights(false);
     }
   };
 
   app.controller('LightController', 
-      ['$scope', '$location', 'lightData', LightController]);
+      ['$scope', '$location', 'lightService', LightController]);
 })();
