@@ -1,5 +1,10 @@
-<div>
-  <ul style="margin: 0em 1em" class="list-group">
-    <li ng-repeat="plugin in plugins" class="list-group-item">{{plugin.name}} <button ng-click="wakeup($index)">{{plugin.operation}}</button></li>
-  </ul>
-</div>
+<nav class="navbar navbar-default">
+  <a class="navbar-brand" href="#/">{{ title }}</a>
+</nav>
+
+<table width="100%">
+  <tr ng-repeat="plugin in plugins" class="row">
+    <td>{{plugin.name}}</td>
+    <td><button class="btn-operation" ng-click="wakeup($index)">{{ plugin.operation }}</button></td>
+  </tr>
+</table>
