@@ -5,6 +5,10 @@ angular.module('demoweb', ['ngRoute'])
       templateUrl: 'app/content-list.html',
       controller: 'demoListCtrl'
     })
+    .when('/error/:errorCode', {
+      templateUrl: 'app/content-error.html',
+      controller: 'errorCtrl'
+    })
     .when('/launch', {
       templateUrl: 'app/content-launch.html',
       controller: 'launchCtrl'

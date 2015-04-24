@@ -6,7 +6,14 @@
           $location.path('/');
         },
         onerror: function(errorCode, errorMessage) {
-          $location.path('/launch');
+          switch(errorCode) {
+          case -1:
+            $location.path('/launch');
+            break;
+          default:
+            $location.path('/error/' + errorCode);
+            break;
+          }
         }
       });
 
@@ -19,7 +26,7 @@
           },
 
           onerror: function(errorCode, errorMessage) {
-            console.log('transit - discoverPlugins: errorCode=' + errorCode + ' errorMessage=' + errorMessage);
+            $location.path('/error/' + errorCode);
           }
         });
       };
