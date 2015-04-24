@@ -1,24 +1,3 @@
-var _client = new demoWeb.Client();
-_client.setApplicationName('DemoWeb');
-_client.setScopes([
-  'servicediscovery',
-  'serviceinformation',
-  'system',
-  'light'
-]);
-_client.setReleasedPlugins([
-  {
-    packageName: "org.deviceconnect.android.deviceplugin.hue",
-    name: "hue",
-    supports: ['light']
-  },
-  {
-    packageName: "org.deviceconnect.android.deviceplugin.sphero",
-    name: "Sphero",
-    supports: ['light']
-  }
-]);
-
 var _demos = {
   light: {
     profiles: ['light'],
@@ -48,8 +27,31 @@ angular.module('demoweb', ['ngRoute'])
     .when('/light', {templateUrl: 'app/content-light.html'})
     .otherwise({redirectTo: '/'});
   }])
-  .controller('demoCtrl', ['$scope', '$location', function($scope, $location) {
-    _client.checkAvailability({
+  .factory('demoWebClient', function () {
+    var _client = new demoWeb.Client();
+    _client.setApplicationName('DemoWeb');
+    _client.setScopes([
+      'servicediscovery',
+      'serviceinformation',
+      'system',
+      'light'
+    ]);
+    _client.setReleasedPlugins([
+      {
+        packageName: "org.deviceconnect.android.deviceplugin.hue",
+        name: "hue",
+        supports: ['light']
+      },
+      {
+        packageName: "org.deviceconnect.android.deviceplugin.sphero",
+        name: "Sphero",
+        supports: ['light']
+      }
+    ]);
+    return _client;
+  })
+  .controller('demoCtrl', ['$scope', '$location', 'demoWebClient', function($scope, $location, demoWebClient) {
+    demoWebClient.checkAvailability({
       onsuccess: function(version) {
         $location.path('/');
       },
@@ -59,7 +61,7 @@ angular.module('demoweb', ['ngRoute'])
     });
 
     $scope.settingAll = function() {
-      _client.discoverPlugins({
+      demoWebClient.discoverPlugins({
         onsuccess: function(plugins) {
           $scope.$apply(function() {
             $location.path('/settings');
@@ -72,10 +74,10 @@ angular.module('demoweb', ['ngRoute'])
       });
     };
   }])
-  .controller('demoListCtrl', ['$scope', '$location', function($scope, $location) {
+  .controller('demoListCtrl', ['$scope', '$location', 'demoWebClient', function($scope, $location, demoWebClient) {
     $scope.title = 'デモ一覧';
     $scope.transit = function(demoName) {
-      _client.discoverDevices({
+      demoWebClient.discoverDevices({
         onsuccess: function(json) {
           var devices;
           console.log('found devices: ', json.services);
@@ -102,7 +104,7 @@ angular.module('demoweb', ['ngRoute'])
           console.log('filtered devices: ', devices);
 
           if (devices.length === 0) {
-            _client.discoverPlugins({
+            demoWebClient.discoverPlugins({
               onsuccess: function(plugins) {
                 $scope.$apply(function() {
                   $location.path('/settings/' + demoName);
@@ -126,15 +128,15 @@ angular.module('demoweb', ['ngRoute'])
       });
     };
   }])
-  .controller('launchCtrl', ['$scope', function($scope) {
+  .controller('launchCtrl', ['$scope', 'demoWebClient', function($scope, demoWebClient) {
     $scope.title = 'システム起動確認';
     $scope.startManager = function() {
-      _client.startManager();
+      demoWebClient.startManager();
     };
   }])
-  .controller('settingsCtrl', ['$scope', '$routeParams', '$location', function($scope, $routeParams, $location) {
+  .controller('settingsCtrl', ['$scope', '$routeParams', '$location', 'demoWebClient', function($scope, $routeParams, $location, demoWebClient) {
     $scope.title = 'デバイス設定一覧';
-    var plugins = _client.getPlugins(),
+    var plugins = demoWebClient.getPlugins(),
         demoName = $routeParams.demoName,
         i, p;
 
@@ -170,7 +172,7 @@ angular.module('demoweb', ['ngRoute'])
     $scope.wakeup = function(index) {
       var p = plugins[index];
       if (p.installed === true) {
-        _client.openSettingWindow({
+        demoWebClient.openSettingWindow({
           pluginId: p.id,
           onsuccess: function(json) {
             console.log('openSettingWindow: success: ', json);
