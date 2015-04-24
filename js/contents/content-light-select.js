@@ -1,6 +1,8 @@
 (function () {
   'use strict';
 
+  var demoClient;
+
   function containLightService(lights, serviceId, lightId) {
     for (var i = 0; i < lights.length; i++) {
       var light = lights[i];
@@ -12,7 +14,7 @@
   }
   
   function discoverLight($scope, lightService) {
-    var devices = _client.getLastKnownDevices();
+    var devices = demoClient.getLastKnownDevices();
     var serviceIds = [];
     for (var i = 0; i < devices.length; i++) {
       serviceIds.push(devices[i].id);
@@ -21,7 +23,7 @@
     // 発見したライトを格納するマップ
     var lightMap = {};
 
-    _client.request({
+    demoClient.request({
       "method": "GET",
       "profile": "light",
       "devices": serviceIds,
@@ -67,7 +69,9 @@
     });
   }
 
-  var SelectLightController = function($scope, $location, lightService) {
+  var SelectLightController = function($scope, $location, demoWebClient, lightService) {
+    demoClient = demoWebClient;
+
     $scope.title = '使用するライトを選択してください';
     discoverLight($scope, lightService);
 
@@ -97,5 +101,5 @@
   };
 
   app.controller('SelectLightController', 
-      ['$scope', '$location', 'lightService', SelectLightController]);
+      ['$scope', '$location', 'demoWebClient', 'lightService', SelectLightController]);
 })();

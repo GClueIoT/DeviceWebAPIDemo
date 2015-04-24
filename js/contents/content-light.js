@@ -1,6 +1,8 @@
 (function () {
   'use strict';
 
+  var demoClient;
+
   /**
    * 操作を行うライト一覧。
    */
@@ -332,7 +334,7 @@
    * @returns
    */
   function sendLightColor(serviceId, lightId, color, brightness, callback) {
-    _client.request({
+    demoClient.request({
       "method": "POST",
       "profile": "light",
       "devices": [serviceId],
@@ -361,7 +363,7 @@
    * @returns
    */
   function sendTurnOff(serviceId, lightId, callback) {
-    _client.request({
+    demoClient.request({
       "method": "DELETE",
       "profile": "light",
       "devices": [serviceId],
@@ -438,7 +440,8 @@
     }
   }
   
-  var LightController = function ($scope, $location, lightService) {
+  var LightController = function ($scope, $location, demoWebClient, lightService) {
+    demoClient = demoWebClient;
     lightList = lightService.lights;
 
     $scope.title = 'ライト制御';
@@ -475,5 +478,5 @@
   };
 
   app.controller('LightController', 
-      ['$scope', '$location', 'lightService', LightController]);
+      ['$scope', '$location', 'demoWebClient', 'lightService', LightController]);
 })();
