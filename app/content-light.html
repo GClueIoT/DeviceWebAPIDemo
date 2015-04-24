@@ -1,1 +1,33 @@
-light
+<div ng-controller="LightController">
+  <nav class="navbar navbar-default">
+    <img type="button" ng-click="settingAll()" class="btn-settings" src="img/Gear_off.png">
+    <a class="navbar-brand" href="#/">{{title}}</a>
+  </nav>
+
+  <div id="light-container" align="center">
+    <div id="device" class="btn btn-default" ng-click="discoverLight()">{{deviceName}}</div>
+    <div id="power-group">
+      <div class="btn-group" role="group" aria-label="power">
+        <button id="turn-off" type="button" class="btn btn-default" ng-click="turnOff()">{{lightOff}}</button>
+        <button id="turn-on" type="button" class="btn btn-default" ng-click="turnOn()">{{lightOn}}</button>
+      </div>
+    </div>
+    <div>
+      <canvas id="color-picker" width="320" height="320"></canvas>
+    </div>
+    <div id="color-cursor"></div>
+    <table style="margin-top:16px">
+      <tr>
+        <td>
+          <img id="brightness-off" src="./img/light_off.png" width="48">
+        </td>
+        <td>
+          <input id="brightness-slider" type="text" data-slider-id="brightness-slider" />
+        </td>
+        <td>
+          <img id="brightness-on" src="./img/light_on.png" width="48">
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>

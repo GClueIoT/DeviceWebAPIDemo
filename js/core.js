@@ -189,6 +189,7 @@ var demoWeb = (function (parent) {
    * @prop {?string} attribute
    * @prop {?string} accessToken
    * @prop {!object[]} devices 
+   * @prop {!object[]} params
    * @prop {function} onsuccess
    * @prop {function} onerror
    * @prop {function} oncomplete
@@ -217,6 +218,9 @@ var demoWeb = (function (parent) {
       builder.setAttribute(req.attribute);
     }
     builder.setAccessToken(this.settings.accessToken);
+    for (var key in req.params) {
+      builder.addParameter(key, req.params[key]);
+    }
 
     
     var callbacks = [];
@@ -322,6 +326,48 @@ var demoWeb = (function (parent) {
     return this.lastKnownDevices;
   };
 
+  Client.prototype.containLastKnownDevices = function(service) {
+    for (var i = 0; i < this.lastKnownDevices.length; i++) {
+      var id = this.lastKnownDevices[i].id;
+      if (id === service.id) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  Client.prototype.removeLastKnownDevices = function(service) {
+    for (var i = 0; i < this.lastKnownDevices.length; i++) {
+      var id = this.lastKnownDevices[i].id;
+      if (id === service.id) {
+        this.lastKnownDevices.splice(i, 1); 
+        return;
+      }
+    }
+  };
+
+  Client.prototype.cleanupLastKnownDevices = function(services) {
+    var removeServices = [];
+    for (var i = 0; i < this.lastKnownDevices.length; i++) {
+      var id = this.lastKnownDevices[i].id;
+      var found = false;
+      for (var j = 0; j < services.length; j++) {
+        if (id === services[j].id) {
+          found = true;
+        }
+      }
+      if (!found) {
+        removeServices.push(this.lastKnownDevices[i]);
+      }
+    }
+    
+    if (removeServices.length > 0) {
+      for (var i = 0; i < removeServices.length; i++) {
+        this.removeLastKnownDevices(removeServices[i]);
+      }
+    }
+  }
+
   /**
    * Discovers devices to which GotAPI server can access currently.
    * @public
@@ -332,8 +378,28 @@ var demoWeb = (function (parent) {
     var self = this;
 
     dConnect.discoverDevices(self.settings.accessToken, function(json) {
-      self.lastKnownDevices = json.services;
-      callback.onsuccess(json);
+      self.cleanupLastKnownDevices(json.services);
+
+      var count = 0;
+      var length = json.services.length;
+      for (var i = 0; i < json.services.length; i++) {
+        if (self.containLastKnownDevices(json.services[i])) {
+          count++;
+          if (count == length) {
+            callback.onsuccess(self.lastKnownDevices);
+          }
+        } else {
+          self.serviceInfomartion(json.services[i], function(service) {
+            if (service) {
+              self.lastKnownDevices.push(service);
+            }
+            count++;
+            if (count == length) {
+              callback.onsuccess(self.lastKnownDevices);
+            }
+          });
+        }
+      }
     }, function(errorCode, errorMessage) {
       switch (errorCode) {
       case dConnect.constants.ErrorCode.EMPTY_ACCESS_TOKEN:
@@ -351,6 +417,23 @@ var demoWeb = (function (parent) {
       }
     });
   };
+
+  Client.prototype.serviceInfomartion = function(service, callback) {
+    var self = this;
+
+    dConnect.getSystemDeviceInfo(service.id, self.settings.accessToken, function(status, header, responseText) {
+      var json = JSON.parse(responseText);
+      if (json.result == 0) {
+        service['scopes'] = json.supports;
+        callback(service);
+      } else {
+        callback(undefined);
+        
+      }
+    }, function(errorCode, errorMessage) {
+      callback(undefined);
+    });
+  }
 
   /**
    * Opens and connects to a WebSocket.

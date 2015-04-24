@@ -1,0 +1,81 @@
+
+.navbar-brand:hover {
+  color: #FF0000;
+}
+
+.navbar-brand:active {
+  color: #FF0000;
+}
+
+#light-container {
+  margin-top: 68px;
+}
+
+#color-cursor {
+  position:absolute;
+  pointer-events: none;
+  width:16px;
+  height:16px;
+  cursor:move;
+  border:2px solid #000;
+}
+
+#brightness-slider .slider-selection {
+  background: #2EA9D7;
+  height:2px;
+}
+
+#brightness-slider .slider-handle {
+  background: #2EA9D7;
+  margin-top:-9px;
+}
+
+input#brightness-slider .slider-track {
+  background: #2EA9D7;
+  height:2px;
+  margin-top:0px;
+}
+
+img#brightness-off {
+  margin: 12px;
+  margin-top: 8px;
+}
+
+img#brightness-on {
+  margin: 14px;
+  margin-top: 2px;
+}
+
+#device {
+  width:320px;
+  margin-left: 16px;
+  margin-right: 16px;
+  margin-bottom: 24px;
+  border-color: #49B4DC;
+}
+#device:hover {
+  background-color: #FFFFFF;
+}
+
+#device:active {
+  background-color: #C3E6F3;
+}
+
+#power-group {
+  margin-bottom: 32px;
+}
+
+button#turn-off {
+  width: 90px;
+  border-color: #49B4DC;
+  background-color: #49B4DC;
+  color: #FFFFFF;
+}
+
+button#turn-on {
+  width: 90px;
+  border-color: #49B4DC;
+  background-color: #FFFFFF;
+  color: #CCCCCC;
+}
+

@@ -18,5 +18,6 @@ angular.module('demoweb', ['ngRoute'])
       controller: 'settingsCtrl'
     })
     .when('/light', {templateUrl: 'app/content-light.html'})
+    .when('/light/select', {templateUrl: 'app/content-light-select.html'})
     .otherwise({redirectTo: '/'});
   }]);
