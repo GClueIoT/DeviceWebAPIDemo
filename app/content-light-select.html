@@ -3,18 +3,19 @@
     <img type="button" ng-click="settingAll()" class="btn-settings" src="img/Gear_off.png">
     <a class="navbar-brand" href="#/light">{{title}}</a>
   </nav>
-
-  <div id="btn-group" align="center">
-    <div id="unregister" class="btn btn-default" ng-click="unregisterAll()">全解除</div>
-    <div id="register" class="btn btn-default" ng-click="registerAll()">全選択</div>
+  <div id="light-container">
+    <div id="btn-group" align="center">
+      <div id="unregister" class="btn btn-default" ng-click="unregisterAll()">全解除</div>
+      <div id="register" class="btn btn-default" ng-click="registerAll()">全選択</div>
+    </div>
+    <ul class="list-group">
+      <li class="list-group-item" ng-repeat="light in list.lights">
+        <div class="light-checkbox">
+          <input class="checkbox" type="checkbox" name="light-checkbox"><label>{{light.name}}</label>
+        </div>
+      </li>
+    </ul>
   </div>
-  <ul class="list-group">
-    <li class="list-group-item" ng-repeat="light in list.lights">
-      <div class="light-checkbox">
-        <input class="checkbox" type="checkbox" name="light-checkbox"><label>{{light.name}}</label>
-      </div>
-    </li>
-  </ul>
 
   <div class="footer">
     <div class="btn-group btn-group-justified" role="group" aria-label="footer">
