@@ -1,6 +1,6 @@
 (function () {
   'use strict';
-  
+
   /**
    * 操作を行うライト一覧。
    */
