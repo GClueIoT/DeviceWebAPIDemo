@@ -52,6 +52,9 @@
     $scope.title = '使用するライトを選択してください';
     discoverLight($scope);
 
+    $scope.settingAll = function() {
+      $location.path('/settings');
+    }
     $scope.registerAll = function() {
       $('input[name=light-checkbox]').prop("checked", true);
     }

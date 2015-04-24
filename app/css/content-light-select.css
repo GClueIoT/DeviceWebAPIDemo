@@ -1,5 +1,28 @@
-input[type=checkbox] {
+.light-checkbox {
+  margin: 0px;
+}
+.light-checkbox input {
+  position: absolute;
+  top: 0;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0px;
+}
+
+.light-checkbox input[type="checkbox"] + label {
+  display: block;
   background-image: url("../../img/check_a_off.png");
+  background-size: 24px;
+  background-position: left center;
+  background-repeat: no-repeat;
+  padding: 4px 0px 4px 32px;
+  margin: 0px;
+  font-size: 18px;
+}
+
+.light-checkbox input[type=checkbox]:checked + label {
+    background-image: url("../../img/check_a_on.png");
 }
 
 .list-group {
@@ -68,6 +91,7 @@ div#register:active {
   color: #FFFFFF;
   height: 48px;
 }
+
 #light-ok:active {
   background-color: #39A4D3;
 }

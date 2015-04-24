@@ -412,6 +412,9 @@
 
     $scope.lightOn = "On";
     $scope.lightOff = "Off";
+    $scope.settingAll = function() {
+      $location.path('/settings');
+    }
     $scope.discoverLight = function() {
       $location.path('/light/select');
     }

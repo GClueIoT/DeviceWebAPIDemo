@@ -1,4 +1,3 @@
-<link rel="stylesheet" href="./app/css/content-light-select.css" />
 <div ng-controller="SelectLightController">
   <nav class="navbar navbar-default">
     <img type="button" ng-click="settingAll()" class="btn-settings" src="img/Gear_off.png">
@@ -11,10 +10,8 @@
   </div>
   <ul class="list-group">
     <li class="list-group-item" ng-repeat="light in list.lights">
-      <div class="checkbox">
-        <label>
-          <input type="checkbox" name="light-checkbox">{{light.name}}
-        </label>
+      <div class="light-checkbox">
+        <input class="checkbox" type="checkbox" name="light-checkbox"><label>{{light.name}}</label>
       </div>
     </li>
   </ul>
