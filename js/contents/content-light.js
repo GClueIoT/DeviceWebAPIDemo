@@ -4,7 +4,7 @@
   /**
    * 操作を行うライト一覧。
    */
-  var lightMap = {};
+  var lightList = [];
 
   /**
    * ライトの電源状態.
@@ -33,7 +33,7 @@
   /**
    * カラーピッカーの大きさ。
    */
-  var colorPickerSize = 140;
+  var colorPickerSize = 130;
 
   /**
    * カラーピッカーを表示するdivのサイズ.
@@ -292,27 +292,24 @@
     sendStateFlag = true;
 
     var count = 0;
-    for (var serviceId in lightMap) {
-      var lights = lightMap[serviceId];
-      for (var i in lights) {
-        var light = lights[i];
-        if (power) {
-          count++;
-          sendLightColor(serviceId, light.lightId, selectColor, selectBrightness, function() {
-            count--;
-            if (count == 0) {
-              sendStateFlag = false;
-            }
-          });
-        } else {
-          count++;
-          sendTurnOff(serviceId, light.lightId, function() {
-            count--;
-            if (count == 0) {
-              sendStateFlag = false;
-            }
-          });
-        }
+    for (var i = 0; i < lightList.length; i++) {
+      var light = lightList[i];
+      if (power) {
+        count++;
+        sendLightColor(light.serviceId, light.light.lightId, selectColor, selectBrightness, function() {
+          count--;
+          if (count == 0) {
+            sendStateFlag = false;
+          }
+        });
+      } else {
+        count++;
+        sendTurnOff(light.serviceId, light.light.lightId, function() {
+          count--;
+          if (count == 0) {
+            sendStateFlag = false;
+          }
+        });
       }
     }
   }
@@ -399,45 +396,23 @@
     return builder.build();
   }
 
-  /**
-   * ライト一覧をダイアログに表示する。
-   * @returns
-   */
-  function showLightList() {
-    var devices = _client.getLastKnownDevices();
-    var serviceIds = [];
-    for (var i = 0; i < devices.length; i++) {
-      serviceIds.push(devices[i].id);
-    }
+  var LightController = function ($scope, $location, lightData) {
+    lightList = lightData.lights;
 
-    _client.request({
-      "method": "GET",
-      "profile": "light",
-      "devices": serviceIds,
-      "onsuccess": function(id, json) {
-        if (json.lights) {
-          lightMap[id] = [];
-          for (var i = 0; i < json.lights.length; i++) {
-            lightMap[id].push(json.lights[i]);
-          }
-        }
-      },
-      "onerror": function(id, error) {
-      },
-      "oncomplete": function() {
-        console.log(JSON.stringify(lightMap));
-      }
-    });
-  }
-
-  var LightController = function ($scope, $location) {
+    $scope.title = 'ライト制御';
     initColorPicker();
 
-    $scope.deviceName = "デバイス";
-    $scope.lightOn = "ON";
-    $scope.lightOff = "OFF";
+    if (lightList.length == 1) {
+      $scope.deviceName = lightList[0].name;
+    } else if (lightList.length > 1) {
+      $scope.deviceName = lightList[0].name + " その他(" + (lightList.length - 1) + ")";
+    } else {
+      $scope.deviceName = "デバイス未設定";
+    }
+
+    $scope.lightOn = "On";
+    $scope.lightOff = "Off";
     $scope.discoverLight = function() {
-//      showLightList();
       $location.path('/light/select');
     }
     $scope.turnOn = function() {
@@ -470,6 +445,6 @@
     }
   };
 
-  angular.module('demoweb')
-    .controller('LightController', ['$scope', '$location', LightController]);
+  app.controller('LightController', 
+      ['$scope', '$location', 'lightData', LightController]);
 })();

@@ -26,7 +26,7 @@ var _demos = {
   }
 };
 
-angular.module('demoweb', ['ngRoute'])
+var app = angular.module('demoweb', ['ngRoute'])
   .config(['$routeProvider', function($routeProvider) {
     $routeProvider
     .when('/', {
@@ -85,19 +85,19 @@ angular.module('demoweb', ['ngRoute'])
             var profiles = _demos[demoName].profiles,
                 scopes = service.scopes,
                 i, j, found;
-            for (i = 0; i < profiles.length; i++) {
-              found = false;
-              loop:
-              for (j = 0; j < scopes.length; j++) {
-                if (profiles[i] === scopes[j]) {
-                  found = true;
-                  break loop;
-                }
-              }
-              if (!found) {
-                return false;
-              }
-            }
+//            for (i = 0; i < profiles.length; i++) {
+//              found = false;
+//              loop:
+//              for (j = 0; j < scopes.length; j++) {
+//                if (profiles[i] === scopes[j]) {
+//                  found = true;
+//                  break loop;
+//                }
+//              }
+//              if (!found) {
+//                return false;
+//              }
+//            }
             return true;
           });
           console.log('filtered devices: ', devices);
@@ -191,3 +191,20 @@ angular.module('demoweb', ['ngRoute'])
       $location.path(path);
     };
   }]);
+
+app.service('lightData', ['$rootScope', function($rootScope) {
+  var service = {
+    lights: [],
+    addLight: function (light) {
+      service.lights.push(light);
+    },
+    removeAll: function() {
+      service.lights = [];
+    },
+    setLight: function(list) {
+      service.lights = [];
+      service.lights.concat(list);
+    }
+  }
+  return service;
+}]);

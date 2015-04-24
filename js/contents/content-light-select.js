@@ -48,23 +48,30 @@
     });
   }
 
-  var SelectLightController = function($scope) {
+  var SelectLightController = function($scope, $location, lightData) {
+    $scope.title = '使用するライトを選択してください';
     discoverLight($scope);
 
     $scope.registerAll = function() {
-      alert("registerAll");
+      $('input[name=light-checkbox]').prop("checked", true);
     }
     $scope.unregisterAll = function() {
-      alert("unregisterAll");
+      $('input[name=light-checkbox]').prop("checked", false);
     }
     $scope.cancel = function() {
-      alert("cancel");
+      $location.path('/light');
     }
     $scope.ok = function() {
-      alert("ok");
+      lightData.removeAll();
+      var $checked = $('[name=light-checkbox]:checked');
+      var valList = $checked.map(function(index, el) {
+        lightData.addLight($scope.list.lights[index]);
+        return $scope.list.lights[index];
+      });
+      $location.path('/light');
     }
   };
 
-  angular.module('demoweb')
-    .controller('SelectLightController', ['$scope', '$location', SelectLightController]);
+  app.controller('SelectLightController', 
+      ['$scope', '$location', 'lightData', SelectLightController]);
 })();

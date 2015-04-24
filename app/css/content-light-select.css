@@ -11,7 +11,36 @@ input[type=checkbox] {
 }
 
 #btn-group {
-  margin-bottom: 24px;
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+
+div#unregister {
+  border-color: #49B4DC;
+  width: 130px;
+  margin: 4px;
+}
+
+div#unregister:hover {
+  background-color: #FFFFFF;
+}
+
+div#unregister:active {
+  background-color: #C3E6F3;
+}
+
+div#register {
+  border-color: #49B4DC;
+  width: 130px;
+  margin: 4px;
+}
+
+div#register:hover {
+  background-color: #FFFFFF;
+}
+
+div#register:active {
+  background-color: #C3E6F3;
 }
 
 .footer {

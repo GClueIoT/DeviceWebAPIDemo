@@ -1,8 +1,15 @@
+
 <link rel="stylesheet" href="./lib/bootstrap-slider/css/bootstrap-slider.css" />
 <link rel="stylesheet" href="./app/css/content-light.css" />
 <script src="./lib/bootstrap-slider/js/bootstrap-slider.js"></script>
+
 <div ng-controller="LightController">
-  <div align="center">
+  <nav class="navbar navbar-default">
+    <img type="button" ng-click="settingAll()" class="btn-settings" src="img/Gear_off.png">
+    <a class="navbar-brand" href="#/">{{title}}</a>
+  </nav>
+
+  <div id="light-container" align="center">
     <div id="device" class="btn btn-default" ng-click="discoverLight()">{{deviceName}}</div>
     <div id="power-group">
       <div class="btn-group" role="group" aria-label="power">
@@ -17,13 +24,13 @@
     <table style="margin-top:16px">
       <tr>
         <td>
-          <img src="./img/light_off.png" width="48" style="margin:12px;margin-top:8px;">
+          <img id="brightness-off" src="./img/light_off.png" width="48">
         </td>
         <td>
           <input id="brightness-slider" type="text" data-slider-id="brightness-slider" />
         </td>
         <td>
-          <img src="./img/light_on.png" width="48" style="margin:14px;margin-top:2px;">
+          <img id="brightness-on" src="./img/light_on.png" width="48">
         </td>
       </tr>
     </table>
