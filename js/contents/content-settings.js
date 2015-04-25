@@ -1,6 +1,8 @@
 (function() {
   angular.module('demoweb')
-    .controller('settingsCtrl', ['$scope', '$routeParams', '$location', 'demoWebClient', 'demoConstants', function($scope, $routeParams, $location, demoWebClient, demoConstants) {
+    .controller('settingsCtrl', ['$scope', '$routeParams', '$location', 'demoWebClient', 'demoConstants', 'transition', function($scope, $routeParams, $location, demoWebClient, demoConstants, transition) {
+      transition.scope = $scope;
+      
       $scope.title = 'デバイス設定一覧';
       var plugins = demoWebClient.getPlugins(),
           demoName = $routeParams.demoName,
@@ -44,7 +46,7 @@
               console.log('openSettingWindow: success: ', json);
             },
             onerror: function(errorCode, errorMessage) {
-              console.log('openSettingWindow: error: ' + errorCode + ' message=' + errorMessage);
+              transition.next('/error/' + errorCode);
             }
           });
         } else {
@@ -53,9 +55,7 @@
       };
 
       $scope.next = function() {
-        var path = demoConstants.demos[demoName].path;
-        console.log('path: ' + path);
-        $location.path(path);
+        transition.next(demoConstants.demos[demoName].path);
       };
     }]);
 })();

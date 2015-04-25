@@ -1,6 +1,8 @@
 (function() {
   angular.module('demoweb')
-    .controller('demoListCtrl', ['$scope', '$location', 'demoWebClient', 'demoConstants', function($scope, $location, demoWebClient, demoConstants) {
+    .controller('demoListCtrl', ['$scope', '$location', 'demoWebClient', 'demoConstants', 'transition', function($scope, $location, demoWebClient, demoConstants, transition) {
+      transition.scope = $scope;
+      
       $scope.title = 'デモ一覧';
       $scope.transit = function(demoName) {
         demoWebClient.discoverDevices({
@@ -32,9 +34,7 @@
             if (devices.length === 0) {
               demoWebClient.discoverPlugins({
                 onsuccess: function(plugins) {
-                  $scope.$apply(function() {
-                    $location.path('/settings/' + demoName);
-                  });
+                  transition.next('/settings/' + demoName);
                 },
 
                 onerror: function(errorCode, errorMessage) {
@@ -42,14 +42,12 @@
                 }
               });
             } else {
-              $scope.$apply(function() {
-                $location.path(demoConstants.demos[demoName].path);
-              });
+              transition.next(demoConstants.demos[demoName].path);
             }
           },
 
           onerror: function(errorCode, errorMessage) {
-            $location.path('/settings/' + demoName);
+            transition.next('/error/' + errorCode);
           }
         });
       };

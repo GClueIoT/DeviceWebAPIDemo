@@ -4,7 +4,10 @@
 
 <content>
   <div style="margin: 1em;">
-    <p>{{message}}</p>
-    <button class="btn-operation" ng-click="">確認</button>
+    <p>{{errorMessage}}</p>
+    <p>エラーコード: {{errorCode}}</p>
+    <div style="text-align:center">
+      <button class="btn-operation" ng-click="back()">前の画面に戻る</button>
+    </div>
   </div>
 </content>

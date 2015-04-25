@@ -1,32 +1,34 @@
 (function() {
   angular.module('demoweb')
-    .controller('demoCtrl', ['$scope', '$location', 'demoWebClient', function($scope, $location, demoWebClient) {
+    .controller('demoCtrl', ['$scope', '$location', 'demoWebClient', 'transition', function($scope, $location, demoWebClient, transition) {
+      transition.scope = $scope;
+      
       demoWebClient.checkAvailability({
         onsuccess: function(version) {
-          $location.path('/');
+          transition.next('/');
         },
         onerror: function(errorCode, errorMessage) {
+          var path;
           switch(errorCode) {
           case -1:
-            $location.path('/launch');
+            path = '/launch';
             break;
           default:
-            $location.path('/error/' + errorCode);
+            path = '/error/' + errorCode;
             break;
           }
+          transition.next(path);
         }
       });
 
       $scope.settingAll = function() {
         demoWebClient.discoverPlugins({
           onsuccess: function(plugins) {
-            $scope.$apply(function() {
-              $location.path('/settings');
-            });
+            transition.next('/settings');
           },
 
           onerror: function(errorCode, errorMessage) {
-            $location.path('/error/' + errorCode);
+            transition.next('/error/' + errorCode);
           }
         });
       };
