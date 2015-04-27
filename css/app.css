@@ -152,3 +152,9 @@ footer td.button {
 footer td.button:active {
   background-color: #39A4D3;
 }
+
+.modal-spinner-container {
+  width: 100%;
+  text-align: center;
+  margin-top: 0.75em;
+}
