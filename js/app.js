@@ -23,5 +23,9 @@ angular.module('demoweb', ['ngRoute'])
     })
     .when('/light', {templateUrl: 'app/content-light.html'})
     .when('/light/select', {templateUrl: 'app/content-light-select.html'})
+    .when('/trial/install/:package', {
+      templateUrl: 'trial/app/content-install.html',
+      controller: 'trialInstallCtrl'
+    })
     .otherwise({redirectTo: '/'});
   }]);

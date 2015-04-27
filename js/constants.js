@@ -2,6 +2,8 @@
   'use strinct';
 
   var constants = {
+    DEBUG: true,
+
     applicationName: 'Demo Web',
 
     scopes: [

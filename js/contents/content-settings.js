@@ -50,7 +50,11 @@
             }
           });
         } else {
-          location.href = 'market://details?id=' + p.packageName;
+          if (demoConstants.DEBUG) {
+            $location.path('/trial/install/' + p.packageName);
+          } else {
+            location.href = 'market://details?id=' + p.packageName;
+          }
         }
       };
 
