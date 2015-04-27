@@ -81,7 +81,6 @@
         this.pageY = (isTouch ? event.changedTouches[0].pageY : e.pageY);
         this.left = this.pageX;
         this.top = this.pageY;
-        moveCursor(this.left, this.top);
         this.touched = true;
       },
       'touchmove mousemove': function(e) {
@@ -99,6 +98,7 @@
         if (!this.touched) {
           return;
         }
+        moveCursor(this.left, this.top);
         this.touched = false;
       }
     });
@@ -274,7 +274,7 @@
   function moveSelectColor(x, y) {
     selectColor = getColor(x, y);
     if (lightPower) {
-      test(true);
+      setLightColor(true);
     }
   }
 
@@ -287,11 +287,11 @@
   function moveSelectBrightness(brightness) {
     selectBrightness =  brightness / 100.0;
     if (lightPower) {
-      test(true);
+      setLightColor(true);
     }
   }
 
-  function test(power) {
+  function setLightColor(power) {
     if (!lightList || lightList.length == 0) {
       return;
     }
@@ -344,7 +344,6 @@
         "brightness": brightness,
       },
       "onsuccess": function(id, json) {
-        console.log(JSON.stringify(json));
       },
       "onerror": function(id, error) {
         alert("error");
@@ -408,12 +407,13 @@
 
   function turnOnLights(force) {
     if (!lightList || lightList.length == 0) {
+      alert("ライトが未設定です。");
       return;
     }
 
     if (!lightPower || force) {
       lightPower = true;
-      test(true);
+      setLightColor(true);
       $('#turn-off').css({
         'background-color': '#49B4DC',
         'color': '#FFFFFF'
@@ -428,7 +428,7 @@
   function turnoffLights(force) {
     if (lightPower || force) {
       lightPower = false;
-      test(false);
+      setLightColor(false);
       $('#turn-on').css({
         'background-color': '#49B4DC',
         'color': '#FFFFFF'
