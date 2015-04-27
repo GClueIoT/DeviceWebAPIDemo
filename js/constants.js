@@ -13,6 +13,11 @@
       'light'
     ],
 
+    manager: {
+      packageName: 'org.deviceconnect.android.manager',
+      name: 'Device WebAPI Manager'
+    },
+
     plugins: [
       {
         packageName: "org.deviceconnect.android.deviceplugin.hue",

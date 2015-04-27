@@ -35,7 +35,7 @@
 
   angular.module('demoweb')
     .controller('errorCtrl', ['$scope', '$routeParams', '$window', 'demoConstants', function($scope, $routeParams, $window, demoConstants) {
-      $scope.title = 'エラー発生';
+      $scope.title = 'エラーが発生しました';
       $scope.errorCode = $routeParams.errorCode;
       $scope.errorMessage = errorMessage(Number($routeParams.errorCode));
       
