@@ -1,13 +1,16 @@
+
 .light-checkbox {
   margin: 0px;
 }
+
 .light-checkbox input {
   position: absolute;
   top: 0;
   opacity: 0;
-  width: 100%;
+  width: 90%;
   height: 100%;
   margin: 0px;
+  padding: 0px;
 }
 
 .light-checkbox input[type="checkbox"] + label {
@@ -16,7 +19,7 @@
   background-size: 24px;
   background-position: left center;
   background-repeat: no-repeat;
-  padding: 4px 0px 4px 32px;
+  padding: 4px 0px 4px 36px;
   margin: 0px;
   font-size: 18px;
 }
@@ -26,16 +29,19 @@
 }
 
 .list-group {
+  margin:0px;
   margin-bottom:48px;
 }
 
 .list-group-item {
-  border-color: #49B4DC;
+  border-color: #49B4DC #FFFFFF #49B4DC;
 }
 
 #btn-group {
   margin-top: 16px;
   margin-bottom: 16px;
+  margin-left: 0px;
+  margin-right: 0px;
 }
 
 div#unregister {
@@ -72,6 +78,7 @@ div#register:active {
   width: 100%;
   height: 48px;
   background-color: #49B4DC;
+  margin: 0px;
 }
 
 #light-cancel {

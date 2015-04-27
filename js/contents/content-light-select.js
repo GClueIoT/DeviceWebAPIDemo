@@ -3,6 +3,24 @@
 
   var demoClient;
 
+  function showErrorDialog($modal) {
+    var modalInstance = $modal.open({
+      templateUrl: 'error-dialog-light.html',
+      controller: 'ModalInstanceCtrl',
+      size: 'lg',
+      resolve: {
+        'title': function() {
+          return 'エラー';
+        },
+        'message': function() {
+          return 'ライトが選択されていません。';
+        }
+      }
+    });
+    modalInstance.result.then(function () {
+    });
+  }
+  
   function containLightService(lights, serviceId, lightId) {
     for (var i = 0; i < lights.length; i++) {
       var light = lights[i];
@@ -69,7 +87,7 @@
     });
   }
 
-  var SelectLightController = function($scope, $location, demoWebClient, lightService) {
+  var SelectLightController = function($scope, $modal, $location, demoWebClient, lightService) {
     demoClient = demoWebClient;
 
     $scope.title = '使用するライトを選択してください';
@@ -88,19 +106,24 @@
       $location.path('/light');
     }
     $scope.ok = function() {
-      lightService.removeAll();
-      var $checked = $('[name=light-checkbox]');
-      var valList = $checked.map(function(index, el) {
-        if (el.checked) {
-          lightService.addLight($scope.list.lights[index]);
-        }
-        return $scope.list.lights[index];
-      });
-      $location.path('/light');
+      var $checked = $('[name=light-checkbox]:checked');
+      if ($checked.length == 0) {
+        showErrorDialog($modal);
+      } else {
+        lightService.removeAll();
+        var $checkbox = $('[name=light-checkbox]');
+        var valList = $checkbox.map(function(index, el) {
+          if (el.checked) {
+            lightService.addLight($scope.list.lights[index]);
+          }
+          return $scope.list.lights[index];
+        });
+        $location.path('/light');
+      }
     }
   };
 
   angular.module('demoweb')
     .controller('SelectLightController', 
-      ['$scope', '$location', 'demoWebClient', 'lightService', SelectLightController]);
+      ['$scope', '$modal', '$location', 'demoWebClient', 'lightService', SelectLightController]);
 })();
