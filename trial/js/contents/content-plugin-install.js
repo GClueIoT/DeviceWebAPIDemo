@@ -8,13 +8,9 @@
     file: 'dConnectDeviceSphero.apk',
     name: 'Sphero'
   };
-  apkList['org.deviceconnect.android.manager'] = {
-    file: 'dConnectManager.apk',
-    name: 'Device WebAPI Manager'
-  };
 
   angular.module('demoweb')
-    .controller('trialInstallCtrl', ['$scope', '$routeParams', '$window', function($scope, $routeParams, $window) {
+    .controller('trialPluginInstallCtrl', ['$scope', '$routeParams', '$window', function($scope, $routeParams, $window) {
       var packageName = $routeParams.package;
       if (!packageName) {
         return;
@@ -25,16 +21,13 @@
         return;
       }
 
-      $scope.title = 'インストール / URLスキーム';
+      $scope.title = 'インストール';
       $scope.apk_name = apk.file;
       $scope.install = function() {
         $window.location.href = './trial/apk/' + apk.file;
       };
       $scope.back = function() {
         $window.history.back();
-      };
-      $scope.urlScheme = function() {
-        dConnect.startManager();
       };
     }]);
 })();

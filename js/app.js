@@ -31,9 +31,13 @@ angular.module('demoweb', ['ngRoute', 'ui.bootstrap'])
     .when('/light/select', {
       templateUrl: 'app/content-light-select.html'
     })
-    .when('/trial/install/:package', {
-      templateUrl: 'trial/app/content-install.html',
-      controller: 'trialInstallCtrl'
+    .when('/trial/manager/install', {
+      templateUrl: 'trial/app/content-manager-install.html',
+      controller: 'trialManagerInstallCtrl'
+    })
+    .when('/trial/plugin/install/:package', {
+      templateUrl: 'trial/app/content-plugin-install.html',
+      controller: 'trialPluginInstallCtrl'
     })
     .otherwise({redirectTo: '/'});
   }]);

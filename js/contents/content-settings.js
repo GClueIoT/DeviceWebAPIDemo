@@ -33,7 +33,7 @@
           });
         } else {
           if (demoConstants.DEBUG) {
-            $location.path('/trial/install/' + p.packageName);
+            $location.path('/trial/plugin/install/' + p.packageName);
           } else {
             location.href = 'market://details?id=' + p.packageName;
           }

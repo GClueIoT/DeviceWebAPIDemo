@@ -4,7 +4,7 @@
       $scope.title = 'システム起動確認';
       $scope.startManager = function() {
         if (demoConstants.DEBUG) {
-          $location.path('/trial/install/' + demoConstants.manager.packageName);
+          $location.path('/trial/manager/install');
         } else {
           demoWebClient.startManager();
         }

@@ -1,0 +1,19 @@
+<nav class="navbar navbar-default">
+  <a class="navbar-brand" href="#/">{{title}}</a>
+</nav>
+
+<content>
+  <div style="margin: 1em;">
+    <p style="color:red">※この画面は動作確認用です。公開後はGoogle Playの画面に置き換わります。</p>
+    <p><a ng-click="install()">{{apk_name}}</a> をインストールしますか？</p>
+  </div>
+</content>
+
+<footer>
+  <table>
+    <tr>
+      <td class="button" ng-click="back()" width="50%">戻る</td>
+      <td class="button" ng-click="install()" width="50%">インストール</td>
+    </tr>
+  </table>
+</footer>
