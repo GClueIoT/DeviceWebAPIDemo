@@ -75,7 +75,7 @@
       .slider({ min: 0, max: 100, value: 100, focus: false })
       .on('slideStart', function() {
         if (!checkLights()) {
-          showErrorDialog();
+          showErrorDialogNoLights();
         }
       })
       .on('slide', function() {
@@ -95,11 +95,10 @@
         if (checkTouchOutOfColorPicker(px, py)) {
           return;
         }
-
         e.preventDefault();
 
         if (!checkLights()) {
-          showErrorDialog();
+          showErrorDialogNoLights();
           return;
         }
 
@@ -114,6 +113,7 @@
           return;
         }
         e.preventDefault();
+
         this.left = this.left - (this.pageX - (isTouch ? event.changedTouches[0].pageX : e.pageX));
         this.top = this.top - (this.pageY - (isTouch ? event.changedTouches[0].pageY : e.pageY));
         moveCursor(this.left, this.top);
@@ -124,6 +124,7 @@
         if (!this.touched) {
           return;
         }
+        sendStateFlag = false;
         moveCursor(this.left, this.top);
         this.touched = false;
       }
@@ -391,7 +392,7 @@
       "onsuccess": function(id, json) {
       },
       "onerror": function(id, error) {
-        alert("error");
+        showErrorDialogWebAPI();
       },
       "oncomplete": function() {
         callback();
@@ -418,7 +419,7 @@
         console.log(JSON.stringify(json));
       },
       "onerror": function(id, error) {
-        alert("error");
+        showErrorDialogWebAPI();
       },
       "oncomplete": function() {
         callback();
@@ -457,12 +458,13 @@
    */
   function turnOnLights(force) {
     if (!checkLights()) {
-      showErrorDialog();
+      showErrorDialogNoLights();
       return;
     }
 
     if (!lightPower || force) {
       lightPower = true;
+      sendStateFlag = false;
       setLightColor(true);
       $('#turn-on').css({
         'background-color': '#49B4DC',
@@ -483,6 +485,7 @@
   function turnOffLights(force) {
     if (lightPower || force) {
       lightPower = false;
+      sendStateFlag = false;
       setLightColor(false);
       $('#turn-off').css({
         'background-color': '#49B4DC',
@@ -504,20 +507,31 @@
     return (lightList && lightList.length > 0);
   }
 
+  function showErrorDialogWebAPI() {
+    showErrorDialog('エラー', '通信に失敗しました。');
+  }
+
+  function showErrorDialogNoLights() {
+    showErrorDialog('エラー', 'ライトが設定されていません。');
+  }
+
   /**
    * エラーダイアログを表示する。
+   * 
+   * @param title ダイアログのタイトル
+   * @param message ダイアログのメッセージ
    */
-  function showErrorDialog() {
+  function showErrorDialog(title, message) {
     var modalInstance = modalDialog.open({
       templateUrl: 'error-dialog-light.html',
       controller: 'ModalInstanceCtrl',
       size: 'lg',
       resolve: {
         'title': function() {
-          return 'エラー';
+          return title;
         },
         'message': function() {
-          return 'ライトが設定されていません。';
+          return message;
         }
       }
     });

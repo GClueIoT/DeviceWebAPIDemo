@@ -255,43 +255,54 @@ var demoWeb = (function (parent) {
         req.oncomplete();
       }
     };
-    for (var i = 0; i < req.devices.length; i++) {
-      callbacks.push({
-        id: req.devices[i],
-        onsuccess: function(json) {
-          req.onsuccess(this.id, json);
-          checkFinished();
-        },
-        onerror: function(errorCode, errorMessage) {
-          req.onsuccess(this.id, errorCode, errorMessage);
-          checkFinished();
-        }
-      });
-    }
-    for (var i = 0; i < req.devices.length; i++) {
-      builder.setServiceId(req.devices[i]);
-      var cb = callbacks[i];
-      self.requestInternal(req.method, builder.build(), null, null, cb);
+    if (count == 0) {
+      req.oncomplete();
+    } else {
+      for (var i = 0; i < req.devices.length; i++) {
+        callbacks.push({
+          id: req.devices[i],
+          onsuccess: function(json) {
+            req.onsuccess(this.id, json);
+            checkFinished();
+          },
+          onerror: function(errorCode, errorMessage) {
+            req.onsuccess(this.id, errorCode, errorMessage);
+            checkFinished();
+          }
+        });
+      }
+      self.requestInternal(req.method, builder, req.devices, callbacks, 0);
     }
   };
 
-  Client.prototype.requestInternal = function(method, uri, headers, data, cb) {
+  Client.prototype.requestInternal = function(method, builder, serviceIds, callbacks, index) {
+    builder.setServiceId(serviceIds[index]);
+    builder.setAccessToken(this.settings.accessToken);
+
     var self = this;
-    dConnect.sendRequest(method, uri, headers, data, cb.onsuccess.bind(cb), 
-      function(errorCode, errorMessage) {
+    var uri = builder.build();
+    dConnect.sendRequest(method, uri, null, null, function(json) {
+        callbacks[index].onsuccess(json);
+        index++;
+        if (index < serviceIds.lenght) {
+          self.requestInternal(method, builder, serviceIds, callbacks, index);
+        }
+      }, function(errorCode, errorMessage) {
         switch (errorCode) {
         case dConnect.constants.ErrorCode.NOT_FOUND_CLIENT_ID:
         case dConnect.constants.ErrorCode.EMPTY_ACCESS_TOKEN:
         case dConnect.constants.ErrorCode.SCOPE:
           self.authorize({
             onsuccess: function() {
-              self.requestInternal(method, uri, headers, data, cb);
+              self.requestInternal(method, builder, serviceIds, callbacks, index);
             },
-            onerror: cb.onerror.bind(cb)
+            onerror: function(errorCode, errorMessage) {
+              callbacks[index].onerror(errorCode, errorMessage);
+            }
           });
           break;
         default:
-          cb.onerror.bind(cb);
+          callbacks[index].onerror(errorCode, errorMessage);
           break;
         }
     });
