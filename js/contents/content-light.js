@@ -1,7 +1,15 @@
 (function () {
   'use strict';
 
+  /**
+   * Device Web API Managerにアクセスするためのインスタンス。
+   */
   var demoClient;
+
+  /**
+   * ダイアログ。
+   */
+  var modalDialog;
 
   /**
    * 操作を行うライト一覧。
@@ -65,9 +73,15 @@
 
     var brightness = $("#brightness-slider")
       .slider({ min: 0, max: 100, value: 100, focus: false })
+      .on('slideStart', function() {
+        if (!checkLights()) {
+          showErrorDialog();
+        }
+      })
       .on('slide', function() {
         moveSelectBrightness(brightness.getValue());
-      }).data('slider');
+      })
+      .data('slider');
 
     var x = $('#color-picker').position().left + divSize - 8;
     var y = $('#color-picker').position().top + divSize - 8;
@@ -76,9 +90,21 @@
     var isTouch = ('ontouchstart' in window);
     $('#color-picker').bind({
       'touchstart mousedown': function(e) {
+        var px = (isTouch ? event.changedTouches[0].pageX : e.pageX);
+        var py = (isTouch ? event.changedTouches[0].pageY : e.pageY);
+        if (checkTouchOutOfColorPicker(px, py)) {
+          return;
+        }
+
         e.preventDefault();
-        this.pageX = (isTouch ? event.changedTouches[0].pageX : e.pageX);
-        this.pageY = (isTouch ? event.changedTouches[0].pageY : e.pageY);
+
+        if (!checkLights()) {
+          showErrorDialog();
+          return;
+        }
+
+        this.pageX = px;
+        this.pageY = py;
         this.left = this.pageX;
         this.top = this.pageY;
         this.touched = true;
@@ -105,7 +131,25 @@
   }
 
   /**
+   * カラーピッカーの外側をタッチしているかの判定を行う。
+   * @param x x座標
+   * @param y y座標
+   * @return 外側をタッチしている場合はtrue、それ以外はfalse
+   */
+  function checkTouchOutOfColorPicker(x, y) {
+    var cx = $('#color-picker').position().left + divSize;
+    var cy = $('#color-picker').position().top + divSize;
+    var dx = x - cx;
+    var dy = y - cy;
+    var radius = Math.sqrt(dx * dx + dy * dy);
+    return (radius > colorPickerSize);
+  }
+
+  /**
    * カラーピッカーのカーソルを移動する。
+   * 
+   * @param x x座標
+   * @param y y座標
    */
   function moveCursor(x, y) {
     var cx = $('#color-picker').position().left + divSize;
@@ -291,12 +335,13 @@
     }
   }
 
+  /**
+   * ライトの色を設定する。
+   * 
+   * @param power 電源(true: 点灯、false: 消灯)
+   */
   function setLightColor(power) {
-    if (!lightList || lightList.length == 0) {
-      return;
-    }
-
-    if (sendStateFlag) {
+    if (!checkLights() || sendStateFlag) {
       return;
     }
     sendStateFlag = true;
@@ -405,44 +450,85 @@
     return builder.build();
   }
 
+  /**
+   * ライトを点灯する。
+   * 
+   * @param force trueの場合は強制的に点灯する
+   */
   function turnOnLights(force) {
-    if (!lightList || lightList.length == 0) {
-      alert("ライトが未設定です。");
+    if (!checkLights()) {
+      showErrorDialog();
       return;
     }
 
     if (!lightPower || force) {
       lightPower = true;
       setLightColor(true);
-      $('#turn-off').css({
+      $('#turn-on').css({
         'background-color': '#49B4DC',
         'color': '#FFFFFF'
       });
-      $('#turn-on').css({
+      $('#turn-off').css({
         'background-color': '#FFFFFF',
         'color': '#CCCCCC'
       });
     }
   }
-  
-  function turnoffLights(force) {
+
+  /**
+   * ライトを消灯する。
+   * 
+   * @param force trueの場合は強制的に消灯する
+   */
+  function turnOffLights(force) {
     if (lightPower || force) {
       lightPower = false;
       setLightColor(false);
-      $('#turn-on').css({
+      $('#turn-off').css({
         'background-color': '#49B4DC',
         'color': '#FFFFFF'
       });
-      $('#turn-off').css({
+      $('#turn-on').css({
         'background-color': '#FFFFFF',
         'color': '#CCCCCC'
       });
     }
   }
-  
-  var LightController = function ($scope, $location, demoWebClient, lightService) {
+
+  /**
+   * ライトが設定されているか確認する。
+   * 
+   * @return ライトが設定されている場合はtrue、それ以外はfalse
+   */
+  function checkLights() {
+    return (lightList && lightList.length > 0);
+  }
+
+  /**
+   * エラーダイアログを表示する。
+   */
+  function showErrorDialog() {
+    var modalInstance = modalDialog.open({
+      templateUrl: 'error-dialog-light.html',
+      controller: 'ModalInstanceCtrl',
+      size: 'lg',
+      resolve: {
+        'title': function() {
+          return 'エラー';
+        },
+        'message': function() {
+          return 'ライトが設定されていません。';
+        }
+      }
+    });
+    modalInstance.result.then(function () {
+    });
+  }
+
+  var LightController = function ($scope, $modal, $location, demoWebClient, lightService) {
     demoClient = demoWebClient;
     lightList = lightService.lights;
+    modalDialog = $modal;
 
     $scope.title = 'ライト制御';
     initColorPicker();
@@ -458,7 +544,7 @@
       turnOnLights(true)
     } else {
       $scope.deviceName = "デバイス未設定";
-      turnoffLights(true);
+      turnOffLights(true);
     }
 
     $scope.lightOn = "On";
@@ -473,11 +559,11 @@
       turnOnLights(false);
     }
     $scope.turnOff = function() {
-      turnoffLights(false);
+      turnOffLights(false);
     }
   };
 
   angular.module('demoweb')
     .controller('LightController', 
-      ['$scope', '$location', 'demoWebClient', 'lightService', LightController]);
+      ['$scope', '$modal', '$location', 'demoWebClient', 'lightService', LightController]);
 })();

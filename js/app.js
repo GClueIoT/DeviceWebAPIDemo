@@ -1,4 +1,4 @@
-angular.module('demoweb', ['ngRoute'])
+angular.module('demoweb', ['ngRoute', 'ui.bootstrap'])
   .config(['$routeProvider', function($routeProvider) {
     $routeProvider
     .when('/', {
@@ -25,8 +25,12 @@ angular.module('demoweb', ['ngRoute'])
       templateUrl: 'app/content-settings.html',
       controller: 'settingsCtrl'
     })
-    .when('/light', {templateUrl: 'app/content-light.html'})
-    .when('/light/select', {templateUrl: 'app/content-light-select.html'})
+    .when('/light', {
+      templateUrl: 'app/content-light.html'
+    })
+    .when('/light/select', {
+      templateUrl: 'app/content-light-select.html'
+    })
     .when('/trial/install/:package', {
       templateUrl: 'trial/app/content-install.html',
       controller: 'trialInstallCtrl'
