@@ -402,6 +402,7 @@ var demoWeb = (function (parent) {
       }
     }, function(errorCode, errorMessage) {
       switch (errorCode) {
+      case dConnect.constants.ErrorCode.NOT_FOUND_CLIENT_ID:
       case dConnect.constants.ErrorCode.EMPTY_ACCESS_TOKEN:
       case dConnect.constants.ErrorCode.SCOPE:
         self.authorize({
