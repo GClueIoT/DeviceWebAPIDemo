@@ -407,22 +407,26 @@ var demoWeb = (function (parent) {
 
       var count = 0;
       var length = json.services.length;
-      for (var i = 0; i < json.services.length; i++) {
-        if (self.containLastKnownDevices(json.services[i])) {
-          count++;
-          if (count == length) {
-            callback.onsuccess(self.lastKnownDevices);
-          }
-        } else {
-          self.serviceInfomartion(json.services[i], function(service) {
-            if (service) {
-              self.lastKnownDevices.push(service);
-            }
+      if (length == 0) {
+        callback.onsuccess(self.lastKnownDevices);
+      } else {
+        for (var i = 0; i < json.services.length; i++) {
+          if (self.containLastKnownDevices(json.services[i])) {
             count++;
             if (count == length) {
               callback.onsuccess(self.lastKnownDevices);
             }
-          });
+          } else {
+            self.serviceInfomartion(json.services[i], function(service) {
+              if (service) {
+                self.lastKnownDevices.push(service);
+              }
+              count++;
+              if (count == length) {
+                callback.onsuccess(self.lastKnownDevices);
+              }
+            });
+          }
         }
       }
     }, function(errorCode, errorMessage) {
