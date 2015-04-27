@@ -4,12 +4,18 @@
 
 <content>
   <div style="margin: 1em;">
-  Device Web API Managerがインストールされているかどうかを確認します。<br>
-  <br>
-  ・インストール済みの場合は、Device Web API Managerを起動します。<br>
-  <br>
-  ・未インストールの場合は、Google Playへ移動します。<br>
-  <br>
-  <button class="btn btn-default" ng-click="startManager()">確認を開始する</button>
+    Device Web API Managerがインストールされているかどうかを確認します。よろしいですか？<br>
+    <br>
+    ・インストール済みの場合は、Device Web API Managerを起動します。<br>
+    <br>
+    ・未インストールの場合は、Google Playへ移動します。<br>
   </div>
 </content>
+
+<footer>
+  <table>
+    <tr>
+      <td class="button" ng-click="startManager()" width="50%">確認する</td>
+    </tr>
+  </table>
+</footer>

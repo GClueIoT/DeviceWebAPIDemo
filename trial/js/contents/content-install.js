@@ -1,12 +1,16 @@
 (function() {
-  var plugins = {};
-  plugins['org.deviceconnect.android.deviceplugin.hue'] = {
+  var apkList = {};
+  apkList['org.deviceconnect.android.deviceplugin.hue'] = {
     file: 'dConnectDeviceHue.apk',
     name: 'hue'
   };
-  plugins['org.deviceconnect.android.deviceplugin.sphero'] = {
+  apkList['org.deviceconnect.android.deviceplugin.sphero'] = {
     file: 'dConnectDeviceSphero.apk',
     name: 'Sphero'
+  };
+  apkList['org.deviceconnect.android.manager'] = {
+    file: 'dConnectManager.apk',
+    name: 'Device WebAPI Manager'
   };
 
   angular.module('demoweb')
@@ -16,18 +20,21 @@
         return;
       }
 
-      var plugin = plugins[packageName];
-      if (!plugin) {
+      var apk = apkList[packageName];
+      if (!apk) {
         return;
       }
 
-      $scope.title = plugin.name;
-      $scope.apk_name = plugin.file;
+      $scope.title = 'インストール / URLスキーム';
+      $scope.apk_name = apk.file;
       $scope.install = function() {
-        $window.location.href = './trial/apk/' + plugin.file;
+        $window.location.href = './trial/apk/' + apk.file;
       };
       $scope.back = function() {
         $window.history.back();
+      };
+      $scope.urlScheme = function() {
+        dConnect.startManager();
       };
     }]);
 })();

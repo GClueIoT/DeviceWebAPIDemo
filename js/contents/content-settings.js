@@ -41,7 +41,7 @@
       };
 
       $scope.next = function() {
-        transition.next(demoConstants.demos[demoName].path);
+        $location.path(demoConstants.demos[demoName].path);
       };
     }]);
 })();
