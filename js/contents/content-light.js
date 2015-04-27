@@ -477,6 +477,7 @@
     }
   };
 
-  app.controller('LightController', 
+  angular.module('demoweb')
+    .controller('LightController', 
       ['$scope', '$location', 'demoWebClient', 'lightService', LightController]);
 })();

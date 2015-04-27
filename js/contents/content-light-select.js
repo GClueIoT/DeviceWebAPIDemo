@@ -100,6 +100,7 @@
     }
   };
 
-  app.controller('SelectLightController', 
+  angular.module('demoweb')
+    .controller('SelectLightController', 
       ['$scope', '$location', 'demoWebClient', 'lightService', SelectLightController]);
 })();
