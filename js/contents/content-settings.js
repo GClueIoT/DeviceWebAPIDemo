@@ -1,26 +1,89 @@
 (function() {
+
+  var apkList = {};
+  apkList['org.deviceconnect.android.deviceplugin.hue'] = {
+    file: 'dConnectDeviceHue.apk',
+    name: 'hue'
+  };
+  apkList['org.deviceconnect.android.deviceplugin.sphero'] = {
+    file: 'dConnectDeviceSphero.apk',
+    name: 'Sphero'
+  };
+
+  var progressModal;
+
+  var client;
+
+  var appLocation;
+
+  var pluginTimerId;
+
+  function showProgress() {
+    var modalInstance = progressModal.open({
+      templateUrl: 'progress.html',
+      controller: 'ProgressInstanceCtrl',
+      size: 'lg',
+      resolve: {
+        'title': function() {
+          return '待機中';
+        },
+        'message': function() {
+          return 'インストール完了を待っています...';
+        }
+      }
+    });
+    modalInstance.result.then(function () {
+    }, function() {
+      if (pluginTimerId) {
+        clearTimeout(pluginTimerId);
+      }
+    });
+    return modalInstance;
+  }
+
+  function waitPlugin(packageName, modalInstance, callback) {
+    console.log('waitPlugin: packageName=' + packageName);
+    pluginTimerId = setTimeout(function() {
+      client.discoverPlugins({
+        onsuccess: function(plugins) {
+          plugins = plugins.filter(function(p) { 
+            return p.installed && p.packageName === packageName; 
+          });
+          if (plugins.length <= 0) {
+            waitPlugin(packageName, modalInstance, callback);
+          } else {
+            callback.oninstalled();
+            modalInstance.close();
+          }
+          console.log('waitPlugin discoverPlugins onsuccess: ' + plugins.length);
+        },
+        onerror: function(errorCode, errorMessage) {
+          console.log('waitPlugin: errorCode=' + errorCode + ' errorMessage=' + errorMessage);
+          modalInstance.dismiss('cancel');
+          appLocation.path('/error/' + errorCode);
+        }
+      });
+    }, 250);
+  }
+
   angular.module('demoweb')
-    .controller('settingsCtrl', ['$scope', '$routeParams', '$location', 'demoWebClient', 'demoConstants', 'transition', function($scope, $routeParams, $location, demoWebClient, demoConstants, transition) {
+    .controller('settingsCtrl', ['$scope', '$window', '$routeParams', '$location', '$modal', 'demoWebClient', 'demoConstants', 'transition', function($scope, $window, $routeParams, $location, $modal, demoWebClient, demoConstants, transition) {
+      progressModal = $modal;
+      client = demoWebClient;
+      appLocation = $location;
       transition.scope = $scope;
       
       $scope.title = 'デバイス設定一覧';
-      var plugins = demoWebClient.getPlugins(),
-          demoName = $routeParams.demoName,
+      var demoName = $routeParams.demoName,
+          profiles = demoName ? demoConstants.demos[demoName].profiles : undefined,
           i, p;
 
       console.log('settings demoName: ' + demoName);
-      if (demoName) {
-        plugins = demoWebClient.getPlugins({profiles: demoConstants.demos[demoName].profiles});
-      }
+      
 
-      for (i = 0; i < plugins.length; i++) {
-        p = plugins[i];
-        p.operation = (p.installed === true) ? '設定' : 'インストール';
-      }
-
-      $scope.plugins = plugins;
+      $scope.plugins = getPlugins(profiles);
       $scope.wakeup = function(index) {
-        var p = plugins[index];
+        var p = $scope.plugins[index];
         if (p.installed === true) {
           demoWebClient.openSettingWindow({
             pluginId: p.id,
@@ -32,10 +95,19 @@
             }
           });
         } else {
+          var modalInstance = showProgress();
+          waitPlugin(p.packageName, modalInstance, {
+              oninstalled: function() {
+                $scope.$apply(function() {
+                  $scope.plugins = getPlugins(profiles);
+                });
+              }
+          });
+
           if (demoConstants.DEBUG) {
-            $location.path('/trial/plugin/install/' + p.packageName);
+            $window.location.href = './trial/apk/' + apkList[p.packageName].file;
           } else {
-            location.href = 'market://details?id=' + p.packageName;
+            $window.location.href = 'market://details?id=' + p.packageName;
           }
         }
       };
@@ -43,5 +115,19 @@
       $scope.next = function() {
         $location.path(demoConstants.demos[demoName].path);
       };
+
+      function getPlugins(profiles) {
+        var plugins;
+        if (profiles) {
+          plugins = demoWebClient.getPlugins({profiles: profiles});
+        } else {
+          plugins = demoWebClient.getPlugins();
+        }
+        for (i = 0; i < plugins.length; i++) {
+          p = plugins[i];
+          p.operation = (p.installed === true) ? '設定' : 'インストール';
+        }
+        return plugins;
+      }
     }]);
 })();
