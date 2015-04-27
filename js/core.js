@@ -101,7 +101,7 @@ var demoWeb = (function (parent) {
     this.installedPlugins = plugins;
   };
 
-  Client.prototype.getPlugins = function() {
+  Client.prototype.getPlugins = function(filter) {
     var list = [],
         i,
         self = this;
@@ -124,7 +124,32 @@ var demoWeb = (function (parent) {
         list.push(self.releasedPlugins[i]);
       }
     }
-    return list;
+    if (!filter || !filter.profiles) {
+      return list;
+    }
+
+    return list.filter(function(p) {
+      var profiles = filter.profiles,
+          scopes = p.supports,
+          i, j, found;
+      for (i = 0; i < profiles.length; i++) {
+        found = false;
+        loop:
+        for (j = 0; j < scopes.length; j++) {
+          if (profiles[i] === scopes[j]) {
+            found = true;
+            break loop;
+          }
+        }
+        if (!found) {
+          return false;
+        }
+        if (filter.installed === true && p.installed !== true) {
+          return false;
+        }
+      }
+      return true;
+    });
   };
 
   /**

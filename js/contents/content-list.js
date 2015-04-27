@@ -34,7 +34,7 @@
             if (devices.length === 0) {
               demoWebClient.discoverPlugins({
                 onsuccess: function(plugins) {
-                  transition.next('/settings/' + demoName);
+                  transition.next('/prompt/settings/' + demoName);
                 },
 
                 onerror: function(errorCode, errorMessage) {

@@ -13,6 +13,10 @@ angular.module('demoweb', ['ngRoute'])
       templateUrl: 'app/content-launch.html',
       controller: 'launchCtrl'
     })
+    .when('/prompt/settings/:demoName', {
+      templateUrl: 'app/content-prompt-settings.html',
+      controller: 'promptSettingsCtrl'
+    })
     .when('/settings', {
       templateUrl: 'app/content-settings-all.html',
       controller: 'settingsCtrl'

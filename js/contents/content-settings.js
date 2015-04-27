@@ -10,25 +10,7 @@
 
       console.log('settings demoName: ' + demoName);
       if (demoName) {
-        plugins = plugins.filter(function(p) {
-          var profiles = demoConstants.demos[demoName].profiles,
-              scopes = p.supports,
-              i, j, found;
-          for (i = 0; i < profiles.length; i++) {
-            found = false;
-            loop:
-            for (j = 0; j < scopes.length; j++) {
-              if (profiles[i] === scopes[j]) {
-                found = true;
-                break loop;
-              }
-            }
-            if (!found) {
-              return false;
-            }
-          }
-          return true;
-        })
+        plugins = demoWebClient.getPlugins({profiles: demoConstants.demos[demoName].profiles});
       }
 
       for (i = 0; i < plugins.length; i++) {
