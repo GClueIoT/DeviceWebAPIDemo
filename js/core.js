@@ -247,7 +247,7 @@ var demoWeb = (function (parent) {
       builder.addParameter(key, req.params[key]);
     }
 
-    
+    var self = this;
     var callbacks = [];
     var count = req.devices.length;
     var checkFinished = function() {
@@ -271,9 +271,31 @@ var demoWeb = (function (parent) {
     for (var i = 0; i < req.devices.length; i++) {
       builder.setServiceId(req.devices[i]);
       var cb = callbacks[i];
-      dConnect.sendRequest(req.method, builder.build(), null, null, cb.onsuccess.bind(cb), cb.onerror.bind(cb));
+      self.requestInternal(req.method, builder.build(), null, null, cb);
     }
   };
+
+  Client.prototype.requestInternal = function(method, uri, headers, data, cb) {
+    var self = this;
+    dConnect.sendRequest(method, uri, headers, data, cb.onsuccess.bind(cb), 
+      function(errorCode, errorMessage) {
+        switch (errorCode) {
+        case dConnect.constants.ErrorCode.NOT_FOUND_CLIENT_ID:
+        case dConnect.constants.ErrorCode.EMPTY_ACCESS_TOKEN:
+        case dConnect.constants.ErrorCode.SCOPE:
+          self.authorize({
+            onsuccess: function() {
+              self.requestInternal(method, uri, headers, data, cb);
+            },
+            onerror: cb.onerror.bind(cb)
+          });
+          break;
+        default:
+          cb.onerror.bind(cb);
+          break;
+        }
+    });
+  }
 
   /**
    * Callback of plugin discovery.
@@ -328,16 +350,31 @@ var demoWeb = (function (parent) {
       builder.setAccessToken(self.settings.accessToken);
     }
     dConnect.get(builder.build(), null, function(json) {
-      var plugins = json.plugins,
-          i;
-      for (i = 0; i < plugins.length; i++) {
+      var plugins = json.plugins;
+      for (var i = 0; i < plugins.length; i++) {
         plugins[i].installed = true;
       }
       self.setInstalledPlugins(plugins);
 
       callback.onsuccess(self.getPlugins());
     }, function(errorCode, errorMessage) {
-      callback.onerror(errorCode, errorMessage);
+      switch (errorCode) {
+      case dConnect.constants.ErrorCode.NOT_FOUND_CLIENT_ID:
+      case dConnect.constants.ErrorCode.EMPTY_ACCESS_TOKEN:
+      case dConnect.constants.ErrorCode.SCOPE:
+        self.authorize({
+          onsuccess: function() {
+            self.discoverPlugins(callback);
+          },
+          onerror: function(errorCode, errorMessage) {
+            callback.onerror(errorCode, errorMessage);
+          }
+        });
+        break;
+      default:
+        callback.onerror(errorCode, errorMessage);
+        break;
+      }
     });
   };
 
