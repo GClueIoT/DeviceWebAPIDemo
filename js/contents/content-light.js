@@ -543,7 +543,7 @@
       $scope.deviceName = lightList[0].name + " その他(" + (lightList.length - 1) + ")";
       turnOnLights(true)
     } else {
-      $scope.deviceName = "デバイス未設定";
+      $scope.deviceName = "ライト未設定";
       turnOffLights(true);
     }
 
