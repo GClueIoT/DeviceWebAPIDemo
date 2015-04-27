@@ -1,9 +1,4 @@
 <div ng-controller="LightController">
-  <nav class="navbar navbar-default">
-    <img type="button" ng-click="settingAll()" class="btn-settings" src="img/Gear_off.png">
-    <a class="navbar-brand" href="#/">{{title}}</a>
-  </nav>
-
   <div id="light-container" align="center">
     <div id="device" class="btn btn-default" ng-click="discoverLight()">{{deviceName}}</div>
     <div id="power-group">
@@ -30,7 +25,12 @@
       </tr>
     </table>
   </div>
-  
+  <nav class="navbar navbar-default">
+    <img type="button" ng-click="settingAll()" class="btn-settings" src="img/Gear_off.png">
+    <a class="navbar-brand" href="#/">{{title}}</a>
+  </nav>
+
+
     <script type="text/ng-template" id="error-dialog-light.html">
         <div class="modal-header">
             <h4 class="modal-title">{{title}}</h4>
@@ -42,5 +42,5 @@
             <button class="btn btn-primary" ng-click="ok()">OK</button>
         </div>
     </script>
-  
+
 </div>
