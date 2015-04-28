@@ -69,7 +69,7 @@
     discoverLights($scope, $location, lightService);
 
     $scope.settingAll = function() {
-      $location.path('/settings');
+      $location.path('/settings/light');
     }
     $scope.registerAll = function() {
       $('input[name=light-checkbox]').prop("checked", true);
