@@ -69,7 +69,20 @@
     discoverLights($scope, $location, lightService);
 
     $scope.settingAll = function() {
-      $location.path('/settings/light');
+      demoClient.discoverPlugins({
+        onsuccess: function(plugins) {
+          $scope.$apply(function() {
+            $location.path('/settings/light');
+          });
+        },
+
+        onerror: function(errorCode, errorMessage) {
+          console.log('transit - discoverPlugins: errorCode=' + errorCode + ' errorMessage=' + errorMessage);
+          $scope.$apply(function() {
+            $location.path('/error/' + errorCode);
+          });
+        }
+      });
     }
     $scope.registerAll = function() {
       $('input[name=light-checkbox]').prop("checked", true);

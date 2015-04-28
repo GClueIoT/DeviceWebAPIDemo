@@ -42,6 +42,7 @@
 
                 onerror: function(errorCode, errorMessage) {
                   console.log('transit - discoverPlugins: errorCode=' + errorCode + ' errorMessage=' + errorMessage);
+                  transition.next('/error/' + errorCode);
                 }
               });
             } else {

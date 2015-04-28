@@ -674,7 +674,20 @@
     $scope.lightOn = "On";
     $scope.lightOff = "Off";
     $scope.settingAll = function() {
-      $location.path('/settings/light');
+      demoClient.discoverPlugins({
+        onsuccess: function(plugins) {
+          $scope.$apply(function() {
+            $location.path('/settings/light');
+          });
+        },
+
+        onerror: function(errorCode, errorMessage) {
+          console.log('transit - discoverPlugins: errorCode=' + errorCode + ' errorMessage=' + errorMessage);
+          $scope.$apply(function() {
+            $location.path('/error/' + errorCode);
+          });
+        }
+      });
     }
     $scope.discoverLight = function() {
       $location.path('/light/select');
@@ -692,5 +705,5 @@
 
   angular.module('demoweb')
     .controller('LightController', 
-      ['$scope', '$modal', '$window', '$location', 'demoWebClient', 'lightService',  LightController]);
+      ['$scope', '$modal', '$window', '$location', 'demoWebClient', 'lightService', LightController]);
 })();
