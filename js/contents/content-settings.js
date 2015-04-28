@@ -52,7 +52,7 @@
           if (plugins.length <= 0) {
             waitPlugin(packageName, modalInstance, callback);
           } else {
-            callback.oninstalled();
+            callback.oninstalled(plugins[0]);
             modalInstance.close();
           }
           console.log('waitPlugin discoverPlugins onsuccess: ' + plugins.length);
@@ -79,28 +79,20 @@
           i, p;
 
       console.log('settings demoName: ' + demoName);
-      
 
       $scope.plugins = getPlugins(profiles);
       $scope.wakeup = function(index) {
         var p = $scope.plugins[index];
         if (p.installed === true) {
-          demoWebClient.openSettingWindow({
-            pluginId: p.id,
-            onsuccess: function(json) {
-              console.log('openSettingWindow: success: ', json);
-            },
-            onerror: function(errorCode, errorMessage) {
-              transition.next('/error/' + errorCode);
-            }
-          });
+          openSettingWindow(p);
         } else {
           var modalInstance = showProgress();
           waitPlugin(p.packageName, modalInstance, {
-              oninstalled: function() {
+              oninstalled: function(p) {
                 $scope.$apply(function() {
                   $scope.plugins = getPlugins(profiles);
                 });
+                openSettingWindow(p);
               }
           });
 
@@ -128,6 +120,18 @@
           p.operation = (p.installed === true) ? '設定' : 'インストール';
         }
         return plugins;
+      }
+
+      function openSettingWindow(plugin) {
+        demoWebClient.openSettingWindow({
+          pluginId: plugin.id,
+          onsuccess: function(json) {
+            console.log('openSettingWindow: success: ', json);
+          },
+          onerror: function(errorCode, errorMessage) {
+            transition.next('/error/' + errorCode);
+          }
+        });
       }
     }]);
 })();
