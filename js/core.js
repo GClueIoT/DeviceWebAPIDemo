@@ -284,7 +284,7 @@ var demoWeb = (function (parent) {
     dConnect.sendRequest(method, uri, null, null, function(json) {
         callbacks[index].onsuccess(json);
         index++;
-        if (index < serviceIds.lenght) {
+        if (index < serviceIds.length) {
           self.requestInternal(method, builder, serviceIds, callbacks, index);
         }
       }, function(errorCode, errorMessage) {
@@ -298,11 +298,19 @@ var demoWeb = (function (parent) {
             },
             onerror: function(errorCode, errorMessage) {
               callbacks[index].onerror(errorCode, errorMessage);
+              index++;
+              if (index < serviceIds.length) {
+                self.requestInternal(method, builder, serviceIds, callbacks, index);
+              }
             }
           });
           break;
         default:
           callbacks[index].onerror(errorCode, errorMessage);
+          index++;
+          if (index < serviceIds.length) {
+            self.requestInternal(method, builder, serviceIds, callbacks, index);
+          }
           break;
         }
     });
