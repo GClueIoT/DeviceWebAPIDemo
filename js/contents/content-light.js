@@ -344,7 +344,7 @@
   function moveSelectColor(x, y) {
     selectColor = getColor(x, y);
     if (lightPower) {
-      setLightColor(true);
+      addLightCommand(true);
     }
   }
 
@@ -357,30 +357,44 @@
   function moveSelectBrightness(brightness) {
     selectBrightness =  brightness / 100.0;
     if (lightPower) {
-      setLightColor(true);
+      addLightCommand(true);
     }
   }
 
   /**
-   * ライトの色を設定する。
+   * ライトの命令を追加する。
    * 
    * @param power 電源(true: 点灯、false: 消灯)
    */
-  function setLightColor(power) {
+  function addLightCommand(power) {
     if (!checkLights() || sendStateFlag) {
       return;
     }
     sendStateFlag = true;
 
+    addRequest({
+      power: power,
+      selectColor: selectColor,
+      selectBrightness: selectBrightness
+    });
+  }
+
+  /**
+   * ライトの色を設定する。
+   * 
+   * @param req リクエスト
+   * @param callback コールバック
+   */
+  function setLightColor(req, callback) {
     var count = 0;
     for (var i = 0; i < lightList.length; i++) {
       var light = lightList[i];
-      if (power) {
+      if (req.power) {
         count++;
-        sendLightColor(light.serviceId, light.light.lightId, selectColor, selectBrightness, function() {
+        sendLightColor(light.serviceId, light.light.lightId, req.selectColor, req.selectBrightness, function() {
           count--;
           if (count == 0) {
-            sendStateFlag = false;
+            callback();
           }
         });
       } else {
@@ -388,11 +402,50 @@
         sendTurnOff(light.serviceId, light.light.lightId, function() {
           count--;
           if (count == 0) {
-            sendStateFlag = false;
+            callback();
           }
         });
       }
     }
+  }
+
+  /**
+   * ライトを操作するリクエストを格納するキュー。
+   */
+  var requestQueue = [];
+
+  /**
+   * リクエストを追加する。
+   * 
+   * 10個以上のリクエストが溜まっている場合には最初のリクエストから削除する。
+   * 
+   * @param request リクエスト
+   */
+  function addRequest(request) {
+    requestQueue.push(request);
+    if (requestQueue.length == 1) {
+      sendRequest();
+    } else if (requestQueue.length > 10) {
+      requestQueue.splice(0, 1);
+    }
+  }
+
+  /**
+   * リクエストを順番に送信する。
+   */
+  function sendRequest() {
+    if (requestQueue.length == 0) {
+      return;
+    }
+
+    var request = requestQueue[0];
+    setLightColor(request, function() {
+      sendStateFlag = false;
+      setTimeout(function() {
+        requestQueue.splice(0, 1);
+        sendRequest();
+      }, 400);
+    });
   }
 
   /**
@@ -414,14 +467,10 @@
         "color": color,
         "brightness": brightness,
       },
-      "onsuccess": function(id, json) {
-      },
       "onerror": function(id, errorCode, errorMessage) {
         showErrorDialogWebAPI();
       },
-      "oncomplete": function() {
-        callback();
-      }
+      "oncomplete": callback
     });
   }
 
@@ -440,15 +489,10 @@
       "params": {
         "lightId": lightId,
       },
-      "onsuccess": function(id, json) {
-        console.log(JSON.stringify(json));
-      },
       "onerror": function(id, errorCode, errorMessage) {
         showErrorDialogWebAPI();
       },
-      "oncomplete": function() {
-        callback();
-      }
+      "oncomplete": callback
     });
   }
 
@@ -490,7 +534,7 @@
     if (!lightPower || force) {
       lightPower = true;
       sendStateFlag = false;
-      setLightColor(true);
+      addLightCommand(true);
       $('#turn-on').css({
         'background-color': '#49B4DC',
         'color': '#FFFFFF'
@@ -511,7 +555,7 @@
     if (lightPower || force) {
       lightPower = false;
       sendStateFlag = false;
-      setLightColor(false);
+      addLightCommand(false);
       $('#turn-off').css({
         'background-color': '#49B4DC',
         'color': '#FFFFFF'
@@ -532,10 +576,16 @@
     return (lightList && lightList.length > 0);
   }
 
+  /**
+   * 通信エラーを通知するダイアログを表示する。
+   */
   function showErrorDialogWebAPI() {
     showErrorDialog('エラー', '通信に失敗しました。');
   }
 
+  /**
+   * ライトが設定されていないことを通知するダイアログを表示する。
+   */
   function showErrorDialogNoLights() {
     showErrorDialog('エラー', 'ライトが設定されていません。');
   }
@@ -564,6 +614,12 @@
     });
   }
 
+  /**
+   * ライトの設定を画面に設定する。
+   * 
+   * @param $scope スコープ
+   * @param lights ライト一覧
+   */
   function setLightDevices($scope, lights) {
     lightList = lights;
     if (lightList.length == 1) {
