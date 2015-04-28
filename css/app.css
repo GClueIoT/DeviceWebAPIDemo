@@ -22,8 +22,29 @@ div.navbar-collapse.collapse.in {
   border: 0;
   margin-bottom: 0;
 }
-.navbar .navbar-brand {
+.navbar .navbar-title {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  width: 100%;
+  text-align: center;
+
+  height: 50px;
+  padding: 15px 15px;
+  font-size: 18px;
+  line-height: 20px;
   color: #ffffff;
+}
+.navbar .navbar-back {
+  float: left;
+  height: 50px;
+  padding: 15px 15px;
+  font-size: 18px;
+  line-height: 20px;
+  color: #ffffff;
+}
+.navbar-title.navbar-title-small {
+  font-size: 16px;
 }
 
 table.demo-list {
