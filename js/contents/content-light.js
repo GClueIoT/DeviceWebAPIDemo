@@ -79,10 +79,10 @@
         }
       })
       .on('slide', function() {
-        moveSelectBrightness(brightness.getValue());
+        moveSelectBrightness(brightness.getValue(), false);
       })
       .on('change', function() {
-        moveSelectBrightness(brightness.getValue());
+        moveSelectBrightness(brightness.getValue(), true);
       })
       .data('slider');
 
@@ -352,9 +352,13 @@
    * 座標からブライトネスの選択を行い、可能ならばデバイスにブライトネス変更の命令を行う。
    * 
    * @param brightness ブライトネス(0-100)
+   * @param force trueの場合は強制的にブライトネスを反映する
    * @returns
    */
-  function moveSelectBrightness(brightness) {
+  function moveSelectBrightness(brightness, force) {
+    if (force) {
+      sendStateFlag = false;
+    }
     selectBrightness =  brightness / 100.0;
     if (lightPower) {
       addLightCommand(true);
