@@ -188,7 +188,7 @@
       x = cx + colorPickerSize * Math.cos(theta);
       y = cy + colorPickerSize * Math.sin(theta);
     }
-    $('#color-cursor').css({left:x - 12, top:y - 12});
+    $('#color-cursor').css({left:x - 10, top:y - 10});
 
     x -= $('#color-picker').position().left;
     y -= $('#color-picker').position().top;
@@ -209,7 +209,7 @@
     var x = divSize - 1 + 0.5 + radius * Math.cos(theta * Math.PI / (colorPickerSize * 3));
     var y = divSize - 1 + 0.5 - radius * Math.sin(theta * Math.PI / (colorPickerSize * 3));
     canvas.strokeStyle = "rgb(" + calcWhite(r, radius) + "," + calcWhite(g, radius) + "," + calcWhite(b, radius) + ")";
-    canvas.strokeRect(x, y, 4, 4);
+    canvas.strokeRect(x-1.5, y-1.5, 4, 4);
   }
 
   /**

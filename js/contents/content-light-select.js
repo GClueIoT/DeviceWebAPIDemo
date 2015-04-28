@@ -91,7 +91,7 @@
       $('input[name=light-checkbox]').prop("checked", false);
     }
     $scope.cancel = function() {
-      $location.path('/light');
+      $window.history.back();
     }
     $scope.ok = function() {
       var $checked = $('[name=light-checkbox]:checked');
@@ -106,7 +106,7 @@
           }
           return $scope.list.lights[index];
         });
-        $location.path('/light');
+        $window.history.back();
       }
     }
     $scope.back = function() {
