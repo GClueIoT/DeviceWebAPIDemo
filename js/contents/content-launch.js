@@ -87,5 +87,8 @@
           demoWebClient.startManager();
         }
       };
+      $scope.back = function() {
+        $window.history.back();
+      };
     }]);
 })();

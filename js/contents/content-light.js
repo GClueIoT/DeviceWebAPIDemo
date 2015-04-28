@@ -655,7 +655,7 @@
     });
   }
 
-  var LightController = function ($scope, $modal, $location, demoWebClient, lightService) {
+  var LightController = function ($scope, $modal, $window, $location, demoWebClient, lightService) {
     demoClient = demoWebClient;
     modalDialog = $modal;
 
@@ -685,9 +685,12 @@
     $scope.turnOff = function() {
       turnOffLights(false);
     }
+    $scope.back = function() {
+      $window.history.back();
+    };
   };
 
   angular.module('demoweb')
     .controller('LightController', 
-      ['$scope', '$modal', '$location', 'demoWebClient', 'lightService',  LightController]);
+      ['$scope', '$modal', '$window', '$location', 'demoWebClient', 'lightService',  LightController]);
 })();

@@ -72,7 +72,7 @@
       client = demoWebClient;
       appLocation = $location;
       transition.scope = $scope;
-      
+
       $scope.title = 'デバイス設定一覧';
       var demoName = $routeParams.demoName,
           profiles = demoName ? demoConstants.demos[demoName].profiles : undefined,
@@ -104,6 +104,9 @@
         }
       };
 
+      $scope.back = function() {
+        $window.history.back();
+      };
       $scope.next = function() {
         $location.path(demoConstants.demos[demoName].path);
       };

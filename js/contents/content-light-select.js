@@ -62,7 +62,7 @@
     });
   }
 
-  var SelectLightController = function($scope, $modal, $location, demoWebClient, lightService) {
+  var SelectLightController = function($scope, $modal, $window, $location, demoWebClient, lightService) {
     demoClient = demoWebClient;
 
     $scope.title = '使用するライトを選択してください';
@@ -96,9 +96,12 @@
         $location.path('/light');
       }
     }
+    $scope.back = function() {
+      $window.history.back();
+    };
   };
 
   angular.module('demoweb')
     .controller('SelectLightController', 
-      ['$scope', '$modal', '$location', 'demoWebClient', 'lightService', SelectLightController]);
+      ['$scope', '$modal', '$window', '$location', 'demoWebClient', 'lightService', SelectLightController]);
 })();

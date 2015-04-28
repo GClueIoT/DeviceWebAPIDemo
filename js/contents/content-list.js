@@ -1,9 +1,12 @@
 (function() {
   angular.module('demoweb')
-    .controller('demoListCtrl', ['$scope', '$location', 'demoWebClient', 'demoConstants', 'transition', function($scope, $location, demoWebClient, demoConstants, transition) {
+    .controller('demoListCtrl', ['$scope', '$window', '$location', 'demoWebClient', 'demoConstants', 'transition', function($scope, $window, $location, demoWebClient, demoConstants, transition) {
       transition.scope = $scope;
       
       $scope.title = 'デモ一覧';
+      $scope.back = function() {
+        $window.history.back();
+      };
       $scope.transit = function(demoName) {
         demoWebClient.discoverDevices({
           onsuccess: function(services) {
