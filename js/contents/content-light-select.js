@@ -36,7 +36,7 @@
    */
   function discoverLights($scope, $location, lightService) {
     var oldLights = lightService.lights;
-    lightService.discover(demoClient, {
+    lightService.discoverDevices(demoClient, {
       oncomplete: function(lights) {
         for (var i = 0; i < lights.length; i++) {
           var obj = lights[i];
