@@ -266,7 +266,7 @@ var demoWeb = (function (parent) {
             checkFinished();
           },
           onerror: function(errorCode, errorMessage) {
-            req.onsuccess(this.id, errorCode, errorMessage);
+            req.onerror(this.id, errorCode, errorMessage);
             checkFinished();
           }
         });
