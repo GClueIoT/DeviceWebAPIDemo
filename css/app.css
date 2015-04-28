@@ -21,6 +21,7 @@ div.navbar-collapse.collapse.in {
   background-color: #49B4DC;
   border: 0;
   margin-bottom: 0;
+  z-index: 0;
 }
 .navbar .navbar-title {
   position: absolute;
@@ -34,14 +35,15 @@ div.navbar-collapse.collapse.in {
   font-size: 18px;
   line-height: 20px;
   color: #ffffff;
+  z-index: 1;
 }
 .navbar .navbar-back {
-  float: left;
+  position: relative;
+
   height: 50px;
   padding: 15px 15px;
   font-size: 18px;
-  line-height: 20px;
-  color: #ffffff;
+  z-index: 2;
 }
 .navbar-title.navbar-title-small {
   font-size: 16px;
@@ -88,6 +90,7 @@ table.demo-list td.nodemo {
   margin-bottom: 10px;
   width: 25px;
   height: 25px;
+  z-index: 2;
 }
 .btn-settings:active {
 
