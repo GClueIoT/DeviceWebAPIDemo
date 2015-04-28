@@ -88,10 +88,20 @@
     $('#color-cursor').css({left:x, top:y});
 
     var isTouch = ('ontouchstart' in window);
+    var isFirefox = (navigator.userAgent.indexOf("Firefox") != -1);
     $('#color-picker').bind({
       'touchstart mousedown': function(e) {
-        var px = (isTouch ? event.changedTouches[0].pageX : e.pageX);
-        var py = (isTouch ? event.changedTouches[0].pageY : e.pageY);
+        var px, py;
+        if (isFirefox) {
+          px = e.originalEvent.touches[0].pageX;
+          py = e.originalEvent.touches[0].pageY;
+        } else if (isTouch) {
+          px = event.changedTouches[0].pageX;
+          py = event.changedTouches[0].pageY;
+        } else {
+          px = e.pageX;
+          py = e.pageY;
+        }
         if (checkTouchOutOfColorPicker(px, py)) {
           return;
         }
@@ -114,11 +124,23 @@
         }
         e.preventDefault();
 
-        this.left = this.left - (this.pageX - (isTouch ? event.changedTouches[0].pageX : e.pageX));
-        this.top = this.top - (this.pageY - (isTouch ? event.changedTouches[0].pageY : e.pageY));
+        var px, py;
+        if (isFirefox) {
+          px = e.originalEvent.touches[0].pageX;
+          py = e.originalEvent.touches[0].pageY;
+        } else if (isTouch) {
+          px = event.changedTouches[0].pageX;
+          py = event.changedTouches[0].pageY;
+        } else {
+          px = e.pageX;
+          py = e.pageY;
+        }
+
+        this.left = this.left - (this.pageX - px);
+        this.top = this.top - (this.pageY - py);
         moveCursor(this.left, this.top);
-        this.pageX = (isTouch ? event.changedTouches[0].pageX : e.pageX);
-        this.pageY = (isTouch ? event.changedTouches[0].pageY : e.pageY);
+        this.pageX = px;
+        this.pageY = py;
       },
       'touchend mouseup': function(e) {
         if (!this.touched) {
