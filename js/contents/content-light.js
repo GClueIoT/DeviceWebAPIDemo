@@ -429,7 +429,7 @@
     requestQueue.push(request);
     if (requestQueue.length == 1) {
       sendRequest();
-    } else if (requestQueue.length > 10) {
+    } else if (requestQueue.length > 5) {
       requestQueue.splice(0, 1);
     }
   }
@@ -448,7 +448,7 @@
       setTimeout(function() {
         requestQueue.splice(0, 1);
         sendRequest();
-      }, 400);
+      }, 500);
     });
   }
 

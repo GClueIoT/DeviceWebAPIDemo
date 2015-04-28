@@ -35,7 +35,9 @@
           var self = this;
           var serviceIds = [];
           for (var i = 0; i < devices.length; i++) {
-            serviceIds.push(devices[i].id);
+            if (devices[i].scopes.lastIndexOf('light') >= 0) {
+              serviceIds.push(devices[i].id);
+            }
           }
           var lightMap = {};
           client.request({
