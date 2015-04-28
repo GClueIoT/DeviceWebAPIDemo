@@ -81,6 +81,9 @@
       .on('slide', function() {
         moveSelectBrightness(brightness.getValue());
       })
+      .on('change', function() {
+        moveSelectBrightness(brightness.getValue());
+      })
       .data('slider');
 
     var x = $('#color-picker').position().left + divSize - 8;
@@ -413,7 +416,7 @@
       },
       "onsuccess": function(id, json) {
       },
-      "onerror": function(id, error) {
+      "onerror": function(id, errorCode, errorMessage) {
         showErrorDialogWebAPI();
       },
       "oncomplete": function() {
@@ -440,7 +443,7 @@
       "onsuccess": function(id, json) {
         console.log(JSON.stringify(json));
       },
-      "onerror": function(id, error) {
+      "onerror": function(id, errorCode, errorMessage) {
         showErrorDialogWebAPI();
       },
       "oncomplete": function() {
@@ -561,67 +564,39 @@
     });
   }
 
-  /**
-   * ライトを発見し、すべて登録する。
-   * 
-   * @param $scope スコープ
-   * @param lightService ライトサービス
-   */
-  function discoverLight($scope, lightService) {
-    var devices = demoClient.getLastKnownDevices();
-    var serviceIds = [];
-    for (var i = 0; i < devices.length; i++) {
-      serviceIds.push(devices[i].id);
+  function setLightDevices($scope, lights) {
+    lightList = lights;
+    if (lightList.length == 1) {
+      $scope.deviceName = lightList[0].name;
+      turnOnLights(true)
+      return true;
+    } else if (lightList.length > 1) {
+      $scope.deviceName = lightList[0].name + " その他(" + (lightList.length - 1) + ")";
+      turnOnLights(true)
+      return true;
+    } else {
+      return false;
     }
+  }
 
-    var lightMap = {};
-
-    demoClient.request({
-      "method": "GET",
-      "profile": "light",
-      "devices": serviceIds,
-      "onsuccess": function(id, json) {
-        if (json.lights) {
-          lightMap[id] = [];
-          for (var i = 0; i < json.lights.length; i++) {
-            lightMap[id].push(json.lights[i]);
-          }
+  /**
+   * ライトを検索して登録する。
+   */
+  function discoverLights($scope, $location, lightService) {
+    lightService.discover(demoClient, {
+      oncomplete: function(lights) {
+        if (setLightDevices($scope, lights)) {
+          $scope.$apply();
         }
       },
-      "onerror": function(id, error) {
-      },
-      "oncomplete": function() {
-        for (var serviceId in lightMap) {
-          var lights = lightMap[serviceId];
-          for (var i in lights) {
-            var light = lights[i];
-            lightService.addLight({
-              'name': light.name,
-              'serviceId': serviceId,
-              'light': light
-            });
-          }
-        }
-
-        lightList = lightService.lights;
-
-        if (lightList.length == 1) {
-          $scope.deviceName = lightList[0].name;
-          turnOnLights(true)
-        } else if (lightList.length > 1) {
-          $scope.deviceName = lightList[0].name + " その他(" + (lightList.length - 1) + ")";
-          turnOnLights(true)
-        } else {
-          return;
-        }
-        $scope.$apply();
+      onerror: function(errorCode, errorMessage) {
+        $location.path('/error/' + errorCode);
       }
     });
   }
 
   var LightController = function ($scope, $modal, $location, demoWebClient, lightService) {
     demoClient = demoWebClient;
-    lightList = lightService.lights;
     modalDialog = $modal;
 
     $scope.title = 'ライト制御';
@@ -630,16 +605,10 @@
     selectColor = "FFFFFF";
     selectBrightness = 1.0;
 
-    if (lightList.length == 1) {
-      $scope.deviceName = lightList[0].name;
-      turnOnLights(true)
-    } else if (lightList.length > 1) {
-      $scope.deviceName = lightList[0].name + " その他(" + (lightList.length - 1) + ")";
-      turnOnLights(true)
-    } else {
+    if (!setLightDevices($scope, lightService.lights)) {
       $scope.deviceName = "ライト未設定";
       turnOffLights(true);
-      discoverLight($scope, lightService);
+      discoverLights($scope, $location, lightService);
     }
 
     $scope.lightOn = "On";
@@ -660,5 +629,5 @@
 
   angular.module('demoweb')
     .controller('LightController', 
-      ['$scope', '$modal', '$location', 'demoWebClient', 'lightService', LightController]);
+      ['$scope', '$modal', '$location', 'demoWebClient', 'lightService',  LightController]);
 })();

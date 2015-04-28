@@ -13,7 +13,7 @@
           return 'エラー';
         },
         'message': function() {
-          return 'ライトが選択されていません。';
+          return 'ライトが一つも選択されていません。';
         }
       }
     });
@@ -30,59 +30,34 @@
     }
     return false;
   }
-  
-  function discoverLight($scope, lightService) {
-    var devices = demoClient.getLastKnownDevices();
-    var serviceIds = [];
-    for (var i = 0; i < devices.length; i++) {
-      serviceIds.push(devices[i].id);
-    }
 
-    // 発見したライトを格納するマップ
-    var lightMap = {};
-
-    demoClient.request({
-      "method": "GET",
-      "profile": "light",
-      "devices": serviceIds,
-      "onsuccess": function(id, json) {
-        if (json.lights) {
-          lightMap[id] = [];
-          for (var i = 0; i < json.lights.length; i++) {
-            lightMap[id].push(json.lights[i]);
-          }
-        }
-      },
-      "onerror": function(id, error) {
-      },
-      "oncomplete": function() {
-        var lightIds = [];
-        for (var serviceId in lightMap) {
-          var lights = lightMap[serviceId];
-          for (var i in lights) {
-            var light = lights[i];
-            var checked = false;
-            if (containLightService(lightService.lights, serviceId, light.lightId)) {
-              checked = true;
-            }
-            lightIds.push({
-              'name': light.name,
-              'serviceId': serviceId,
-              'light': light,
-              'checked': checked
-            });
-          }
+  /**
+   * ライトを検索して登録する。
+   */
+  function discoverLights($scope, $location, lightService) {
+    var oldLights = lightService.lights;
+    lightService.discover(demoClient, {
+      oncomplete: function(lights) {
+        for (var i = 0; i < lights.length; i++) {
+          var obj = lights[i];
+          var serviceId = obj.serviceId;
+          var lightId = obj.light.lightId;
+          obj.checked = containLightService(oldLights, serviceId, lightId);
         }
 
         $scope.list = {
           'name'  : 'Light一覧',
-          'lights' : lightIds
+          'lights' : lights
         }
         $scope.$apply();
+
         var $checkboxs = $('[name=light-checkbox]');
         $checkboxs.map(function(index, el) {
-          el.checked = lightIds[index].checked;
+          el.checked = lights[index].checked;
         });
+      },
+      onerror: function(errorCode, errorMessage) {
+        $location.path('/error/' + errorCode);
       }
     });
   }
@@ -91,7 +66,7 @@
     demoClient = demoWebClient;
 
     $scope.title = '使用するライトを選択してください';
-    discoverLight($scope, lightService);
+    discoverLights($scope, $location, lightService);
 
     $scope.settingAll = function() {
       $location.path('/settings');
