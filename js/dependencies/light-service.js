@@ -22,6 +22,7 @@
           }
         },
         discoverDevices: function(client, callback) {
+          var self = this;
           client.discoverDevices({
             onsuccess: function(services) {
               self.discoverLights(client, services, callback);
