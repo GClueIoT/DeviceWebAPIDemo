@@ -59,7 +59,7 @@
     c.beginPath();
     c.arc(divSize, divSize, colorPickerSize + 2, 0, Math.PI * 2, false);
     c.fill();
-    for (var r = 0; r < colorPickerSize; r++) {
+    for (var r = 0; r < colorPickerSize; r+=4) {
       var rr = r * 255 / colorPickerSize;
       for (var th = 0; th < colorPickerSize; th += (colorPickerSize - 1) / r) {
         setColor(c, r, -th, rr, 0, rr * th / (colorPickerSize - 1));
@@ -209,7 +209,7 @@
     var x = divSize - 1 + 0.5 + radius * Math.cos(theta * Math.PI / (colorPickerSize * 3));
     var y = divSize - 1 + 0.5 - radius * Math.sin(theta * Math.PI / (colorPickerSize * 3));
     canvas.strokeStyle = "rgb(" + calcWhite(r, radius) + "," + calcWhite(g, radius) + "," + calcWhite(b, radius) + ")";
-    canvas.strokeRect(x, y, 1, 1);
+    canvas.strokeRect(x, y, 4, 4);
   }
 
   /**
