@@ -699,7 +699,7 @@
       turnOffLights(false);
     }
     $scope.back = function() {
-      $window.history.back();
+      $location.path('/');
     };
   };
 
