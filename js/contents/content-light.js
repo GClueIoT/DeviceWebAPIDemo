@@ -539,6 +539,64 @@
     });
   }
 
+  /**
+   * ライトを発見し、すべて登録する。
+   * 
+   * @param $scope スコープ
+   * @param lightService ライトサービス
+   */
+  function discoverLight($scope, lightService) {
+    var devices = demoClient.getLastKnownDevices();
+    var serviceIds = [];
+    for (var i = 0; i < devices.length; i++) {
+      serviceIds.push(devices[i].id);
+    }
+
+    var lightMap = {};
+
+    demoClient.request({
+      "method": "GET",
+      "profile": "light",
+      "devices": serviceIds,
+      "onsuccess": function(id, json) {
+        if (json.lights) {
+          lightMap[id] = [];
+          for (var i = 0; i < json.lights.length; i++) {
+            lightMap[id].push(json.lights[i]);
+          }
+        }
+      },
+      "onerror": function(id, error) {
+      },
+      "oncomplete": function() {
+        for (var serviceId in lightMap) {
+          var lights = lightMap[serviceId];
+          for (var i in lights) {
+            var light = lights[i];
+            lightService.addLight({
+              'name': light.name,
+              'serviceId': serviceId,
+              'light': light
+            });
+          }
+        }
+
+        lightList = lightService.lights;
+
+        if (lightList.length == 1) {
+          $scope.deviceName = lightList[0].name;
+          turnOnLights(true)
+        } else if (lightList.length > 1) {
+          $scope.deviceName = lightList[0].name + " その他(" + (lightList.length - 1) + ")";
+          turnOnLights(true)
+        } else {
+          return;
+        }
+        $scope.$apply();
+      }
+    });
+  }
+
   var LightController = function ($scope, $modal, $location, demoWebClient, lightService) {
     demoClient = demoWebClient;
     lightList = lightService.lights;
@@ -559,6 +617,7 @@
     } else {
       $scope.deviceName = "ライト未設定";
       turnOffLights(true);
+      discoverLight($scope, lightService);
     }
 
     $scope.lightOn = "On";
