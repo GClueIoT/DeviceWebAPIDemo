@@ -50,6 +50,8 @@
    */
   var divSize = 160;
 
+  var oldColorPickerPosition = {x: 0, y:0};
+
   /**
    * カラーピッカーを描画する。
    */
@@ -89,7 +91,10 @@
     var x = $('#color-picker').position().left + divSize - 8;
     var y = $('#color-picker').position().top + divSize - 8;
     $('#color-cursor').css({left:x, top:y});
+    oldColorPickerPosition.x = $('#color-picker').position().left;
+    oldColorPickerPosition.y = $('#color-picker').position().top;
 
+    console.log(oldColorPickerPosition.x + ", " + oldColorPickerPosition.y);
     var isTouch = ('ontouchstart' in window);
     var isFirefox = (navigator.userAgent.indexOf("Firefox") != -1);
     $('#color-picker').bind({
@@ -97,13 +102,13 @@
         var px, py;
         if (isFirefox) {
           px = e.originalEvent.touches[0].pageX;
-          py = e.originalEvent.touches[0].pageY;
+          py = e.originalEvent.touches[0].pageY - 50;
         } else if (isTouch) {
           px = event.changedTouches[0].pageX;
-          py = event.changedTouches[0].pageY;
+          py = event.changedTouches[0].pageY - 50;
         } else {
           px = e.pageX;
-          py = e.pageY;
+          py = e.pageY - 50;
         }
         if (checkTouchOutOfColorPicker(px, py)) {
           return;
@@ -130,13 +135,13 @@
         var px, py;
         if (isFirefox) {
           px = e.originalEvent.touches[0].pageX;
-          py = e.originalEvent.touches[0].pageY;
+          py = e.originalEvent.touches[0].pageY - 50;
         } else if (isTouch) {
           px = event.changedTouches[0].pageX;
-          py = event.changedTouches[0].pageY;
+          py = event.changedTouches[0].pageY - 50;
         } else {
           px = e.pageX;
-          py = e.pageY;
+          py = e.pageY - 50;
         }
 
         this.left = this.left - (this.pageX - px);
@@ -153,6 +158,17 @@
         moveCursor(this.left, this.top);
         this.touched = false;
       }
+    });
+
+    $(window).on('resize', function(e) {
+      var dx = $('#color-picker').position().left - oldColorPickerPosition.x;
+      var dy = $('#color-picker').position().top - oldColorPickerPosition.y;
+      var x =  $('#color-cursor').position().left + dx;
+      var y =  $('#color-cursor').position().top + dy;
+      $('#color-cursor').css({left:x, top:y});
+
+      oldColorPickerPosition.x = $('#color-picker').position().left;
+      oldColorPickerPosition.y = $('#color-picker').position().top;
     });
   }
 

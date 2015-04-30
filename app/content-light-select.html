@@ -1,10 +1,10 @@
-<div ng-controller="SelectLightController">
   <nav class="navbar navbar-default">
     <div class="btn-settings" ng-click="settingAll()"><img src="img/Gear_off.png"></div>
     <img class="navbar-back" ng-click="back()" src="img/back.png">
     <div class="navbar-title navbar-title-small">{{title}}</div>
   </nav>
-  <div id="light-container">
+  
+  <content>
     <div id="btn-group" align="center">
       <div id="unregister" class="btn btn-default" ng-click="unregisterAll()">全解除</div>
       <div id="register" class="btn btn-default" ng-click="registerAll()">全選択</div>
@@ -16,7 +16,7 @@
         </div>
       </li>
     </ul>
-  </div>
+  </content>
 
   <div class="footer">
     <div class="btn-group btn-group-justified" role="group" aria-label="footer">
@@ -29,15 +29,15 @@
     </div>
   </div>
 
-    <script type="text/ng-template" id="error-dialog-light.html">
-        <div class="modal-header">
-            <h4 class="modal-title">{{title}}</h4>
-        </div>
-        <div class="modal-body">
-           {{message}}
-        </div>
-        <div class="modal-footer">
-            <button class="btn btn-primary" ng-click="ok()">OK</button>
-        </div>
-    </script>
-</div>
+  <script type="text/ng-template" id="error-dialog-light.html">
+    <div class="modal-header">
+      <h4 class="modal-title">{{title}}</h4>
+    </div>
+    <div class="modal-body">
+      {{message}}
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" ng-click="ok()">OK</button>
+    </div>
+  </script>
+  

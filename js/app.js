@@ -26,10 +26,12 @@ angular.module('demoweb', ['ngRoute', 'ui.bootstrap'])
       controller: 'settingsCtrl'
     })
     .when('/light', {
-      templateUrl: 'app/content-light.html'
+      templateUrl: 'app/content-light.html',
+        controller: 'LightController'
     })
     .when('/light/select', {
-      templateUrl: 'app/content-light-select.html'
+      templateUrl: 'app/content-light-select.html',
+        controller: 'SelectLightController'
     })
     .when('/trial/manager/install', {
       templateUrl: 'trial/app/content-manager-install.html',

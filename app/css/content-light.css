@@ -18,7 +18,8 @@
 }
 
 #light-container {
-  margin-top: 68px;
+  margin-top: 24px;
+  z-index: -1;
 }
 
 #color-cursor {
@@ -57,7 +58,7 @@ img#brightness-on {
   margin-top: 2px;
 }
 
-#device {
+div#search-light {
   width:320px;
   margin-left: 16px;
   margin-right: 16px;
