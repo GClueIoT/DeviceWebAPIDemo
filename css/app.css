@@ -39,11 +39,13 @@ div.navbar-collapse.collapse.in {
 }
 .navbar .navbar-back {
   position: relative;
-
   height: 50px;
   padding: 15px 15px;
   font-size: 18px;
   z-index: 2;
+}
+.navbar-back:hover, .navbar-back:active {
+  background-color: #39A4D3;
 }
 .navbar-title.navbar-title-small {
   font-size: 16px;
@@ -85,15 +87,19 @@ table.demo-list td.nodemo {
 .btn-settings {
   position: relative;
   float: right;
-  margin-top: 10px;
-  margin-right: 10px;
-  margin-bottom: 10px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  width: 45px;
+  height: 100%;
+  z-index: 2;
+  text-align: center;
+}
+.btn-settings:hover, .btn-settings:active {
+  background-color: #39A4D3;
+}
+.btn-settings img {
   width: 25px;
   height: 25px;
-  z-index: 2;
-}
-.btn-settings:active {
-
 }
 
 .btn-operation {
@@ -105,8 +111,8 @@ table.demo-list td.nodemo {
   padding: 5px 0px;
 }
 
-.btn-operation:active {
-  background-color: #c3e6f3;
+.btn-operation:hover, .btn-operation:active {
+  background-color: #39A4D3;
 }
 
 .rect {
