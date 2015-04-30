@@ -25,6 +25,22 @@ angular.module('demoweb', ['ngRoute', 'ui.bootstrap'])
       templateUrl: 'app/content-settings.html',
       controller: 'settingsCtrl'
     })
+    .when('/devices', {
+      templateUrl: 'app/content-device-checkbox.html',
+      controller: 'DeviceListController'
+    })
+    .when('/devices/:profileName', {
+      templateUrl: 'app/content-device-checkbox.html',
+      controller: 'DeviceListController'
+    })
+    .when('/radio', {
+      templateUrl: 'app/content-device-radio.html',
+      controller: 'DeviceRadioController'
+    })
+    .when('/radio/:profileName', {
+      templateUrl: 'app/content-device-radio.html',
+      controller: 'DeviceRadioController'
+    })
     .when('/light', {
       templateUrl: 'app/content-light.html',
         controller: 'LightController'
@@ -32,6 +48,10 @@ angular.module('demoweb', ['ngRoute', 'ui.bootstrap'])
     .when('/light/select', {
       templateUrl: 'app/content-light-select.html',
         controller: 'SelectLightController'
+    })
+    .when('/heartrate', {
+      templateUrl: 'app/content-heartrate.html',
+      controller: 'HeartRateController'
     })
     .when('/trial/manager/install', {
       templateUrl: 'trial/app/content-manager-install.html',

@@ -1,48 +1,4 @@
 
-.light-checkbox {
-  margin: 0px;
-}
-
-.light-checkbox input {
-  position: absolute;
-  top: 0;
-  opacity: 0;
-  width: 90%;
-  height: 100%;
-  margin: 0px;
-  padding: 0px;
-}
-
-.light-checkbox input[type="checkbox"] + label {
-  display: block;
-  background-image: url("../../img/check_a_off.png");
-  background-size: 24px;
-  background-position: left center;
-  background-repeat: no-repeat;
-  padding: 4px 0px 4px 36px;
-  margin: 0px;
-  font-size: 18px;
-}
-
-.light-checkbox input[type=checkbox]:checked + label {
-    background-image: url("../../img/check_a_on.png");
-}
-
-.list-group-item:first-child {
-  border-radius: 0px;
-  -webkit-border-radius: 0px;
-  -moz-border-radius: 0px;
-}
-
-.list-group {
-  margin:0px;
-  margin-bottom:48px;
-}
-
-.list-group-item {
-  border-color: #49B4DC #FFFFFF #49B4DC;
-}
-
 #btn-group {
   margin-top: 16px;
   margin-bottom: 16px;

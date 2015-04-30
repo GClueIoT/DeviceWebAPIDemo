@@ -28,6 +28,11 @@
         packageName: "org.deviceconnect.android.deviceplugin.sphero",
         name: "Sphero",
         supports: ['light']
+      },
+      {
+        packageName: "org.deviceconnect.android.deviceplugin.heartrate",
+        name: "HeartRate",
+        supports: ['health']
       }
     ],
 
@@ -35,6 +40,10 @@
       light: {
         profiles: ['light'],
         path: '/light'
+      },
+      heartrate: {
+        profiles: ['health'],
+        path: '/heartrate'
       }
     }
   };

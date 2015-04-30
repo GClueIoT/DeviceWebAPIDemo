@@ -51,7 +51,7 @@
         }
         $scope.$apply();
 
-        var $checkboxs = $('[name=light-checkbox]');
+        var $checkboxs = $('[name=list-checkbox]');
         $checkboxs.map(function(index, el) {
           el.checked = lights[index].checked;
         });
@@ -83,21 +83,21 @@
       });
     }
     $scope.registerAll = function() {
-      $('input[name=light-checkbox]').prop("checked", true);
+      $('input[name=list-checkbox]').prop("checked", true);
     }
     $scope.unregisterAll = function() {
-      $('input[name=light-checkbox]').prop("checked", false);
+      $('input[name=list-checkbox]').prop("checked", false);
     }
     $scope.cancel = function() {
       $window.history.back();
     }
     $scope.ok = function() {
-      var $checked = $('[name=light-checkbox]:checked');
+      var $checked = $('[name=list-checkbox]:checked');
       if ($checked.length == 0) {
         showErrorDialog($modal);
       } else {
         lightService.removeAll();
-        var $checkbox = $('[name=light-checkbox]');
+        var $checkbox = $('[name=list-checkbox]');
         var valList = $checkbox.map(function(index, el) {
           if (el.checked) {
             lightService.addLight($scope.list.lights[index]);

@@ -11,8 +11,8 @@
     </div>
     <ul class="list-group">
       <li class="list-group-item" ng-repeat="light in list.lights">
-        <div class="light-checkbox">
-          <input class="checkbox" type="checkbox" name="light-checkbox"><label>{{light.name}}</label>
+        <div class="list-checkbox">
+          <input class="checkbox" type="checkbox" name="list-checkbox"><label>{{light.name}}</label>
         </div>
       </li>
     </ul>
@@ -28,6 +28,7 @@
       </div>
     </div>
   </div>
+
   <script type="text/ng-template" id="error-dialog-light-select.html">
     <div class="modal-header">
       <h4 class="modal-title">{{title}}</h4>
