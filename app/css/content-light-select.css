@@ -28,6 +28,12 @@
     background-image: url("../../img/check_a_on.png");
 }
 
+.list-group-item:first-child {
+  border-radius: 0px;
+  -webkit-border-radius: 0px;
+  -moz-border-radius: 0px;
+}
+
 .list-group {
   margin:0px;
   margin-bottom:48px;
