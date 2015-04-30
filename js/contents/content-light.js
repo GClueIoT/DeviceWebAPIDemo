@@ -594,6 +594,8 @@
     showErrorDialog('エラー', 'ライトが設定されていません。');
   }
 
+  var isShowDialog = false;
+
   /**
    * エラーダイアログを表示する。
    * 
@@ -601,6 +603,11 @@
    * @param message ダイアログのメッセージ
    */
   function showErrorDialog(title, message) {
+    if (isShowDialog) {
+      return;
+    }
+    isShowDialog = true;
+
     var modalInstance = modalDialog.open({
       templateUrl: 'error-dialog-light.html',
       controller: 'ModalInstanceCtrl',
@@ -615,6 +622,7 @@
       }
     });
     modalInstance.result.then(function () {
+      isShowDialog = false;
     });
   }
 
