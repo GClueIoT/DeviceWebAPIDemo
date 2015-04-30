@@ -5,7 +5,7 @@
 
   function showErrorDialog($modal) {
     var modalInstance = $modal.open({
-      templateUrl: 'error-dialog-light.html',
+      templateUrl: 'error-dialog-light-select.html',
       controller: 'ModalInstanceCtrl',
       size: 'lg',
       resolve: {
@@ -75,9 +75,7 @@
             $location.path('/settings/light');
           });
         },
-
         onerror: function(errorCode, errorMessage) {
-          console.log('transit - discoverPlugins: errorCode=' + errorCode + ' errorMessage=' + errorMessage);
           $scope.$apply(function() {
             $location.path('/error/' + errorCode);
           });

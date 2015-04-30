@@ -94,7 +94,6 @@
     oldColorPickerPosition.x = $('#color-picker').position().left;
     oldColorPickerPosition.y = $('#color-picker').position().top;
 
-    console.log(oldColorPickerPosition.x + ", " + oldColorPickerPosition.y);
     var isTouch = ('ontouchstart' in window);
     var isFirefox = (navigator.userAgent.indexOf("Firefox") != -1);
     $('#color-picker').bind({
@@ -706,7 +705,6 @@
         },
 
         onerror: function(errorCode, errorMessage) {
-          console.log('transit - discoverPlugins: errorCode=' + errorCode + ' errorMessage=' + errorMessage);
           $scope.$apply(function() {
             $location.path('/error/' + errorCode);
           });
