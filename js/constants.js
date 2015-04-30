@@ -2,7 +2,7 @@
   'use strinct';
 
   var constants = {
-    DEBUG: true,
+    DEBUG: false,
 
     applicationName: 'Demo Web',
 
