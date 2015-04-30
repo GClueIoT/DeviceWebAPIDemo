@@ -63,6 +63,10 @@
     }, 250);
   }
 
+  function isMobile() {
+    return ((navigator.userAgent.indexOf('iPhone') > 0 && navigator.userAgent.indexOf('iPad') == -1) || navigator.userAgent.indexOf('iPod') > 0 || navigator.userAgent.indexOf('Android') > 0);
+  }
+
   angular.module('demoweb')
     .controller('launchCtrl', ['$scope', '$location', '$window', '$modal', 'demoWebClient', 'demoConstants', function($scope, $location, $window, $modal, demoWebClient, demoConstants) {
       progressModal = $modal;
@@ -71,9 +75,13 @@
 
       $scope.title = 'システム起動確認';
 
-      var modalInstance;
       $scope.startManager = function() {
-        modalInstance = showProgress();
+        if (!isMobile()) {
+          showWarning();
+          return;
+        }
+
+        var modalInstance = showProgress();
         waitAvailability({
           onavailable: function() {
             modalInstance.close();
@@ -90,5 +98,30 @@
       $scope.back = function() {
         $window.history.back();
       };
+
+      function showWarning() {
+        console.log('showWarning: manager');
+        var modalInstance = progressModal.open({
+          templateUrl: 'dialog.html',
+          controller: 'ModalInstanceCtrl',
+          size: 'lg',
+          resolve: {
+            'title': function() {
+              return '注意';
+            },
+            'message': function() {
+              return 'PC上で操作する場合は、Device WebAPI ManagerをAndroid端末上にインストールかつ起動した後、本ページをリロードしてください。';
+            },
+            'onclose' : function() {
+              return function() {
+                var url = 'https://play.google.com/store/apps/details?id=' + demoConstants.manager.packageName;
+                console.log('Google Play: ' + url);
+                $window.location.href = url;
+              };
+            }
+          }
+        });
+        return modalInstance;
+      }
     }]);
 })();

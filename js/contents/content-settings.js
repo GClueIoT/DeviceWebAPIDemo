@@ -66,6 +66,10 @@
     }, 250);
   }
 
+  function isMobile() {
+    return ((navigator.userAgent.indexOf('iPhone') > 0 && navigator.userAgent.indexOf('iPad') == -1) || navigator.userAgent.indexOf('iPod') > 0 || navigator.userAgent.indexOf('Android') > 0);
+  }
+
   angular.module('demoweb')
     .controller('settingsCtrl', ['$scope', '$window', '$routeParams', '$location', '$modal', 'demoWebClient', 'demoConstants', 'transition', function($scope, $window, $routeParams, $location, $modal, demoWebClient, demoConstants, transition) {
       progressModal = $modal;
@@ -83,6 +87,10 @@
       $scope.plugins = getPlugins(profiles);
       $scope.wakeup = function(index) {
         var p = $scope.plugins[index];
+        if (!isMobile()) {
+          showWarning(p);
+          return;
+        }
         if (p.installed === true) {
           openSettingWindow(p);
         } else {
@@ -135,6 +143,31 @@
             transition.next('/error/' + errorCode);
           }
         });
+      }
+
+      function showWarning(plugin) {
+        console.log('showWarning: ' + plugin.packageName);
+        var modalInstance = progressModal.open({
+          templateUrl: 'dialog.html',
+          controller: 'ModalInstanceCtrl',
+          size: 'lg',
+          resolve: {
+            'title': function() {
+              return '注意';
+            },
+            'message': function() {
+              return 'プラグインのインストールはAndroid端末上で実行する必要があります。';
+            },
+            'onclose' : function() {
+              return function() {
+                var url = 'https://play.google.com/store/apps/details?id=' + plugin.packageName;
+                console.log('Google Play: ' + url);
+                $window.location.href = url;
+              };
+            }
+          }
+        });
+        return modalInstance;
       }
     }]);
 })();
