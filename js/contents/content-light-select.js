@@ -17,7 +17,7 @@
         }
       }
     });
-    modalInstance.result.then(function () {
+    modalInstance.result.then(function (result) {
     });
   }
   

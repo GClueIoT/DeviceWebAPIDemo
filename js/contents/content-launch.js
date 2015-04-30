@@ -111,14 +111,14 @@
             },
             'message': function() {
               return 'PC上で操作する場合は、Device WebAPI ManagerをAndroid端末上にインストールかつ起動した後、本ページをリロードしてください。';
-            },
-            'onclose' : function() {
-              return function() {
-                var url = 'https://play.google.com/store/apps/details?id=' + demoConstants.manager.packageName;
-                console.log('Google Play: ' + url);
-                $window.location.href = url;
-              };
             }
+          }
+        });
+        modalInstance.result.then(function (result) {
+          if (result) {
+            var url = 'https://play.google.com/store/apps/details?id=' + demoConstants.manager.packageName;
+            console.log('Google Play: ' + url);
+            $window.location.href = url;
           }
         });
         return modalInstance;

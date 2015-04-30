@@ -157,14 +157,14 @@
             },
             'message': function() {
               return 'プラグインのインストールはAndroid端末上で実行する必要があります。';
-            },
-            'onclose' : function() {
-              return function() {
-                var url = 'https://play.google.com/store/apps/details?id=' + plugin.packageName;
-                console.log('Google Play: ' + url);
-                $window.location.href = url;
-              };
             }
+          }
+        });
+        modalInstance.result.then(function (result) {
+          if (result) {
+            var url = 'https://play.google.com/store/apps/details?id=' + plugin.packageName;
+            console.log('Google Play: ' + url);
+            $window.location.href = url;
           }
         });
         return modalInstance;
