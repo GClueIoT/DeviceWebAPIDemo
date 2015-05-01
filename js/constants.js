@@ -10,7 +10,8 @@
       'servicediscovery',
       'serviceinformation',
       'system',
-      'light'
+      'light',
+      'health'
     ],
 
     manager: {

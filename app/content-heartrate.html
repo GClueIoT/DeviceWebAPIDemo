@@ -8,7 +8,7 @@
     <div id="heartrate-container" align="center">
       <div id="heartrate-search" class="btn btn-default" ng-click="searchHeartRate()">{{deviceName}}</div>
       <div id="heartrate-main">
-        <img id="heart-img" src="img/heartrate/HeartBeat1.png" width="100%">
+        <img id="heart-img" ng-src="{{heart_image}}" width="100%">
         <div id="heartrate-value">
           <div class="heartrate">{{heartrate}}</div>
           <div class="bpm">bpm</div>

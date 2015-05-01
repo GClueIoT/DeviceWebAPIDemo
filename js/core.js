@@ -58,6 +58,7 @@ var demoWeb = (function (parent) {
     this.lastKnownDevices = [];
     this.releasedPlugins = [];
     this.installedPlugins = [];
+    this.connectWebSocket(function() {});
   };
   parent.Client = Client;
 
@@ -549,5 +550,53 @@ var demoWeb = (function (parent) {
     dConnect.disconnectWebSocket();
   }
 
+  Client.prototype.addEventListener = function(req) {
+    req.devices = req.devices || [];
+    req.onevent = req.onevent || function() {};
+    req.onsuccess = req.onsuccess || function() {};
+    req.onerror = req.onerror || function() {};
+
+    var builder = new dConnect.URIBuilder();
+    if (req.profile) {
+      builder.setProfile(req.profile);
+    }
+    if (req.interface) {
+      builder.setInterface(req.interface);
+    }
+    if (req.attribute) {
+      builder.setAttribute(req.attribute);
+    }
+    builder.setServiceId(req.serviceId);
+    builder.setSessionKey(this.settings.sessionKey);
+    builder.setAccessToken(this.settings.accessToken);
+    for (var key in req.params) {
+      builder.addParameter(key, req.params[key]);
+    }
+    dConnect.addEventListener(builder.build(), req.onevent, req.onsuccess, req.onerror);
+  }
+
+  Client.prototype.removeEventListener = function(req) {
+    req.devices = req.devices || [];
+    req.onsuccess = req.onsuccess || function() {};
+    req.onerror = req.onerror || function() {};
+
+    var builder = new dConnect.URIBuilder();
+    if (req.profile) {
+      builder.setProfile(req.profile);
+    }
+    if (req.interface) {
+      builder.setInterface(req.interface);
+    }
+    if (req.attribute) {
+      builder.setAttribute(req.attribute);
+    }
+    builder.setServiceId(req.serviceId);
+    builder.setSessionKey(this.settings.sessionKey);
+    builder.setAccessToken(this.settings.accessToken);
+    for (var key in req.params) {
+      builder.addParameter(key, req.params[key]);
+    }
+    dConnect.removeEventListener(builder.build(), req.onsuccess, req.onerror);
+  }
   return parent;
 })({});
