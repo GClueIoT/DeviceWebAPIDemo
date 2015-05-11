@@ -2,13 +2,12 @@
   'use strict';
 
   function discoverDevices(client, callback) {
-    var self = this;
     client.discoverDevices({
       onsuccess: function(services) {
-        self.discoverLights(client, services, callback);
+        callback(services);
       },
       onerror: function(errorCode, errorMessage) {
-        callback.onerror(errorCode, errorMessage);
+        callback([]);
       }
     })
   }
@@ -24,14 +23,19 @@
   }
 
   function searchDevices(client, profileName, callback) {
-    var devices = client.getLastKnownDevices();
-    if (devices && devices.length > 0) {
-      searchDevicesWithProfile(devices, profileName, callback);
-    } else {
-      discoverDevices(client, function(devices) {
-        searchDevicesWithProfile(devices, profileName, callback);
-      });
+    discoverDevices(client, function(devices) {
+      callback(getDevicesWithProfile(devices, profileName));
+    });
+  }
+
+  function getDevicesWithProfile(devices, profileName) {
+    var list = [];
+    for (var i = 0; i < devices.length; i++) {
+      if (profileName === undefined || devices[i].scopes.lastIndexOf(profileName) >= 0) {
+        list.push(devices[i]);
+      }
     }
+    return list;
   }
 
   var DeviceListController = function ($scope, $window, $routeParams, $location, demoWebClient, deviceService) {

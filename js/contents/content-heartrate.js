@@ -70,6 +70,24 @@
     }
   }
 
+  function showErrorDialog($modal) {
+    var modalInstance = $modal.open({
+      templateUrl: 'error-dialog-heartrate-select.html',
+      controller: 'ModalInstanceCtrl',
+      size: 'lg',
+      resolve: {
+        'title': function() {
+          return 'エラー';
+        },
+        'message': function() {
+          return 'デバイスが選択されていません。';
+        }
+      }
+    });
+    modalInstance.result.then(function (result) {
+    });
+  }
+
   var HeartRateController = function ($scope, $modal, $window, $location, demoWebClient, deviceService) {
     var device = undefined;
     $scope.title = "心拍計";
@@ -105,6 +123,8 @@
     $scope.clickHeartRate = function() {
       if (device) {
         clickHeartRate($scope, demoWebClient, device);
+      } else {
+        showErrorDialog($modal);
       }
     }
   }

@@ -23,3 +23,15 @@
   </table>
 </footer>
 
+  <script type="text/ng-template" id="error-dialog-device-radio.html">
+    <div class="modal-header">
+      <h4 class="modal-title">{{title}}</h4>
+    </div>
+    <div class="modal-body">
+      {{message}}
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" ng-click="ok()">OK</button>
+      <button class="btn btn-primary" ng-click="cancel()">Cancel</button>
+    </div>
+  </script>
