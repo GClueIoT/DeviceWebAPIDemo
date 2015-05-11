@@ -6,8 +6,6 @@
 
   var _areaWidth;
   var _areaHeight;
-  var _faceWidth = 288 / 2;
-  var _faceHeight = 288 / 2;
 
   var _expressions = ['mad', 'sad', 'smile', 'surprise'];
   var _promptMessage = '開始ボタンを押してください。';
@@ -57,11 +55,12 @@
 
     for (var i = 0; i < faces.length; i++) {
       var face = faces[i];
+      var faceWidth = _areaWidth * face.width;
       drawFace(ctx, {
-        x: _areaWidth * face.x - _faceWidth / 2,
-        y: _areaHeight * face.y - _faceHeight / 2,
-        width: _faceWidth,
-        height: _faceHeight,
+        x: _areaWidth * face.x - faceWidth / 2,
+        y: _areaHeight * face.y - faceWidth / 2,
+        width: faceWidth,
+        height: faceWidth,
         expression: face.expressionResults.expression
       });
     }
