@@ -19,12 +19,11 @@
 </content>
 
 <footer>
-  <div class="btn-group btn-group-justified" role="group" aria-label="footer">
-    <div class="btn-group" role="group">
-      <button id="light-cancel" type="button" class="btn btn-default" ng-click="cancel()">キャンセル</button>
-    </div>
-    <div class="btn-group" role="group">
-      <button id="light-cancel" type="button" class="btn btn-default" ng-click="ok()">決定</button>
-    </div>
-  </div>
+  <table>
+    <tr>
+      <td class="button" ng-click="cancel()" width="50%">いいえ</td>
+      <td class="button" ng-click="ok()" width="50%">はい</td>
+    </tr>
+  </table>
 </footer>
+
