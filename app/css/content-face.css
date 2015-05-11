@@ -1,7 +1,5 @@
 #face-area {
-  width: 320px;
-  height: 320px;
-  background-color: #cccccc;
+  background-color: #F9F9F9;
   border: 1px solid #49B4DC;
 }
 
@@ -12,7 +10,7 @@
 }
 
 #face-search {
-  width:340px;
+  width: 90%;
   margin-left: 16px;
   margin-right: 16px;
   margin-bottom: 16px;
@@ -29,14 +27,12 @@
 }
 
 #face-footer {
-  background-color: #4D4D4D;
   width: 100%;
   margin: 0px;
-  margin-top: 24px;
 }
 
 #face-button {
-  width:240px;
+  width: 90%;
   margin: 16px;
   padding: 16px;
   background-color: #49B4DC;
@@ -63,7 +59,6 @@
 
 #face-main {
   position: relative;
-  width: 410px;
 }
 
 .face {

@@ -2,30 +2,103 @@
   'use strict';
 
   var isStarting = false;
+  var progressModal;
 
-  var _width = 320;
-  var _height = 320;
+  var _areaWidth;
+  var _areaHeight;
+  var _faceWidth = 288 / 2;
+  var _faceHeight = 288 / 2;
 
-  function onExpression(face) {
-    drawFace({
-      x: _width * face.x,
-      y: _height * face.y,
-      width: 100,
-      height: 100,
-      expression: face.expressionResults.expression
+  var _expressions = ['mad', 'sad', 'smile', 'surprise'];
+  var _promptMessage = '開始ボタンを押してください。';
+
+  function showError($modal, message) {
+    $modal.open({
+      templateUrl: 'error-dialog-face.html',
+      controller: 'ModalInstanceCtrl',
+      size: 'lg',
+      resolve: {
+        'title': function() {
+          return 'エラー';
+        },
+        'message': function() {
+          return message;
+        }
+      }
     });
   }
 
-  function drawFace(opt) {
+  function showProgress(callback) {
+    var modalInstance = progressModal.open({
+      templateUrl: 'progress.html',
+      controller: 'ProgressInstanceCtrl',
+      size: 'lg',
+      backdrop: 'static',
+      resolve: {
+        'title': function() {
+          return '待機中';
+        },
+        'message': function() {
+          return 'デバイスからの応答を待っています...';
+        }
+      }
+    });
+    modalInstance.result.then(function () {
+      callback.onclose();
+    }, function() {
+      callback.onclose();
+    });
+    return modalInstance;
+  }
+
+  function onExpressions(faces) {
     var canvas = $('#face-area').get(0);
     var ctx = canvas.getContext('2d');
+
+    for (var i = 0; i < faces.length; i++) {
+      var face = faces[i];
+      drawFace(ctx, {
+        x: _areaWidth * face.x - _faceWidth / 2,
+        y: _areaHeight * face.y - _faceHeight / 2,
+        width: _faceWidth,
+        height: _faceHeight,
+        expression: face.expressionResults.expression
+      });
+    }
+  }
+
+  function resetCanvas(message) {
+    var canvas = $('#face-area').get(0);
+    var ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, _areaWidth, _areaHeight);
+    if (message) {
+      ctx.textAlign = 'center';
+      ctx.fillText(message, _areaWidth / 2, _areaHeight / 2);
+    }
+  }
+
+  function getExpressionName(exp) {
+    for (var i = 0; i < _expressions.length; i++) {
+      if (exp === _expressions[i]) {
+        return exp;
+      }
+    }
+    return 'unknown';
+  }
+
+  function drawFace(ctx, opt) {
+    console.log('drawFace: x=' + opt.x + ' y=' + opt.y + ' expression=' + opt.expression);
+    
     var img = new Image();
-    img.src = 'img/face/' + opt.expression + '.png';
-    ctx.clearRect(0, 0, _width, _height);
+    var exp = getExpressionName(opt.expression);
+    img.src = 'img/face/' + exp + '.png';
+    
     ctx.drawImage(img, opt.x, opt.y, opt.width, opt.height);
   }
 
-  function registerFace($scope, client, device) {
+  function registerFace($scope, $modal, client, device) {
+    var modalInstance;
+
     client.addEventListener({
       profile: "humandetect",
       attribute: "onfacedetection",
@@ -41,17 +114,23 @@
         if (event.faceDetects) {
           console.log("results: ", event.faceDetects);
 
+          var array = [];
           for (i = 0; i < event.faceDetects.length; i++) {
             face = event.faceDetects[i];
             if (face.expressionResults) {
               var exp = face.expressionResults.expression;
-              console.log("expression: " + exp);
               if (exp) {
-                onExpression(face);
+                array.push(face);
               }
             } else {
               console.log("no expressionResults");
             }
+          }
+          if (array.length > 0) {
+            modalInstance.close();
+            resetCanvas();
+
+            onExpressions(array);
           }
         } else {
           console.log("no faceDetects");
@@ -59,10 +138,19 @@
       },
       onsuccess: function() {
         console.log("onsuccess");
+        resetCanvas();
+
         isStarting = true;
+        modalInstance = showProgress({
+          onclose: function() {
+            isStarting = false;
+            unregisterFace($scope, client, device);
+          }
+        });
       },
       onerror: function(errorCode, errorMessage) {
         console.log("onerror: " + errorCode + " " + errorMessage);
+        showError($modal, errorMessage);
       }
     });
   }
@@ -82,15 +170,17 @@
     });
   }
 
-  function clickFace($scope, client, device) {
+  function clickFace($scope, $modal, client, device) {
     if (isStarting) {
       unregisterFace($scope, client, device);
     } else {
-      registerFace($scope, client, device);
+      registerFace($scope, $modal, client, device);
     }
   }
 
   var FaceController = function ($scope, $modal, $window, $location, demoWebClient, deviceService) {
+    progressModal = $modal;
+
     var device = undefined;
     $scope.title = "表情認識";
     $scope.button = "開始";
@@ -100,6 +190,14 @@
     } else {
       $scope.deviceName = "デバイス未設定";
     }
+
+    _areaWidth = 0.9 * $($window).width();
+    _areaHeight = (3 / 4) * _areaWidth;
+    var canvas = $('#face-area').get(0);
+    canvas.width = _areaWidth;
+    canvas.height = _areaHeight;
+    resetCanvas(_promptMessage);
+
     $scope.settingAll = function() {
       demoWebClient.discoverPlugins({
         onsuccess: function(plugins) {
@@ -122,7 +220,9 @@
     };
     $scope.clickFace = function() {
       if (device) {
-        clickFace($scope, demoWebClient, device);
+        clickFace($scope, $modal, demoWebClient, device);
+      } else {
+        showError($modal, 'デバイスが選択されていません。');
       }
     };
   };

@@ -9,10 +9,10 @@
     img: 'img/Appli_Heart.png',
     title: '心拍計'
   };
-  var hvccDemo =  {
-    name: 'hvcc',
+  var faceDemo =  {
+    name: 'face',
     img: 'img/Appli_Facial expression recognition.png',
-    title: '顔認識'
+    title: '表情認識'
   };
 
   function isIOS() {
@@ -33,7 +33,7 @@
       demos.push(lightDemo);
       if (!isIOS()) {
         demos.push(heartRateDemo);
-//        demos.push(hvccDemo);
+        demos.push(faceDemo);
       }
 
       var size = demos.length < 8 ? 4 : Math.ceil(demos.length / 2);
