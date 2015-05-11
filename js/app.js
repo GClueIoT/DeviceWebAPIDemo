@@ -53,6 +53,10 @@ angular.module('demoweb', ['ngRoute', 'ui.bootstrap'])
       templateUrl: 'app/content-heartrate.html',
       controller: 'HeartRateController'
     })
+    .when('/face', {
+      templateUrl: 'app/content-face.html',
+      controller: 'FaceController'
+    })
     .when('/trial/manager/install', {
       templateUrl: 'trial/app/content-manager-install.html',
       controller: 'trialManagerInstallCtrl'

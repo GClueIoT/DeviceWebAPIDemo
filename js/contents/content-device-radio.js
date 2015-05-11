@@ -5,7 +5,7 @@
     var self = this;
     client.discoverDevices({
       onsuccess: function(services) {
-        self.discoverLights(client, services, callback);
+        callback.onsuccess(services);
       },
       onerror: function(errorCode, errorMessage) {
         callback.onerror(errorCode, errorMessage);
@@ -42,7 +42,7 @@
         'name'  : 'デバイス一覧',
         'devices' : devices
       }
-      $scope.$apply();
+      //$scope.$apply();
 
       setTimeout(function() {
         var $radio = $('[name=list-radio]');

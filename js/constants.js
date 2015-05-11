@@ -11,7 +11,8 @@
       'serviceinformation',
       'system',
       'light',
-      'health'
+      'health',
+      'humandetect'
     ],
 
     manager: {
@@ -34,6 +35,11 @@
         packageName: "org.deviceconnect.android.deviceplugin.heartrate",
         name: "HeartRate",
         supports: ['health']
+      },
+      {
+        packageName: "org.deviceconnect.android.deviceplugin.hvc",
+        name: "HVC",
+        supports: ['humandetect']
       }
     ],
 
@@ -45,6 +51,10 @@
       heartrate: {
         profiles: ['health'],
         path: '/heartrate'
+      },
+      face: {
+        profiles: ['humandetect'],
+        path: '/face'
       }
     }
   };
