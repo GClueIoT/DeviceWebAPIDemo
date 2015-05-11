@@ -30,6 +30,11 @@
   cursor:move;
 }
 
+#brightness-slider {
+  width: 80%;
+  min-width: 160px;
+}
+
 #brightness-slider .slider-selection {
   background: #2EA9D7;
   height:2px;
@@ -59,7 +64,8 @@ img#brightness-on {
 }
 
 div#search-light {
-  width:320px;
+  width: 75%;
+  max-width: 320px;
   margin-left: 16px;
   margin-right: 16px;
   margin-bottom: 24px;
