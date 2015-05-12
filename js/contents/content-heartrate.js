@@ -118,7 +118,7 @@
       $location.path('/');
     }
     $scope.searchHeartRate = function() {
-      $location.path('/radio/health');
+      $location.path('/radio/heartrate/health');
     }
     $scope.clickHeartRate = function() {
       if (device) {

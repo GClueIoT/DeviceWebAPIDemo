@@ -28,7 +28,7 @@
     return list;
   }
 
-  function showErrorDialog($modal, $location) {
+  function showErrorDialog($modal, $location, settingsPath) {
     var modalInstance = $modal.open({
       templateUrl: 'error-dialog-device-radio.html',
       controller: 'ModalInstanceCtrl',
@@ -44,17 +44,19 @@
     });
     modalInstance.result.then(function (result) {
       if (result) {
-        $location.path('/settings');
+        $location.path(settingsPath);
       }
     });
   }
 
   var DeviceRadioController = function ($scope, $modal, $window, $routeParams, $location, demoWebClient, deviceService) {
-    var profileName = $routeParams.profileName;
+    var demoName = $routeParams.demoName,
+        profileName = $routeParams.profileName,
+        settingsPath = '/settings/' + demoName + '/' + profileName;
 
     searchDevices(demoWebClient, profileName, function(devices) {
       if (devices.length == 0) {
-        showErrorDialog($modal, $location);
+        showErrorDialog($modal, $location, settingsPath);
       } else {
         $scope.list = {
           'name'  : 'デバイス一覧',
@@ -78,7 +80,7 @@
       demoWebClient.discoverPlugins({
         onsuccess: function(plugins) {
           $scope.$apply(function() {
-            $location.path('/settings');
+            $location.path(settingsPath);
           });
         },
         onerror: function(errorCode, errorMessage) {
@@ -97,7 +99,7 @@
     $scope.ok = function() {
       var $checked = $('[name=list-radio]:checked');
       if ($checked.length == 0) {
-        showErrorDialog($modal, $location);
+        showErrorDialog($modal, $location, settingsPath);
       } else {
         deviceService.removeAll();
         var $radio = $('[name=list-radio]');

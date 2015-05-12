@@ -25,6 +25,10 @@ angular.module('demoweb', ['ngRoute', 'ui.bootstrap'])
       templateUrl: 'app/content-settings.html',
       controller: 'settingsCtrl'
     })
+    .when('/settings/:demoName/:profileName', {
+      templateUrl: 'app/content-settings.html',
+      controller: 'settingsCtrl'
+    })
     .when('/devices', {
       templateUrl: 'app/content-device-checkbox.html',
       controller: 'DeviceListController'
@@ -37,7 +41,7 @@ angular.module('demoweb', ['ngRoute', 'ui.bootstrap'])
       templateUrl: 'app/content-device-radio.html',
       controller: 'DeviceRadioController'
     })
-    .when('/radio/:profileName', {
+    .when('/radio/:demoName/:profileName', {
       templateUrl: 'app/content-device-radio.html',
       controller: 'DeviceRadioController'
     })

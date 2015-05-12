@@ -86,7 +86,7 @@
   }
 
   function drawFace(ctx, opt) {
-    console.log('drawFace: x=' + opt.x + ' y=' + opt.y + ' expression=' + opt.expression);
+    console.log('drawFace: {x:' + opt.x + ', y:' + opt.y + ', expression:"' + opt.expression + '", width:' + opt.width + ', height:' + opt.height + '}');
     
     var img = new Image();
     var exp = getExpressionName(opt.expression);
@@ -215,7 +215,7 @@
       $location.path('/');
     };
     $scope.searchFace = function() {
-      $location.path('/radio/humandetect');
+      $location.path('/radio/face/humandetect');
     };
     $scope.clickFace = function() {
       if (device) {
