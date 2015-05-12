@@ -2,16 +2,16 @@
   function errorMessage(errorCode) {
     switch(errorCode) {
     case dConnect.constants.ErrorCode.ACCESS_FAILED:
-      return 'Device WebAPIサーバが見つかりませんでした。';
+      return 'Device Web APIサーバが見つかりませんでした。';
     case dConnect.constants.ErrorCode.NOT_SUPPORT_PROFILE:
     case dConnect.constants.ErrorCode.NOT_SUPPORT_ACTION:
       return '現在サポートされていない機能です。必要なプラグインがインストールされているかをご確認ください。';
     case dConnect.constants.ErrorCode.NOT_FOUND_SERVICE:
       return '指定されたデバイスを発見できませんでした。';
     case dConnect.constants.ErrorCode.TIMEOUT:
-      return 'Device WebAPIサーバとの通信がタイムアウトしました。';
+      return 'Device Web APIサーバとの通信がタイムアウトしました。';
     case dConnect.constants.ErrorCode.INVALID_ORIGIN:
-      return 'Device WebAPIへのアクセスが許可されませんでした。ホワイトリストの設定をご確認ください。';
+      return 'Device Web APIへのアクセスが許可されませんでした。ホワイトリストの設定をご確認ください。';
     case dConnect.constants.ErrorCode.ILLEGAL_DEVICE_STATE:
       return 'デバイス側の状態異常が発生しました。';
     case dConnect.constants.ErrorCode.ILLEGAL_SERVER_STATE:
@@ -29,7 +29,7 @@
     case dConnect.constants.ErrorCode.SCOPE:
     case dConnect.constants.ErrorCode.NOT_FOUND_CLIENT_ID:
     default:
-      return 'Device WebAPIの実行に失敗しました。';
+      return 'Device Web APIの実行に失敗しました。';
     }
   }
 

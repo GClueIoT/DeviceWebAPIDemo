@@ -17,7 +17,7 @@
 
     manager: {
       packageName: 'org.deviceconnect.android.manager',
-      name: 'Device WebAPI Manager'
+      name: 'Device Web API Manager'
     },
 
     plugins: [
