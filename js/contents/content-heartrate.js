@@ -97,6 +97,7 @@
     if (deviceService.devices.length > 0) {
       device = deviceService.devices[0];
       $scope.deviceName = deviceService.devices[0].name;
+      deviceService.removeAll();
     } else {
       $scope.deviceName = "デバイス未設定";
     }
