@@ -222,7 +222,7 @@ footer td.button:active {
 
 .list-radio input[type="radio"] + label {
   display: block;
-  background-image: url("../../img/check_b_off.png");
+  background-image: url("../img/check_b_off.png");
   background-size: 24px;
   background-position: left center;
   background-repeat: no-repeat;
@@ -232,7 +232,7 @@ footer td.button:active {
 }
 
 .list-radio input[type=radio]:checked + label {
-    background-image: url("../../img/check_b_on.png");
+    background-image: url("../img/check_b_on.png");
 }
 
 .list-checkbox {
@@ -251,7 +251,7 @@ footer td.button:active {
 
 .list-checkbox input[type="checkbox"] + label {
   display: block;
-  background-image: url("../../img/check_a_off.png");
+  background-image: url("../img/check_a_off.png");
   background-size: 24px;
   background-position: left center;
   background-repeat: no-repeat;
@@ -261,6 +261,6 @@ footer td.button:active {
 }
 
 .list-checkbox input[type=checkbox]:checked + label {
-    background-image: url("../../img/check_a_on.png");
+    background-image: url("../img/check_a_on.png");
 }
 
