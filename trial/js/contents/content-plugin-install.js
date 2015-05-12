@@ -8,6 +8,14 @@
     file: 'dConnectDeviceSphero.apk',
     name: 'Sphero'
   };
+  apkList['org.deviceconnect.android.deviceplugin.heartrate'] = {
+    file: 'dConnectDeviceHeartRate.apk',
+    name: 'HeartRate'
+  };
+  apkList['org.deviceconnect.android.deviceplugin.hvc'] = {
+    file: 'dConnectDeviceHVC.apk',
+    name: 'HVC'
+  };
 
   angular.module('demoweb')
     .controller('trialPluginInstallCtrl', ['$scope', '$routeParams', '$window', function($scope, $routeParams, $window) {
