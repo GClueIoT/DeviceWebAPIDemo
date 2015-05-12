@@ -1,7 +1,7 @@
 (function() {
   var apk = {
     file: 'dConnectManager.apk',
-    name: 'Device WebAPI Manager'
+    name: 'Device Web API Manager'
   };
 
   angular.module('demoweb')

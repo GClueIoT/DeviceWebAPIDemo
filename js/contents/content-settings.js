@@ -95,8 +95,14 @@
 
       $scope.title = 'デバイス設定一覧';
       var demoName = $routeParams.demoName,
-          profiles = demoName ? demoConstants.demos[demoName].profiles : undefined,
-          i, p;
+          profileName = $routeParams.profileName,
+          profiles, i, p;
+
+      if (profileName) {
+        profiles = [ profileName ];
+      } else if (demoName) {
+        profiles = demoConstants.demos[demoName].profiles;
+      }
 
       console.log('settings demoName: ' + demoName);
 

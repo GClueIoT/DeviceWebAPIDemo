@@ -18,7 +18,7 @@
           return '待機中';
         },
         'message': function() {
-          return 'Device WebAPI Managerの起動完了を待っています...';
+          return 'Device Web API Managerの起動完了を待っています...';
         }
       }
     });
@@ -41,7 +41,7 @@
           return '確認';
         },
         'message': function() {
-          return 'Device WebAPIの起動完了を確認しました。デモ一覧画面に戻ります。';
+          return 'Device Web APIの起動完了を確認しました。デモ一覧画面に戻ります。';
         }
       }
     });
@@ -64,12 +64,22 @@
   }
 
   function isMobile() {
+    return isAndroid() || isIOS();
+  }
+
+  function isAndroid() {
+    var ua = navigator.userAgent;
+    if (/Android/.test(ua)) {
+      return true;
+    }
+    return false;
+  }
+
+  function isIOS() {
     var ua = navigator.userAgent;
     if(/iPhone/.test(ua)) {
       return true;
     } else if(/iPad/.test(ua)) {
-      return true;
-    } else if (/Android/.test(ua)) {
       return true;
     }
     return false;
@@ -97,7 +107,7 @@
           }
         })
 
-        if (demoConstants.DEBUG) {
+        if (demoConstants.DEBUG && isAndroid()) {
           $window.location.href = './trial/apk/dConnectManager.apk';
         } else {
           demoWebClient.startManager();
@@ -118,7 +128,7 @@
               return '注意';
             },
             'message': function() {
-              return 'PC上で操作する場合は、Device WebAPI ManagerをAndroid端末上にインストールかつ起動した後、本ページをリロードしてください。';
+              return 'PC上で操作する場合は、Device Web API ManagerをAndroid端末上にインストールかつ起動した後、本ページをリロードしてください。';
             }
           }
         });
