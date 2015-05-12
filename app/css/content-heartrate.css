@@ -5,7 +5,7 @@
 }
 
 #heartrate-search {
-  width:340px;
+  width:280px;
   margin-left: 16px;
   margin-right: 16px;
   margin-bottom: 16px;
@@ -45,22 +45,19 @@
 #heartrate-value {
   position: absolute;
   top: 0px;
-  margin-top: 48px;
+  margin-top: 30px;
   padding: 0px;
   width: 100%;
   text-align: center;
 }
 
-#heart-img {
-}
-
 #heartrate-main {
   position: relative;
-  width: 410px;
+  width: 320px;
 }
 
 .heartrate {
-  font-size:148px;
+  font-size:120px;
   color: #FFFFFF;
   padding: 0px;
   margin: 0px;
@@ -71,6 +68,6 @@
   color: #FFFFFF;
   padding: 0px;
   margin: 0px;
-  margin-top: -48px;
+  margin-top: -38px;
 }
 
