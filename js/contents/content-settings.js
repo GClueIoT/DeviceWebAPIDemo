@@ -75,7 +75,15 @@
   }
 
   function isMobile() {
-    return ((navigator.userAgent.indexOf('iPhone') > 0 && navigator.userAgent.indexOf('iPad') == -1) || navigator.userAgent.indexOf('iPod') > 0 || navigator.userAgent.indexOf('Android') > 0);
+    var ua = navigator.userAgent;
+    if(/iPhone/.test(ua)) {
+      return true;
+    } else if(/iPad/.test(ua)) {
+      return true;
+    } else if (/Android/.test(ua)) {
+      return true;
+    }
+    return false;
   }
 
   angular.module('demoweb')
@@ -95,13 +103,13 @@
       $scope.plugins = getPlugins(profiles);
       $scope.wakeup = function(index) {
         var p = $scope.plugins[index];
-        if (!isMobile()) {
-          showWarning(p);
-          return;
-        }
         if (p.installed === true) {
           openSettingWindow(p);
         } else {
+          if (!isMobile()) {
+            showWarning(p);
+            return;
+          }
           var modalInstance = showProgress();
           waitPlugin(p.packageName, modalInstance, {
               oninstalled: function(p) {
