@@ -2,12 +2,12 @@
   'use strict';
 
   var isStarting = false;
-  var progressModal;
 
   var _areaWidth;
   var _areaHeight;
 
-  var _expressions = ['mad', 'sad', 'smile', 'surprise'];
+  var _expressions = ['mad', 'sad', 'smile', 'surprise', 'unknown'];
+  var _icons = [];
   var _promptMessage = '開始ボタンを押してください。';
 
   function showError($modal, message) {
@@ -26,8 +26,12 @@
     });
   }
 
-  function showProgress(callback) {
-    var modalInstance = progressModal.open({
+  function showProgress($modal, message, callback) {
+    callback = callback || {};
+    callback.onshow = callback.onshow || function() {};
+    callback.onclose = callback.onclose || function() {}; 
+
+    var modalInstance = $modal.open({
       templateUrl: 'progress.html',
       controller: 'ProgressInstanceCtrl',
       size: 'lg',
@@ -37,7 +41,7 @@
           return '待機中';
         },
         'message': function() {
-          return 'デバイスからの応答を待っています...';
+          return message;
         }
       }
     });
@@ -46,10 +50,11 @@
     }, function() {
       callback.onclose();
     });
+    callback.onshow(modalInstance);
     return modalInstance;
   }
 
-  function onExpressions(faces) {
+  function showExpressions(faces) {
     var canvas = $('#face-area').get(0);
     var ctx = canvas.getContext('2d');
 
@@ -88,11 +93,8 @@
   function drawFace(ctx, opt) {
     console.log('drawFace: {x:' + opt.x + ', y:' + opt.y + ', expression:"' + opt.expression + '", width:' + opt.width + ', height:' + opt.height + '}');
     
-    var img = new Image();
-    var exp = getExpressionName(opt.expression);
-    img.src = 'img/face/' + exp + '.png';
-    
-    ctx.drawImage(img, opt.x, opt.y, opt.width, opt.height);
+    var expName = getExpressionName(opt.expression);
+    ctx.drawImage(_icons[expName], opt.x, opt.y, opt.width, opt.height);
   }
 
   function registerFace($scope, $modal, client, device) {
@@ -103,8 +105,9 @@
       attribute: "onfacedetection",
       serviceId: device.id,
       params: {
-        options: ["expression"],
-        expressionThreshold: 0
+        threshold: 0.2,
+        expressionThreshold: 0.2,
+        options: ["expression"]
       },
       onevent: function(json) {
         var i, face;
@@ -127,9 +130,7 @@
           }
           if (array.length > 0) {
             modalInstance.close();
-            resetCanvas();
-
-            onExpressions(array);
+            showExpressions(array);
           }
         } else {
           console.log("no faceDetects");
@@ -140,7 +141,7 @@
         resetCanvas();
 
         isStarting = true;
-        modalInstance = showProgress({
+        modalInstance = showProgress($modal, 'デバイスからの応答を待っています...', {
           onclose: function() {
             isStarting = false;
             unregisterFace($scope, client, device);
@@ -177,8 +178,36 @@
     }
   }
 
+  function loadIcons(callback) {
+    var i, 
+        img,
+        expName,
+        count = 0;
+
+    callback = callback || {};
+    callback.onload = callback.onload || function() {};
+    callback.onerror = callback.onerror || function() {};
+
+    for (i = 0; i < _expressions.length; i++) {
+      expName = _expressions[i];
+      img = new Image();
+      img.src = 'img/face/' + expName + '.png';
+      img.onload = function() {
+        if (isLoadedAll()) {
+          callback.onload();
+        }
+      };
+      img.onerror = function() {
+        callback.onerror();
+      };
+      _icons[expName] = img;
+    }
+    function isLoadedAll() {
+      return (++count) >= _expressions.length;
+    }
+  }
+
   var FaceController = function ($scope, $modal, $window, $location, demoWebClient, deviceService) {
-    progressModal = $modal;
 
     var device = undefined;
     $scope.title = "表情認識";
@@ -225,6 +254,12 @@
         showError($modal, 'デバイスが選択されていません。');
       }
     };
+
+    loadIcons({
+      onerror: function() {
+        showError($modal, '画像の読み込みに失敗しました。');
+      }
+    });
   };
 
   angular.module('demoweb')
