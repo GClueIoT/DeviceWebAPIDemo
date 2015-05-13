@@ -41,6 +41,7 @@
       },
       "onsuccess": function() {
         moniteringState = STATE_START;
+        hrState = -1;
         $scope.button = "停止";
         $scope.$apply();
       },
