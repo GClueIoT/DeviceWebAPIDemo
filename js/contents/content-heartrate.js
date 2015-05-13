@@ -1,7 +1,12 @@
 (function () {
   'use strict';
 
-  var isStarting = false;
+  var STATE_NONE = 0;
+  var STATE_REGISTER = 1;
+  var STATE_START = 2;
+  var STATE_UNREGISTER = 3;
+
+  var moniteringState = STATE_NONE;
   var hrState = 0;
 
   function getHeartRateState(heartRate) {
@@ -17,6 +22,7 @@
   }
 
   function registerHeartRate($scope, client, device) {
+    moniteringState = STATE_REGISTER;
     client.addEventListener({
       "method": "PUT",
       "profile": "health",
@@ -34,17 +40,19 @@
         $scope.$apply();
       },
       "onsuccess": function() {
-        isStarting = true;
+        moniteringState = STATE_START;
         $scope.button = "停止";
         $scope.$apply();
       },
       "onerror": function(errorCode, errorMessage) {
-        alert("onerror: " + errorCode + " " + errorMessage);
+        moniteringState = STATE_NONE;
+        showErrorDialog($modal, '心拍数の取得開始に失敗しました。');
       }
     });
   }
 
   function unregisterHeartRate($scope, client, device) {
+    moniteringState = STATE_UNREGISTER;
     client.removeEventListener({
       "method": "DELETE",
       "profile": "health",
@@ -52,25 +60,25 @@
       "serviceId": device.id,
       "params": {},
       "onsuccess": function() {
-        isStarting = false;
+        moniteringState = STATE_NONE;
         $scope.button = "開始";
         $scope.$apply();
       },
       "onerror": function(errorCode, errorMessage) {
-        isStarting = false;
+        moniteringState = STATE_NONE;
       }
     });
   }
 
   function clickHeartRate($scope, client, device) {
-    if (isStarting) {
+    if (moniteringState == STATE_START) {
       unregisterHeartRate($scope, client, device);
-    } else {
+    } else if (moniteringState == STATE_NONE) {
       registerHeartRate($scope, client, device);
     }
   }
 
-  function showErrorDialog($modal) {
+  function showErrorDialog($modal, message) {
     var modalInstance = $modal.open({
       templateUrl: 'error-dialog-heartrate-select.html',
       controller: 'ModalInstanceCtrl',
@@ -80,7 +88,7 @@
           return 'エラー';
         },
         'message': function() {
-          return 'デバイスが選択されていません。';
+          return message;
         }
       }
     });
@@ -125,7 +133,7 @@
       if (device) {
         clickHeartRate($scope, demoWebClient, device);
       } else {
-        showErrorDialog($modal);
+        showErrorDialog($modal, 'デバイスが選択されていません。');
       }
     }
   }
