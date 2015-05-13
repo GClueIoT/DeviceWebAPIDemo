@@ -22,6 +22,9 @@
 }
 
 #heartrate-footer {
+  position: fixed;
+  left: 0px;
+  bottom: 0;
   background-color: #4D4D4D;
   width: 100%;
   margin: 0px;
