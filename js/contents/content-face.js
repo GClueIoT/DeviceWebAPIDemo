@@ -209,13 +209,13 @@
 
   var FaceController = function ($scope, $modal, $window, $location, demoWebClient, deviceService) {
 
-    var device = undefined;
+    var device = undefined,
+        list = deviceService.list('face');
     $scope.title = "表情認識";
     $scope.button = "開始";
-    if (deviceService.devices.length > 0) {
-      device = deviceService.devices[0];
-      $scope.deviceName = deviceService.devices[0].name;
-      deviceService.removeAll();
+    if (list.devices.length > 0) {
+      device = list.devices[0];
+      $scope.deviceName = list.devices[0].name;
     } else {
       $scope.deviceName = "デバイス未設定";
     }

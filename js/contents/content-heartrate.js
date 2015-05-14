@@ -98,15 +98,15 @@
   }
 
   var HeartRateController = function ($scope, $modal, $window, $location, demoWebClient, deviceService) {
-    var device = undefined;
+    var device = undefined,
+        list = deviceService.list('heartrate');
     $scope.title = "心拍計";
     $scope.heartrate = "-";
     $scope.button = "開始";
     $scope.heart_image = "./img/heartrate/HeartBeat1.png";
-    if (deviceService.devices.length > 0) {
-      device = deviceService.devices[0];
-      $scope.deviceName = deviceService.devices[0].name;
-      deviceService.removeAll();
+    if (list.devices.length > 0) {
+      device = list.devices[0];
+      $scope.deviceName = list.devices[0].name;
     } else {
       $scope.deviceName = "デバイス未設定";
     }

@@ -49,6 +49,17 @@
     });
   }
 
+  function findSelectedIndex(selectedDevice, allDevices) {
+    if (selectedDevice !== undefined) {
+      for (var i = 0; i < allDevices.length; i++) {
+        if (selectedDevice.id === allDevices[i].id) {
+          return i;
+        }
+      }
+    }
+    return 0;
+  }
+
   var DeviceRadioController = function ($scope, $modal, $window, $routeParams, $location, demoWebClient, deviceService) {
     var demoName = $routeParams.demoName,
         profileName = $routeParams.profileName,
@@ -65,9 +76,10 @@
         $scope.$apply();
 
         setTimeout(function() {
-          var $radio = $('[name=list-radio]');
+          var $radio = $('[name=list-radio]'),
+              selectedIndex = findSelectedIndex(deviceService.list(demoName).devices[0], devices);
           $radio.map(function(index, el) {
-            if (index == 0) {
+            if (index === selectedIndex) {
               el.checked = true;
             }
           });
@@ -101,11 +113,11 @@
       if ($checked.length == 0) {
         showErrorDialog($modal, $location, settingsPath);
       } else {
-        deviceService.removeAll();
+        deviceService.list(demoName).removeAll();
         var $radio = $('[name=list-radio]');
         var valList = $radio.map(function(index, el) {
           if (el.checked) {
-            deviceService.addDevice($scope.list.devices[index]);
+            deviceService.list(demoName).addDevice($scope.list.devices[index]);
           }
           return $scope.list.devices[index];
         });
