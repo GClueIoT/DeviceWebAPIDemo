@@ -10,6 +10,15 @@
   var _icons = [];
   var _promptMessage = '開始ボタンを押してください。';
 
+  function getErrorMessage(errorCode) {
+    switch (errorCode) {
+    case dConnect.constants.ErrorCode.NOT_FOUND_SERVICE:
+      return '指定されたデバイスを発見できませんでした。';
+    default:
+      return '表情認識の実行に失敗しました。';
+    }
+  }
+
   function showError($modal, message) {
     $modal.open({
       templateUrl: 'error-dialog-face.html',
@@ -150,7 +159,7 @@
       },
       onerror: function(errorCode, errorMessage) {
         console.log("onerror: " + errorCode + " " + errorMessage);
-        showError($modal, errorMessage);
+        showError($modal, getErrorMessage(errorCode));
       }
     });
   }
