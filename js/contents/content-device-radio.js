@@ -57,7 +57,23 @@
         }
       }
     }
-    return 0;
+    return -1;
+  }
+
+  function refreshDeviceList(list, allDevices) {
+    var i, newArray = [];
+
+    for (i = 0; i < list.devices.length; i++) {
+      if (findSelectedIndex(list.devices[i], allDevices) === -1) {
+        delete list.devices[i];
+      }
+    }
+    for (i = 0; i < list.devices.length; i++) {
+      if (list.devices[i] !== undefined) {
+        newArray.push(list.devices[i]);
+      }
+    }
+    list.devices = newArray;
   }
 
   var DeviceRadioController = function ($scope, $modal, $window, $routeParams, $location, demoWebClient, deviceService) {
@@ -66,6 +82,9 @@
         settingsPath = '/settings/' + demoName + '/' + profileName;
 
     searchDevices(demoWebClient, profileName, function(devices) {
+
+      refreshDeviceList(deviceService.list(demoName), devices);
+
       if (devices.length == 0) {
         showErrorDialog($modal, $location, settingsPath);
       } else {
@@ -78,6 +97,9 @@
         setTimeout(function() {
           var $radio = $('[name=list-radio]'),
               selectedIndex = findSelectedIndex(deviceService.list(demoName).devices[0], devices);
+          if (selectedIndex === -1) {
+            selectedIndex = 0;
+          }
           $radio.map(function(index, el) {
             if (index === selectedIndex) {
               el.checked = true;
