@@ -137,6 +137,9 @@
         showErrorDialog($modal, 'デバイスが選択されていません。');
       }
     }
+    $scope.$on("$routeChangeSuccess", function () {
+      unregisterHeartRate($scope, demoWebClient, device);
+    });
   }
 
   angular.module('demoweb')
