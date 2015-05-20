@@ -79,7 +79,7 @@
     var i, obj;
     for (i = 0; i < modals.length; i++) {
       if (id === modals[i].id) {
-        obj = modals[i];
+        obj = modals[i].obj;
         modals.splice(i, 1);
         return obj;
       }
