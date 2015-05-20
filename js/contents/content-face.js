@@ -2,7 +2,7 @@
   'use strict';
 
   var isStarting = false;
-  var modalInstance;
+  var modals = [];
 
   var _areaWidth;
   var _areaHeight;
@@ -21,7 +21,9 @@
   }
 
   function showError($modal, message) {
-    $modal.open({
+    var modalId = 'error';
+    closeModal(modalId);
+    openModal($modal, modalId, {
       templateUrl: 'error-dialog-face.html',
       controller: 'ModalInstanceCtrl',
       size: 'lg',
@@ -36,12 +38,57 @@
     });
   }
 
-  function showProgress($modal, message, callback) {
+  function openModal($modal, id, config, callback) {
     callback = callback || {};
     callback.onshow = callback.onshow || function() {};
     callback.onclose = callback.onclose || function() {}; 
 
-    modalInstance = $modal.open({
+    var m = $modal.open(config);
+    m.result.then(function () {
+      callback.onclose();
+    }, function() {
+      callback.onclose();
+    });
+    callback.onshow(m);
+    pushModal(id, m);
+  }
+
+  function closeModal(id) {
+    var m = popModal(id);
+    if (m !== undefined) {
+      m.close();
+    }
+  }
+
+  function closeModalAll() {
+    var i, obj;
+    for (i = 0; i < modals.length; i++) {
+      modals[i].obj.close();
+    }
+    modals = [];
+  }
+
+  function pushModal(id, m) {
+    modals.push({
+      id: id,
+      obj: m
+    });
+  }
+
+  function popModal(id) {
+    var i, obj;
+    for (i = 0; i < modals.length; i++) {
+      if (id === modals[i].id) {
+        obj = modals[i];
+        modals.splice(i, 1);
+        return obj;
+      }
+    }
+  }
+
+  function showProgress($modal, message, callback) {
+    var modalId = 'progress';
+    openModal($modal, modalId, {
       templateUrl: 'progress.html',
       controller: 'ProgressInstanceCtrl',
       size: 'lg',
@@ -54,14 +101,7 @@
           return message;
         }
       }
-    });
-    modalInstance.result.then(function () {
-      callback.onclose();
-    }, function() {
-      callback.onclose();
-    });
-    callback.onshow(modalInstance);
-    return modalInstance;
+    }, callback);
   }
 
   function showExpressions(faces) {
@@ -108,8 +148,6 @@
   }
 
   function registerFace($scope, $modal, client, device) {
-    var modalInstance;
-
     client.addEventListener({
       profile: "humandetect",
       attribute: "onfacedetection",
@@ -139,7 +177,7 @@
             }
           }
           if (array.length > 0) {
-            modalInstance.close();
+            closeModal('progress');
             showExpressions(array);
           }
         } else {
@@ -150,13 +188,15 @@
         console.log("onsuccess");
         resetCanvas();
 
-        isStarting = true;
-        modalInstance = showProgress($modal, 'デバイスからの応答を待っています...', {
-          onclose: function() {
-            isStarting = false;
-            unregisterFace($scope, client, device);
-          }
-        });
+        if (!isStarting) {
+          isStarting = true;
+          showProgress($modal, 'デバイスからの応答を待っています...', {
+            onclose: function() {
+              isStarting = false;
+              unregisterFace($scope, client, device);
+            }
+          });
+        }
       },
       onerror: function(errorCode, errorMessage) {
         console.log("onerror: " + errorCode + " " + errorMessage);
@@ -182,7 +222,7 @@
 
   function clickFace($scope, $modal, client, device) {
     if (isStarting) {
-      unregisterFace($scope, client, device);
+      closeModal('progress');
     } else {
       registerFace($scope, $modal, client, device);
     }
@@ -265,9 +305,7 @@
       }
     };
     $scope.$on("$routeChangeStart", function () {
-      if (modalInstance !== undefined) {
-        modalInstance.close();
-      }
+      closeModalAll();
     });
 
     loadIcons({
