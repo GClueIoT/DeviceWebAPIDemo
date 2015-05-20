@@ -2,6 +2,7 @@
   'use strict';
 
   var isStarting = false;
+  var modalInstance;
 
   var _areaWidth;
   var _areaHeight;
@@ -40,7 +41,7 @@
     callback.onshow = callback.onshow || function() {};
     callback.onclose = callback.onclose || function() {}; 
 
-    var modalInstance = $modal.open({
+    modalInstance = $modal.open({
       templateUrl: 'progress.html',
       controller: 'ProgressInstanceCtrl',
       size: 'lg',
@@ -263,6 +264,11 @@
         showError($modal, 'デバイスが選択されていません。');
       }
     };
+    $scope.$on("$routeChangeStart", function () {
+      if (modalInstance !== undefined) {
+        modalInstance.close();
+      }
+    });
 
     loadIcons({
       onerror: function() {
