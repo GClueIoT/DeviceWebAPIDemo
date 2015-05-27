@@ -12,7 +12,8 @@
       'system',
       'light',
       'health',
-      'humandetect'
+      'humandetect',
+      'remote_controller'
     ],
 
     manager: {
@@ -40,6 +41,11 @@
         packageName: "org.deviceconnect.android.deviceplugin.hvc",
         name: "HVC",
         supports: ['humandetect']
+      },
+      {
+        packageName: "org.deviceconnect.android.deviceplugin.irkit",
+        name: "IRKit",
+        supports: ['remote_controller']
       }
     ],
 
@@ -55,6 +61,10 @@
       face: {
         profiles: ['humandetect'],
         path: '/face'
+      },
+      remote: {
+        profiles: ['remote_controller'],
+        path: '/remote'
       }
     }
   };

@@ -61,6 +61,10 @@ angular.module('demoweb', ['ngRoute', 'ui.bootstrap'])
       templateUrl: 'app/content-face.html',
       controller: 'FaceController'
     })
+    .when('/remote', {
+      templateUrl: 'app/content-remote-controller.html',
+      controller: 'RemoteController'
+    })
     .when('/trial/manager/install', {
       templateUrl: 'trial/app/content-manager-install.html',
       controller: 'trialManagerInstallCtrl'
