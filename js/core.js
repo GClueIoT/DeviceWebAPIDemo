@@ -53,7 +53,10 @@ var demoWeb = (function (parent) {
    * @class Client
    * @memberof demoWeb
    */
-  var Client = function() {
+  var Client = function(host) {
+    if (host) {
+      this.setHost(host);
+    }
     _loadSettings(this);
     this.lastKnownDevices = [];
     this.releasedPlugins = [];
