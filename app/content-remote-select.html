@@ -7,18 +7,9 @@
 <content>
   <div id="remote-container">
     <ul class="list-group">
-      <li class="list-group-item" ng-repeat="command in list.commands" ng-click="sendCommand($index)">
-          {{command.name}}
-          <div class="btn btn-default" ng-click="removeCommand($index)">削除</div>
+      <li class="list-group-item" ng-repeat="device in list.devices" ng-click="selectDevice($index)">
+          {{device.name}}
       </li>
     </ul>
   </div>
 </content>
-
-<footer>
-  <table>
-    <tr>
-      <td class="button" ng-click="addCommand()">追加</td>
-    </tr>
-  </table>
-</footer>

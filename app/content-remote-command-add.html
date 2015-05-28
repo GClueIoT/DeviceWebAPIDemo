@@ -1,0 +1,29 @@
+<nav class="navbar navbar-default">
+  <div class="btn-settings" ng-click="settingAll()"><img src="img/Gear_off.png"></div>
+  <img class="navbar-back" ng-click="back()" src="img/back.png">
+  <div class="navbar-title">{{title}}</div>
+</nav>
+
+<content>
+  <div id="remote-container">
+    <form>
+      <div class="form-group">
+        <label for="commandName">コマンド名</label>
+        <input type="text" class="form-control" id="commandName" placeholder="コマンド名">
+      </div>
+      <div class="form-group">
+        <label for="commandMessage">コマンドメッセージ</label>
+        <textarea class="form-control" id="commandMessage" rows="5" disabled></textarea>
+      </div>
+      <button class="btn btn-default" ng-click="getCommand()">GET</button>
+    </form>
+  </div>
+</content>
+
+<footer>
+  <table>
+    <tr>
+      <td class="button" ng-click="saveCommand()">保存</td>
+    </tr>
+  </table>
+</footer>
