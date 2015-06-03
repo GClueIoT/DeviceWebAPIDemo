@@ -9,7 +9,6 @@
     <ul class="list-group">
       <li class="list-group-item" ng-repeat="command in list.commands" ng-click="sendCommand($index)">
           {{command.name}}
-          <div class="btn btn-default" ng-click="removeCommand($index)">削除</div>
       </li>
     </ul>
   </div>

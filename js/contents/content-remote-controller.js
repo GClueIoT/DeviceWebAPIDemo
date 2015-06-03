@@ -3,42 +3,19 @@
 
   var commandList = [];
 
-  function saveCommandList() {
-    
-  }
-
-  function addCommand(name, command) {
-    commandList.push({name: name, command: command});
-  }
-
-  function removeCommand(name) {
-    for (var i = 0; i < commandList.length; i++) {
-      if (commandList[i].name === name) {
-        commandList.splice(i, 1);
-        saveCommandList();
-        return;
-      }
-    }
-  }
-
-  function getCommand(name) {
-    for (var i = 0; i < commandList.length; i++) {
-      if (commandList[i].name === name) {
-        return commandList[i].command;
-      }
-    }
-    return null;
+  function saveCommandList(service) {
+    store.set(service.id, commandList);
   }
 
   function sendCommand(client, service, command) {
     client.request({
       "method": "POST",
       "profile": "remote_controller",
-      "serviceId": service.id,
+      "devices": [service.id],
       "params": {
         "message": command
       },
-      "onsuccess": function() {
+      "onsuccess": function(id, json) {
       },
       "onerror": function(errorCode, errorMessage) {
       }
@@ -47,6 +24,11 @@
 
   var RemoteController = function ($scope, $modal, $window, $location, demoWebClient, deviceService) {
     var devices = deviceService.list('remote').devices;
+
+    if (devices && devices.length > 0) {
+      commandList = store.get(devices[0].id);
+    }
+
     $scope.title = devices[0].name;
     $scope.list = {
       'commands' : commandList
@@ -72,9 +54,7 @@
       $location.path('/remote/add');
     }
     $scope.sendCommand = function(index) {
-      sendCommand(demoWebClient, list[i], commandList[index].command);
-    }
-    $scope.removeCommand = function(index) {
+      sendCommand(demoWebClient, devices[0], commandList[index].message);
     }
   };
 

@@ -6,6 +6,45 @@
 
 <content>
   <div id="remote-container">
+    <ul class="list-group">
+      <li class="list-group-item" ng-repeat="command in list.commands">
+          {{command.name}}
+          <div class="btn btn-default" ng-click="removeCommand($index)">削除</div>
+      </li>
+    </ul>
+  </div>
+</content>
+
+<script type="text/ng-template" id="error-dialog-remoconn.html">
+  <div class="modal-header">
+    <h4 class="modal-title">{{title}}</h4>
+  </div>
+  <div class="modal-body">
+    {{message}}
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-primary" ng-click="ok()">OK</button>
+  </div>
+</script>
+
+<script type="text/ng-template" id="confirm-dialog-remoconn.html">
+  <div class="modal-header">
+    <h4 class="modal-title">{{title}}</h4>
+  </div>
+  <div class="modal-body">
+    {{message}}
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-primary" ng-click="ok()">はい</button>
+    <button class="btn btn-primary" ng-click="cancel()">いいえ</button>
+  </div>
+</script>
+
+<script type="text/ng-template" id="add-dialog-remoconn.html">
+  <div class="modal-header">
+    <h4 class="modal-title">コマンド追加</h4>
+  </div>
+  <div class="modal-body">
     <form>
       <div class="form-group">
         <label for="commandName">コマンド名</label>
@@ -13,17 +52,20 @@
       </div>
       <div class="form-group">
         <label for="commandMessage">コマンドメッセージ</label>
-        <textarea class="form-control" id="commandMessage" rows="5" disabled></textarea>
+        <textarea class="form-control" id="commandMessage" rows="5" disabled>{{message}}</textarea>
       </div>
-      <button class="btn btn-default" ng-click="getCommand()">GET</button>
     </form>
   </div>
-</content>
+  <div class="modal-footer">
+    <button class="btn btn-primary" ng-click="ok()">追加</button>
+    <button class="btn btn-primary" ng-click="cancel()">キャンセル</button>
+  </div>
+</script>
 
 <footer>
   <table>
     <tr>
-      <td class="button" ng-click="saveCommand()">保存</td>
+      <td class="button" ng-click="addCommand()">GET</td>
     </tr>
   </table>
 </footer>
