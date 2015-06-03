@@ -16,7 +16,7 @@
   };
   var remoteDemo = {
       name: 'remote',
-      img: 'img/Appli_light.png',
+      img: 'img/Appli_remocon.png',
       title: 'リモコン'
   }
 
