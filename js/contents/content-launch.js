@@ -26,9 +26,31 @@
     }, function() {
       if (pluginTimerId) {
         clearTimeout(pluginTimerId);
+        pluginTimerId = undefined;
       }
     });
     return modalInstance;
+  }
+
+  function showRetryPrompt($scope) {
+    var modalInstance = progressModal.open({
+      templateUrl: 'retry-prompt-dialog.html',
+      controller: 'ModalInstanceCtrl',
+      size: 'lg',
+      resolve: {
+        'title': function() {
+          return '注意';
+        },
+        'message': function() {
+          return 'Device Web APIの起動完了を確認できませんでした。再試行しますか？';
+        }
+      }
+    });
+    modalInstance.result.then(function (result) {
+      if (result) {
+        $scope.startManager();
+      }
+    });
   }
 
   function showConfirm() {
@@ -50,17 +72,22 @@
     });
   }
 
-  function waitAvailability(callback) {
+  function waitAvailability(callback, timeout) {
+    var interval = 250; // msec
+    if (timeout <= 0) {
+      callback.ontimeout();
+      return;
+    }
     pluginTimerId = setTimeout(function() {
       client.checkAvailability({
         onsuccess: function(version) {
           callback.onavailable();
         },
         onerror: function(errorCode, errorMessage) {
-          waitAvailability(callback);
+          waitAvailability(callback, timeout - interval);
         }
       });
-    }, 250);
+    }, interval);
   }
 
   function isMobile() {
@@ -104,8 +131,12 @@
           onavailable: function() {
             modalInstance.close();
             showConfirm();
+          },
+          ontimeout: function() {
+            modalInstance.close();
+            showRetryPrompt($scope);
           }
-        })
+        }, 15 * 1000);
 
         if (demoConstants.DEBUG && isAndroid()) {
           $window.location.href = './trial/apk/dConnectManager.apk';
