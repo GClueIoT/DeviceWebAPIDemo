@@ -5,19 +5,13 @@
 </nav>
 
 <content>
-  <div id="remote-container">
-    <ul class="list-group">
-      <li class="list-group-item" ng-repeat="command in list.commands" ng-click="sendCommand($index)">
-          {{command.name}}
-      </li>
-    </ul>
-  </div>
+  <table class="demo-list"></table>
 </content>
 
 <footer>
   <table>
     <tr>
-      <td class="button" ng-click="addCommand()">追加</td>
+      <td class="button" ng-click="shiftCommandList()">コマンド管理</td>
     </tr>
   </table>
 </footer>

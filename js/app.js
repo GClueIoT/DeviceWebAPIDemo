@@ -69,9 +69,9 @@ angular.module('demoweb', ['ngRoute', 'ui.bootstrap'])
       templateUrl: 'app/content-remote-select.html',
       controller: 'RemoteSelectController'
     })
-    .when('/remote/add', {
-      templateUrl: 'app/content-remote-command-add.html',
-      controller: 'RemoteCommandAddController'
+    .when('/remote/command', {
+      templateUrl: 'app/content-remote-command.html',
+      controller: 'RemoteCommandController'
     })
     .when('/trial/manager/install', {
       templateUrl: 'trial/app/content-manager-install.html',

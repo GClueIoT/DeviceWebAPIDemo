@@ -5,14 +5,12 @@
 </nav>
 
 <content>
-  <div id="remote-container">
-    <ul class="list-group">
-      <li class="list-group-item" ng-repeat="command in list.commands">
-          {{command.name}}
-          <div class="btn btn-default" ng-click="removeCommand($index)">削除</div>
-      </li>
-    </ul>
-  </div>
+  <table width="100%">
+    <tr ng-repeat="command in list.commands" class="row">
+      <td>{{command.name}}</td>
+      <td><button class="btn-operation" ng-click="removeCommand($index)">削除</button></td>
+    </tr>
+  </table>
 </content>
 
 <script type="text/ng-template" id="error-dialog-remoconn.html">

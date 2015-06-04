@@ -64,7 +64,7 @@
   }
 
   function openNoDataDialog($modal) {
-    openErrorDialog($modal, 'エラー', 'コマンドメッセージが入力されていません。<br>GETボタンを押下して取得してください。');
+    openErrorDialog($modal, 'エラー', 'コマンドメッセージが入力されていません。IRKitに赤外線リモコンでデータを送信してから、GETボタンを押下してください。');
   }
 
   function openErrorDialog($modal, title, message) {
@@ -95,7 +95,7 @@
           return 'コマンド削除';
         },
         'message': function() {
-          return '削除して良いですか？';
+          return '「' + commandList[index].name + '」を削除して良いですか？';
         }
       }
     });
@@ -107,11 +107,16 @@
     });
   }
 
-  var RemoteCommandAddController = function ($scope, $modal, $window, $location, demoWebClient, deviceService) {
+  var RemoteCommandController = function ($scope, $modal, $window, $location, demoWebClient, deviceService) {
     var devices = deviceService.list('remote').devices;
 
     if (devices && devices.length > 0) {
       commandList = store.get(devices[0].id);
+      if (commandList == undefined) {
+        commandList = [];
+      }
+    } else {
+      openErrorDialog($modal, 'エラー', 'デバイスが選択されていません。');
     }
 
     $scope.title = 'コマンド管理';
@@ -137,13 +142,13 @@
     };
     $scope.removeCommand = function(index) {
       openRemoveDialog($modal, devices[0], index);
-    }
+    };
     $scope.addCommand = function() {
       getCommand($modal, demoWebClient, devices[0]);
-    }
+    };
   };
 
   angular.module('demoweb')
-    .controller('RemoteCommandAddController', 
-      ['$scope', '$modal', '$window', '$location', 'demoWebClient', 'deviceService', RemoteCommandAddController]);
+    .controller('RemoteCommandController', 
+      ['$scope', '$modal', '$window', '$location', 'demoWebClient', 'deviceService', RemoteCommandController]);
 })();
