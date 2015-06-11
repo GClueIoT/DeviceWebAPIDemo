@@ -7,7 +7,7 @@
     store.set(service.id, commandList);
   }
 
-  function sendCommand(client, service, command) {
+  function sendCommand(client, service, command, failureCB) {
     client.request({
       "method": "POST",
       "profile": "remote_controller",
@@ -17,14 +17,29 @@
       },
       "onsuccess": function(id, json) {
       },
-      "onerror": function(errorCode, errorMessage) {
+      "onerror": function(id, errorCode, errorMessage) {
+        failureCB(errorCode, errorMessage);
       }
     });
   }
 
-  function layout() {
-    
+  function showErrorDialog($modal, title, message) {
+    var modalInstance = $modal.open({
+      templateUrl: 'error-dialog-remoconn.html',
+      controller: 'ModalInstanceCtrl',
+      size: 'lg',
+      resolve: {
+        'title': function() {
+          return title;
+        },
+        'message': function() {
+          return message;
+        }
+      }
+    });
+    modalInstance.result.then(function (result) {});
   }
+
   var RemoteController = function ($scope, $modal, $window, $location, $compile, demoWebClient, deviceService) {
     var devices = deviceService.list('remote').devices;
 
@@ -33,6 +48,9 @@
       if (commandList == undefined) {
         commandList = [];
       }
+    } else {
+      showErrorDialog($modal, 'エラー', 'デバイスが選択されていません。');
+      return;
     }
 
     $scope.title = devices[0].name;
@@ -76,7 +94,9 @@
       $location.path('/remote/command');
     }
     $scope.sendCommand = function(index) {
-      sendCommand(demoWebClient, devices[0], commandList[index].message);
+      sendCommand(demoWebClient, devices[0], commandList[index].message, function(errorCode, errorMessage) {
+        showErrorDialog($modal, 'エラー', 'メッセージ送信に失敗しました。');
+      });
     }
   };
 
