@@ -1,0 +1,14 @@
+#photos {
+  position: fixed;
+  left: 0px;
+  bottom: 50px;
+  width: 100%;
+  height: 80px;
+}
+
+.photo {
+  margin: 8px 0px 8px 8px;
+  border: medium solid #EEE;
+  width: 60px;
+  height: 60px;
+}

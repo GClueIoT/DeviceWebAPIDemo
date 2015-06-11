@@ -14,6 +14,11 @@
     img: 'img/Appli_Facial expression recognition.png',
     title: '表情認識'
   };
+  var cameraDemo = {
+      name: 'camera',
+      img: 'img/Appli_camera.png',
+      title: 'カメラ撮影'
+  };
 
   function isIOS() {
     var ua = navigator.userAgent;
@@ -35,6 +40,7 @@
         demos.push(heartRateDemo);
         demos.push(faceDemo);
       }
+      demos.push(cameraDemo);
 
       var size = demos.length < 8 ? 4 : Math.ceil(demos.length / 2);
       var index = 0;

@@ -12,7 +12,8 @@
       'system',
       'light',
       'health',
-      'humandetect'
+      'humandetect',
+      'mediastream_recording'
     ],
 
     manager: {
@@ -40,6 +41,11 @@
         packageName: "org.deviceconnect.android.deviceplugin.hvc",
         name: "HVC",
         supports: ['humandetect']
+      },
+      {
+        packageName: "org.deviceconnect.android.deviceplugin.sonycamera",
+        name: "SonyCamera",
+        supports: ['mediastream_recording']
       }
     ],
 
@@ -55,6 +61,10 @@
       face: {
         profiles: ['humandetect'],
         path: '/face'
+      },
+      camera: {
+        profiles: ['mediastream_recording'],
+        path: '/camera'
       }
     }
   };

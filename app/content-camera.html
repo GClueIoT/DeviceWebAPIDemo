@@ -1,0 +1,48 @@
+ <nav class="navbar navbar-default">
+   <div class="btn-settings" ng-click="settingAll()"><img src="img/Gear_off.png"></div>
+  <img class="navbar-back" ng-click="back()" src="img/back.png">
+  <div class="navbar-title">{{title}}</div>
+</nav>
+
+<content>
+  <div style="text-align: center; margin: 16px;">
+    <div class="btn btn-default" ng-click="selectCamera()">{{deviceName}}</div>
+  </div>
+  <div style="text-align: center; marging: 0px;">
+    <img id="camera-preview" width="100%">
+  </div>
+  
+  <div id="photos"></div>
+
+  <script type="text/ng-template" id="dialog-camera.html">
+    <div class="modal-header">
+      <h4 class="modal-title">{{title}}</h4>
+    </div>
+    <div class="modal-body">
+         <img src="{{message}}" width="100%">
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" ng-click="ok()">OK</button>
+    </div>
+  </script>
+
+  <script type="text/ng-template" id="error-dialog-camera.html">
+    <div class="modal-header">
+      <h4 class="modal-title">{{title}}</h4>
+    </div>
+    <div class="modal-body">
+         {{message}}
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" ng-click="ok()">OK</button>
+    </div>
+  </script>
+</content>
+
+<footer>
+  <table>
+    <tr>
+      <td class="button" ng-click="takePhoto()">撮影</td>
+    </tr>
+  </table>
+</footer>

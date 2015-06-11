@@ -61,6 +61,10 @@ angular.module('demoweb', ['ngRoute', 'ui.bootstrap'])
       templateUrl: 'app/content-face.html',
       controller: 'FaceController'
     })
+    .when('/camera', {
+      templateUrl: 'app/content-camera.html',
+      controller: 'CameraController'
+    })
     .when('/trial/manager/install', {
       templateUrl: 'trial/app/content-manager-install.html',
       controller: 'trialManagerInstallCtrl'
