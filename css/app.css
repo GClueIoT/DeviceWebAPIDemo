@@ -264,3 +264,11 @@ footer td.button:active {
     background-image: url("../img/check_a_on.png");
 }
 
+div.selected-device {
+  width: 75%;
+  max-width: 320px;
+  margin-left: 16px;
+  margin-right: 16px;
+  margin-bottom: 24px;
+  border-color: #49B4DC;
+}

@@ -1,16 +1,15 @@
 (function () {
   'use strict';
 
-  function appendPhoto(uri) {
+  function appendPhoto($scope, $compile, uri) {
     var children = $('#photos').children('img');
     if (children.length >= 5) {
       children[0].remove();
     }
-    $('#photos').append('<img class="photo" ng-click="showPhoto(\"' + uri + '\")" crossorigin="anonymous" src="' + uri + '">');
-    $scope.$apply();
+    $('#photos').append($compile('<img class="photo" ng-click="showPhoto(\'' + uri + '\')" crossorigin="anonymous" src="' + uri + '">')($scope));
   }
 
-  function takePhoto($modal, client, serviceId) {
+  function takePhoto($modal, client, serviceId, callback) {
     client.request({
       "method": "POST",
       "profile": "mediastream_recording",
@@ -18,7 +17,7 @@
       "devices": [serviceId],
       "params": {},
       "onsuccess" : function(id, json) {
-        appendPhoto(json.uri);
+        callback(json.uri);
       },
       "onerror": function(id, errorCode, errorMessage) {
         showErrorDialog($modal, 'エラー', 'errorCode=' + errorCode 
@@ -68,7 +67,7 @@
       size: 'lg',
       resolve: {
         'title': function() {
-          return '写真';
+          return title;
         },
         'message': function() {
           return message;
@@ -78,7 +77,7 @@
     modalInstance.result.then(function (result) {});
   }
 
-  var CameraController = function ($scope, $modal, $window, $location, demoWebClient, deviceService) {
+  var CameraController = function ($scope, $modal, $window, $location, $compile, demoWebClient, deviceService) {
     var device = undefined;
     var list = deviceService.list('camera');
     $scope.title = "カメラ撮影";
@@ -111,16 +110,19 @@
     }
     $scope.takePhoto = function() {
       if (list.devices.length > 0) {
-        takePhoto($modal, demoWebClient, list.devices[0].id);
+        takePhoto($modal, demoWebClient, list.devices[0].id, function(uri) {
+          appendPhoto($scope, $compile, uri);
+        });
+      } else {
+        showErrorDialog($modal, 'エラー', 'デバイスが選択されていません。');
       }
     }
     $scope.showPhoto = function(uri) {
-      alert("ABC" + uri);
       showPhoto($modal, uri);
     }
   }
 
   angular.module('demoweb')
     .controller('CameraController', 
-      ['$scope', '$modal', '$window', '$location', 'demoWebClient', 'deviceService', CameraController]);
+      ['$scope', '$modal', '$window', '$location', '$compile', 'demoWebClient', 'deviceService', CameraController]);
 })();
