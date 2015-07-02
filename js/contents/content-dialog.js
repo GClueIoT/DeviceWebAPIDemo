@@ -7,6 +7,6 @@
     };
     $scope.cancel = function() {
       $modalInstance.close(false);
-    }
+    };
   });
 })();

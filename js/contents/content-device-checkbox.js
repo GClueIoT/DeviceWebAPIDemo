@@ -1,53 +1,14 @@
 (function () {
   'use strict';
 
-  function discoverDevices(client, callback) {
-    client.discoverDevices({
-      onsuccess: function(services) {
-        callback(services);
-      },
-      onerror: function(errorCode, errorMessage) {
-        callback([]);
-      }
-    })
-  }
-
-  function searchDevicesWithProfile(devices, profileName, callback) {
-    var list = [];
-    for (var i = 0; i < devices.length; i++) {
-      if (profileName === undefined || devices[i].scopes.lastIndexOf(profileName) >= 0) {
-        list.push(devices[i]);
-      }
-    }
-    callback(list);
-  }
-
-  function searchDevices(client, profileName, callback) {
-    discoverDevices(client, function(devices) {
-      callback(getDevicesWithProfile(devices, profileName));
-    });
-  }
-
-  function getDevicesWithProfile(devices, profileName) {
-    var list = [];
-    for (var i = 0; i < devices.length; i++) {
-      if (profileName === undefined || devices[i].scopes.lastIndexOf(profileName) >= 0) {
-        list.push(devices[i]);
-      }
-    }
-    return list;
-  }
-
   var DeviceListController = function ($scope, $window, $routeParams, $location, demoWebClient, deviceService) {
     var profileName = $routeParams.profileName;
 
-    searchDevices(demoWebClient, profileName, function(devices) {
+    deviceService.searchDevices(demoWebClient, profileName, function(devices) {
       $scope.list = {
-        'name'  : 'デバイス一覧',
         'devices' : devices
       }
       $scope.$apply();
-
     });
 
     $scope.title = "デバイス選択";
@@ -81,11 +42,11 @@
       var $checked = $('[name=list-checkbox]:checked');
       if ($checked.length == 0) {
       } else {
-        deviceService.removeAll();
+        deviceService.list(demoName).removeAll();
         var $checkbox = $('[name=list-checkbox]');
         var valList = $checkbox.map(function(index, el) {
           if (el.checked) {
-            deviceService.addDevice($scope.list.devices[index]);
+            deviceService.list(demoName).addDevice($scope.list.devices[index]);
           }
           return $scope.list.devices[index];
         });

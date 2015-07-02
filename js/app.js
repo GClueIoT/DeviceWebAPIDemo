@@ -61,6 +61,18 @@ angular.module('demoweb', ['ngRoute', 'ngSanitize', 'ui.bootstrap'])
       templateUrl: 'app/content-face.html',
       controller: 'FaceController'
     })
+    .when('/remote/controller', {
+      templateUrl: 'app/content-remote-controller.html',
+      controller: 'RemoteController'
+    })
+    .when('/remote', {
+      templateUrl: 'app/content-remote-select.html',
+      controller: 'RemoteSelectController'
+    })
+    .when('/remote/command', {
+      templateUrl: 'app/content-remote-command.html',
+      controller: 'RemoteCommandController'
+    })
     .when('/trial/manager/install', {
       templateUrl: 'trial/app/content-manager-install.html',
       controller: 'trialManagerInstallCtrl'

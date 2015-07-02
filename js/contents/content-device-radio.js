@@ -1,33 +1,6 @@
 (function () {
   'use strict';
 
-  function discoverDevices(client, callback) {
-    client.discoverDevices({
-      onsuccess: function(services) {
-        callback(services);
-      },
-      onerror: function(errorCode, errorMessage) {
-        callback([]);
-      }
-    })
-  }
-
-  function searchDevices(client, profileName, callback) {
-    discoverDevices(client, function(devices) {
-      callback(getDevicesWithProfile(devices, profileName));
-    });
-  }
-
-  function getDevicesWithProfile(devices, profileName) {
-    var list = [];
-    for (var i = 0; i < devices.length; i++) {
-      if (profileName === undefined || devices[i].scopes.lastIndexOf(profileName) >= 0) {
-        list.push(devices[i]);
-      }
-    }
-    return list;
-  }
-
   function showErrorDialog($modal, $location, settingsPath) {
     var modalInstance = $modal.open({
       templateUrl: 'error-dialog-device-radio.html',
@@ -81,7 +54,7 @@
         profileName = $routeParams.profileName,
         settingsPath = '/settings/' + demoName + '/' + profileName;
 
-    searchDevices(demoWebClient, profileName, function(devices) {
+    deviceService.searchDevices(demoWebClient, profileName, function(devices) {
 
       refreshDeviceList(deviceService.list(demoName), devices);
 
