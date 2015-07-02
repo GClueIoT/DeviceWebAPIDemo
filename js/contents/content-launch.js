@@ -140,7 +140,7 @@
       if (isIOS()) {
         $scope.message = 'Device Web API Browserが端末にインストールされているかどうかを確認します。よろしいですか？<br><br>・インストール済みの場合は、Device Web API Browserが起動します。<br><br>・未インストールの場合は、App Storeへ移動します。';
       } else {
-        $scope.message = 'Device Web API Managerが端末にインストールされているかどうかを確認します。よろしいですか？<br><br>・インストール済みの場合は、Device Web API Managerの起動画面が表示されます。Launchボタンで起動し、Cancelボタンで本画面に戻ってください。<br><br>・未インストールの場合は、Google Playへ移動します。インストール後、端末標準のランチャーからDevice Web API Managerの設定画面を起動し、ManagerをONにしてください。';
+        $scope.message = 'Device Web API Managerが端末にインストールされているかどうかを確認します。よろしいですか？<br><br>・インストール済みの場合は、Device Web API Managerの起動画面が表示されます。Launchボタンで起動してください。<br><br>・未インストールの場合は、Google Playへ移動します。インストール後、端末標準のランチャーからDevice Web API Managerの設定画面を起動し、ManagerをONにしてください。';
       }
 
       $scope.startManager = function() {
@@ -153,6 +153,7 @@
         waitAvailability({
           onavailable: function() {
             modalInstance.close();
+            demoWebClient.connectWebSocket(function() {});
             showConfirm();
           },
           ontimeout: function() {
