@@ -1,5 +1,8 @@
 (function() {
 
+  /** DeviceWebAPIBrowserのApp ID. */
+  var appId = 'dummy';
+
   var progressModal;
 
   var client;
@@ -84,6 +87,20 @@
           callback.onavailable();
         },
         onerror: function(errorCode, errorMessage) {
+          switch (errorCode) {
+            case dConnect.constants.ErrorCode.ACCESS_FAILED:
+              if (isIOS()) {
+                setTimeout(function() {
+                  location.href = 'itmss://itunes.apple.com/us/app/dconnect/' +
+                          appId + '?ls=1&mt=8';
+                }, 250);
+                callback.onmarket();
+                return;
+              }
+              break;
+            default:
+              break;
+          }
           waitAvailability(callback, timeout - interval);
         }
       });
@@ -135,6 +152,9 @@
           ontimeout: function() {
             modalInstance.close();
             showRetryPrompt($scope);
+          },
+          onmarket: function() {
+            modalInstance.close();
           }
         }, 15 * 1000);
 
