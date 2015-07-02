@@ -1,7 +1,7 @@
 (function() {
 
   /** DeviceWebAPIBrowserのApp ID. */
-  var appId = 'dummy';
+  var appId = '994422987';
 
   var progressModal;
 
