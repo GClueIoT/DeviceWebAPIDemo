@@ -1,4 +1,4 @@
-angular.module('demoweb', ['ngRoute', 'ui.bootstrap'])
+angular.module('demoweb', ['ngRoute', 'ngSanitize', 'ui.bootstrap'])
   .config(['$routeProvider', function($routeProvider) {
     $routeProvider
     .when('/', {
