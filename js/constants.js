@@ -71,7 +71,7 @@
       camera: {
         profiles: ['mediastream_recording'],
         path: '/camera'
-      }
+      },
       remote: {
         profiles: ['remote_controller'],
         path: '/remote'
