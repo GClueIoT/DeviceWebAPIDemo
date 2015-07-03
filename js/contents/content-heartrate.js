@@ -132,7 +132,13 @@
     }
     $scope.clickHeartRate = function() {
       if (device) {
-        clickHeartRate($scope, demoWebClient, device);
+        if (!demoWebClient.isConnectedWebSocket()) {
+          demoWebClient.connectWebSocket(function() {
+            clickHeartRate($scope, demoWebClient, device);
+          });
+        } else {
+          clickHeartRate($scope, demoWebClient, device);
+        }
       } else {
         showErrorDialog($modal, 'デバイスが選択されていません。');
       }
