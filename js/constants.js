@@ -24,6 +24,11 @@
 
     plugins: [
       {
+        packageName: "org.deviceconnect.android.deviceplugin.host",
+        name: "host",
+        supports: ['light', 'mediastream_recording']
+      },
+      {
         packageName: "org.deviceconnect.android.deviceplugin.hue",
         name: "hue",
         supports: ['light']
