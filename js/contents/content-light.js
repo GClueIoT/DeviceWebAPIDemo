@@ -459,11 +459,11 @@
 
     var request = requestQueue[0];
     setLightColor(request, function() {
+      requestQueue.splice(0, 1);
       sendStateFlag = false;
       setTimeout(function() {
-        requestQueue.splice(0, 1);
         sendRequest();
-      }, 500);
+      }, 400);
     });
   }
 

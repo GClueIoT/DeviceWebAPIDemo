@@ -4,12 +4,12 @@
     img: 'img/Appli_light.png',
     title: 'ライト'
   }
-  var heartRateDemo =  {
+  var heartRateDemo = {
     name: 'heartrate',
     img: 'img/Appli_Heart.png',
     title: '心拍計'
   };
-  var faceDemo =  {
+  var faceDemo = {
     name: 'face',
     img: 'img/Appli_Facial expression recognition.png',
     title: '表情認識'
@@ -19,6 +19,11 @@
       img: 'img/Appli_camera.png',
       title: 'カメラ撮影'
   };
+  var remoteDemo = {
+      name: 'remote',
+      img: 'img/Appli_remocon.png',
+      title: 'リモコン'
+  }
 
   function isIOS() {
     var ua = navigator.userAgent;
@@ -40,6 +45,7 @@
         demos.push(heartRateDemo);
         demos.push(faceDemo);
       }
+      demos.push(remoteDemo);
       demos.push(cameraDemo);
 
       var size = demos.length < 8 ? 4 : Math.ceil(demos.length / 2);

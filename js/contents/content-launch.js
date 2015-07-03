@@ -1,5 +1,8 @@
 (function() {
 
+  /** DeviceWebAPIBrowserのApp ID. */
+  var appId = '994422987';
+
   var progressModal;
 
   var client;
@@ -26,9 +29,31 @@
     }, function() {
       if (pluginTimerId) {
         clearTimeout(pluginTimerId);
+        pluginTimerId = undefined;
       }
     });
     return modalInstance;
+  }
+
+  function showRetryPrompt($scope) {
+    var modalInstance = progressModal.open({
+      templateUrl: 'retry-prompt-dialog.html',
+      controller: 'ModalInstanceCtrl',
+      size: 'lg',
+      resolve: {
+        'title': function() {
+          return '注意';
+        },
+        'message': function() {
+          return 'Device Web APIの起動完了を確認できませんでした。再試行しますか？';
+        }
+      }
+    });
+    modalInstance.result.then(function (result) {
+      if (result) {
+        $scope.startManager();
+      }
+    });
   }
 
   function showConfirm() {
@@ -50,17 +75,36 @@
     });
   }
 
-  function waitAvailability(callback) {
+  function waitAvailability(callback, timeout) {
+    var interval = 250; // msec
+    if (timeout <= 0) {
+      callback.ontimeout();
+      return;
+    }
     pluginTimerId = setTimeout(function() {
       client.checkAvailability({
         onsuccess: function(version) {
           callback.onavailable();
         },
         onerror: function(errorCode, errorMessage) {
-          waitAvailability(callback);
+          switch (errorCode) {
+            case dConnect.constants.ErrorCode.ACCESS_FAILED:
+              if (isIOS()) {
+                setTimeout(function() {
+                  location.href = 'itmss://itunes.apple.com/us/app/dconnect/' +
+                          appId + '?ls=1&mt=8';
+                }, 250);
+                callback.onmarket();
+                return;
+              }
+              break;
+            default:
+              break;
+          }
+          waitAvailability(callback, timeout - interval);
         }
       });
-    }, 250);
+    }, interval);
   }
 
   function isMobile() {
@@ -93,6 +137,12 @@
 
       $scope.title = 'システム起動確認';
 
+      if (isIOS()) {
+        $scope.message = 'Device Web API Browserが端末にインストールされているかどうかを確認します。よろしいですか？<br><br>・インストール済みの場合は、Device Web API Browserが起動します。<br><br>・未インストールの場合は、App Storeへ移動します。';
+      } else {
+        $scope.message = 'Device Web API Managerが端末にインストールされているかどうかを確認します。よろしいですか？<br><br>・インストール済みの場合は、Device Web API Managerの起動画面が表示されます。Launchボタンで起動してください。<br><br>・未インストールの場合は、Google Playへ移動します。インストール後、端末標準のランチャーからDevice Web API Managerの設定画面を起動し、ManagerをONにしてください。';
+      }
+
       $scope.startManager = function() {
         if (!isMobile()) {
           showWarning();
@@ -103,9 +153,17 @@
         waitAvailability({
           onavailable: function() {
             modalInstance.close();
+            demoWebClient.connectWebSocket(function() {});
             showConfirm();
+          },
+          ontimeout: function() {
+            modalInstance.close();
+            showRetryPrompt($scope);
+          },
+          onmarket: function() {
+            modalInstance.close();
           }
-        })
+        }, 15 * 1000);
 
         if (demoConstants.DEBUG && isAndroid()) {
           $window.location.href = './trial/apk/dConnectManager.apk';

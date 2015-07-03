@@ -17,6 +17,10 @@
     file: 'dConnectDeviceHVC.apk',
     name: 'HVC'
   };
+  apkList['org.deviceconnect.android.deviceplugin.irkit'] = {
+      file: 'dConnectDeviceIRKit.apk',
+      name: 'IRKit'
+  }
 
   var progressModal;
 

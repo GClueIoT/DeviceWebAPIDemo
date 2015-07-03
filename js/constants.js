@@ -13,6 +13,7 @@
       'light',
       'health',
       'humandetect',
+      'remote_controller',
       'mediastream_recording'
     ],
 
@@ -46,6 +47,11 @@
         packageName: "org.deviceconnect.android.deviceplugin.sonycamera",
         name: "SonyCamera",
         supports: ['mediastream_recording']
+      },
+      {
+        packageName: "org.deviceconnect.android.deviceplugin.irkit",
+        name: "IRKit",
+        supports: ['remote_controller']
       }
     ],
 
@@ -65,6 +71,10 @@
       camera: {
         profiles: ['mediastream_recording'],
         path: '/camera'
+      }
+      remote: {
+        profiles: ['remote_controller'],
+        path: '/remote'
       }
     }
   };
