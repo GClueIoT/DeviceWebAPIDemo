@@ -43,6 +43,20 @@
     });
   }
 
+  function stopPreview(client, serviceId) {
+    client.request({
+      "method": "DELETE",
+      "profile": "mediastream_recording",
+      "attribute": "preview",
+      "devices": [serviceId],
+      "params": {},
+      "onsuccess" : function(id, json) {
+      },
+      "onerror": function(id, errorCode, errorMessage) {
+      }
+    });
+  }
+
   function showPhoto($modal, message) {
     var modalInstance = $modal.open({
       templateUrl: 'dialog-camera.html',
@@ -77,7 +91,7 @@
     modalInstance.result.then(function (result) {});
   }
 
-  var CameraController = function ($scope, $modal, $window, $location, $compile, demoWebClient, deviceService) {
+  var CameraController = function ($scope, $rootScope, $modal, $window, $location, $compile, demoWebClient, deviceService) {
     var device = undefined;
     var list = deviceService.list('camera');
     $scope.title = "カメラ撮影";
@@ -120,9 +134,15 @@
     $scope.showPhoto = function(uri) {
       showPhoto($modal, uri);
     }
+    $scope.$on('$routeChangeStart', function(ev, current){
+      if (list.devices.length > 0) {
+        device = list.devices[0];
+        stopPreview(demoWebClient, list.devices[0].id);
+      }
+    });
   }
 
   angular.module('demoweb')
     .controller('CameraController', 
-      ['$scope', '$modal', '$window', '$location', '$compile', 'demoWebClient', 'deviceService', CameraController]);
+      ['$scope', '$rootScope', '$modal', '$window', '$location', '$compile', 'demoWebClient', 'deviceService', CameraController]);
 })();
