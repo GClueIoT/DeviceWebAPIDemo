@@ -76,6 +76,16 @@ var demoWeb = (function (parent) {
   };
 
   /**
+   * Get a host of GotAPI Server.
+   * @public
+   * @memberof demoWeb.Client
+   * @return {!string} a host of Device Connect server
+   */
+  Client.prototype.getHost = function() {
+    return dConnect.getHost();
+  }
+
+  /**
    * Sets an application's name.
    * The value is used as a request parameter of Grant API.
    * @public

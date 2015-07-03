@@ -17,7 +17,11 @@
       "devices": [serviceId],
       "params": {},
       "onsuccess" : function(id, json) {
-        callback(json.uri);
+        var uri = json.uri;
+        if (client.getHost() != 'localhost') {
+          uri = uri.replace('localhost', client.getHost());
+        }
+        callback(uri);
       },
       "onerror": function(id, errorCode, errorMessage) {
         showErrorDialog($modal, 'エラー', 'errorCode=' + errorCode 
@@ -34,7 +38,11 @@
       "devices": [serviceId],
       "params": {},
       "onsuccess" : function(id, json) {
-        $('#camera-preview').attr({'src': json.uri});
+        var uri = json.uri;
+        if (client.getHost() != 'localhost') {
+          uri = uri.replace('localhost', client.getHost());
+        }
+        $('#camera-preview').attr({'src': uri});
       },
       "onerror": function(id, errorCode, errorMessage) {
         showErrorDialog($modal, 'エラー', 'errorCode=' + errorCode 
