@@ -91,7 +91,7 @@
             case dConnect.constants.ErrorCode.ACCESS_FAILED:
               if (isIOS()) {
                 setTimeout(function() {
-                  location.href = 'itmss://itunes.apple.com/us/app/dconnect/' +
+                  location.href = 'itmss://itunes.apple.com/app/id' +
                           appId + '?ls=1&mt=8';
                 }, 250);
                 callback.onmarket();
