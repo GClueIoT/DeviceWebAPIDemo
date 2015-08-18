@@ -2,7 +2,7 @@
   'use strinct';
 
   var constants = {
-    DEBUG: true,
+    DEBUG: false,
 
     applicationName: 'Demo Web',
 
@@ -17,8 +17,15 @@
     ],
 
     manager: {
-      packageName: 'org.deviceconnect.android.manager',
-      name: 'Device Web API Manager'
+      android: {
+        minVersion: '1.0.6',
+        packageName: 'org.deviceconnect.android.manager',
+        name: 'Device Web API Manager'
+      },
+      ios: {
+        minVersion: '1.0.3',
+        appId: '994422987'
+      }
     },
 
     plugins: [

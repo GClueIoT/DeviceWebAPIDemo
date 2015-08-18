@@ -1,8 +1,5 @@
 (function() {
 
-  /** DeviceWebAPIBrowserのApp ID. */
-  var appId = '994422987';
-
   var progressModal;
 
   var client;
@@ -75,38 +72,6 @@
     });
   }
 
-  function waitAvailability(callback, timeout) {
-    var interval = 250; // msec
-    if (timeout <= 0) {
-      callback.ontimeout();
-      return;
-    }
-    pluginTimerId = setTimeout(function() {
-      client.checkAvailability({
-        onsuccess: function(version) {
-          callback.onavailable();
-        },
-        onerror: function(errorCode, errorMessage) {
-          switch (errorCode) {
-            case dConnect.constants.ErrorCode.ACCESS_FAILED:
-              if (isIOS()) {
-                setTimeout(function() {
-                  location.href = 'itms-apps://itunes.apple.com/app/id' +
-                          appId + '?ls=1&mt=8';
-                }, 250);
-                callback.onmarket();
-                return;
-              }
-              break;
-            default:
-              break;
-          }
-          waitAvailability(callback, timeout - interval);
-        }
-      });
-    }, interval);
-  }
-
   function isMobile() {
     return isAndroid() || isIOS();
   }
@@ -127,6 +92,28 @@
       return true;
     }
     return false;
+  }
+
+  var Version = function(versionName) {
+    this.numbers = [];
+    var tmp = versionName.split('.');
+    for (var i = 0; i < 3; i++) {
+      this.numbers[i] = Number(tmp[i]);
+    }
+  }
+  Version.prototype.compareTo = function(other) {
+    function compareNums(a, b) {
+      return (a > b) ? 1 : (a == b) ? 0 : -1;
+    }
+
+    var result;
+    for (var i = 0; i < this.numbers.length; i++) {
+      result = compareNums(this.numbers[i], other.numbers[i]);
+      if (result !== 0) {
+        return result;
+      }
+    }
+    return 0;
   }
 
   angular.module('demoweb')
@@ -151,8 +138,12 @@
 
         var modalInstance = showProgress();
         waitAvailability({
-          onavailable: function() {
+          onavailable: function(version) {
             modalInstance.close();
+            if (isUpdateNeeded(version)) {
+              showUpdatePrompt();
+              return;
+            }
             demoWebClient.connectWebSocket(function() {});
             showConfirm();
           },
@@ -175,6 +166,27 @@
         $window.history.back();
       };
 
+      function isUpdateNeeded(currentVersionName) {
+        var currentVersion = new Version(currentVersionName);
+        var minVersion;
+        if (isAndroid()) {
+          minVersion = new Version(demoConstants.manager.android.minVersion);
+        } else if (isIOS()) {
+          minVersion = new Version(demoConstants.manager.ios.minVersion);
+        } else {
+          return false;
+        }
+        return currentVersion.compareTo(minVersion) == -1;
+      }
+
+      function createUriForAndroid() {
+        return 'https://play.google.com/store/apps/details?id=' + demoConstants.manager.android.packageName;
+      }
+
+      function createUriForIOS() {
+        return 'itms-apps://itunes.apple.com/app/id' + demoConstants.manager.ios.appId + '?ls=1&mt=8';
+      }
+
       function showWarning() {
         console.log('showWarning: manager');
         var modalInstance = progressModal.open({
@@ -192,12 +204,75 @@
         });
         modalInstance.result.then(function (result) {
           if (result) {
-            var url = 'https://play.google.com/store/apps/details?id=' + demoConstants.manager.packageName;
+            var url = createUriForAndroid();
             console.log('Google Play: ' + url);
             $window.location.href = url;
           }
         });
         return modalInstance;
       }
+
+      function showUpdatePrompt() {
+        var uri, name;
+        if (isAndroid()) {
+          uri = createUriForAndroid();
+          name = demoConstants.manager.android.name;
+        } else if (isIOS()) {
+          uri = createUriForIOS();
+          name = demoConstants.manager.ios.name;
+        } else {
+          return;
+        }
+        var modalInstance = progressModal.open({
+          templateUrl: 'update-prompt-dialog.html',
+          controller: 'ModalInstanceCtrl',
+          size: 'lg',
+          resolve: {
+            'title': function() {
+              return '注意';
+            },
+            'message': function() {
+              return name + 'を最新版にアップデートしてください。';
+            }
+          }
+        });
+        modalInstance.result.then(function (result) {
+          if (result) {
+            location.href = uri;
+          }
+        }); 
+      }
+
+      function waitAvailability(callback, timeout) {
+        var interval = 250; // msec
+        if (timeout <= 0) {
+          callback.ontimeout();
+          return;
+        }
+        pluginTimerId = setTimeout(function() {
+          client.checkAvailability({
+            onsuccess: function(version) {
+              callback.onavailable(version);
+            },
+            onerror: function(errorCode, errorMessage) {
+              switch (errorCode) {
+                case dConnect.constants.ErrorCode.ACCESS_FAILED:
+                  if (isIOS()) {
+                    setTimeout(function() {
+                      location.href = createUriForIOS();
+                    }, 250);
+                    callback.onmarket();
+                    return;
+                  }
+                  break;
+                default:
+                  break;
+              }
+              waitAvailability(callback, timeout - interval);
+            }
+          });
+        }, interval);
+      }
+
     }]);
 })();
