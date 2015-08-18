@@ -94,28 +94,6 @@
     return false;
   }
 
-  var Version = function(versionName) {
-    this.numbers = [];
-    var tmp = versionName.split('.');
-    for (var i = 0; i < 3; i++) {
-      this.numbers[i] = Number(tmp[i]);
-    }
-  }
-  Version.prototype.compareTo = function(other) {
-    function compareNums(a, b) {
-      return (a > b) ? 1 : (a == b) ? 0 : -1;
-    }
-
-    var result;
-    for (var i = 0; i < this.numbers.length; i++) {
-      result = compareNums(this.numbers[i], other.numbers[i]);
-      if (result !== 0) {
-        return result;
-      }
-    }
-    return 0;
-  }
-
   angular.module('demoweb')
     .controller('launchCtrl', ['$scope', '$location', '$window', '$modal', 'demoWebClient', 'demoConstants', function($scope, $location, $window, $modal, demoWebClient, demoConstants) {
       progressModal = $modal;
@@ -140,10 +118,6 @@
         waitAvailability({
           onavailable: function(version) {
             modalInstance.close();
-            if (isUpdateNeeded(version)) {
-              showUpdatePrompt();
-              return;
-            }
             demoWebClient.connectWebSocket(function() {});
             showConfirm();
           },
@@ -165,23 +139,6 @@
       $scope.back = function() {
         $window.history.back();
       };
-
-      function isUpdateNeeded(currentVersionName) {
-        var currentVersion = new Version(currentVersionName);
-        var minVersion;
-        if (isAndroid()) {
-          minVersion = new Version(demoConstants.manager.android.minVersion);
-        } else if (isIOS()) {
-          minVersion = new Version(demoConstants.manager.ios.minVersion);
-        } else {
-          return false;
-        }
-        return currentVersion.compareTo(minVersion) == -1;
-      }
-
-      function createUriForAndroid() {
-        return 'https://play.google.com/store/apps/details?id=' + demoConstants.manager.android.packageName;
-      }
 
       function createUriForIOS() {
         return 'itms-apps://itunes.apple.com/app/id' + demoConstants.manager.ios.appId + '?ls=1&mt=8';
@@ -210,37 +167,6 @@
           }
         });
         return modalInstance;
-      }
-
-      function showUpdatePrompt() {
-        var uri, name;
-        if (isAndroid()) {
-          uri = createUriForAndroid();
-          name = demoConstants.manager.android.name;
-        } else if (isIOS()) {
-          uri = createUriForIOS();
-          name = demoConstants.manager.ios.name;
-        } else {
-          return;
-        }
-        var modalInstance = progressModal.open({
-          templateUrl: 'update-prompt-dialog.html',
-          controller: 'ModalInstanceCtrl',
-          size: 'lg',
-          resolve: {
-            'title': function() {
-              return '注意';
-            },
-            'message': function() {
-              return name + 'を最新版にアップデートしてください。';
-            }
-          }
-        });
-        modalInstance.result.then(function (result) {
-          if (result) {
-            location.href = uri;
-          }
-        }); 
       }
 
       function waitAvailability(callback, timeout) {
