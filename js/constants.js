@@ -13,7 +13,8 @@
       'light',
       'health',
       'humandetect',
-      'remote_controller'
+      'remote_controller',
+      'kadecot'
     ],
 
     manager: {
@@ -53,7 +54,12 @@
         packageName: "org.deviceconnect.android.deviceplugin.irkit",
         name: "IRKit",
         supports: ['remote_controller']
-      }
+      },
+      {
+        packageName: "com.sonycsl.Kadecot",
+        name: "Kadecot",
+        supports: ['kadecot']
+      },
     ],
 
     demos: {
