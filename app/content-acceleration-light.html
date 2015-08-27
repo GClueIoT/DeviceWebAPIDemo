@@ -1,0 +1,39 @@
+<nav class="navbar navbar-default">
+  <div class="btn-settings" ng-click="settingAll()"><img src="img/Gear_off.png"></div>
+  <img class="navbar-back" ng-click="back()" src="img/back.png">
+  <div class="navbar-title">{{title}}</div>
+</nav>
+
+<content>
+  <div id="light-container" align="center">
+    <button id="add-pair" type="button" class="btn btn-default" ng-click="testDialog('test')">{{addPairText}}</button>
+  </div>
+  <button type="button" class="btn btn-default" style="background-color: #49B4DC; position: fixed; width: 98%; height: 50px; padding: 5px; margin: 5px 1%; bottom: 0;">
+      <span class="glyphicon glyphicon-plus" style="text-align: center; line-height: 20px; height: 50px; position: absolute; left: 0px; top: 0px; width: 100%; padding: 15px; font-size: 18px; color: #ffffff; z-index: 1;">{{addPairText}}</span>
+  </button>
+</content>
+
+<script type="text/ng-template" id="dialog-service-select.html">
+  <div class="modal-header" ng-if="title">
+    <h4 class="modal-title">{{title}}</h4>
+  </div>
+  <div class="modal-body">
+    {{message}}
+    <div>{{services.length}}</div>
+    <ul class="list-group" ng-if="services && service.length > 0">
+      hello
+      <li class="list-group-item" ng-repeat="service in services">
+        {{service.name}}
+      </li>
+    </ul>
+    <div ng-if="!services || service.length == 0">
+      {{emptyText}}
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-primary" ng-click="cancel()">CANCEL</button>
+    <button class="btn btn-primary" ng-click="ok()">OK</button>
+  </div>
+</script>
+
+

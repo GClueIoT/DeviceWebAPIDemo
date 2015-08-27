@@ -78,6 +78,13 @@
       remote: {
         profiles: ['remote_controller'],
         path: '/remote'
+      },
+      accelerationLight: {
+        // This demo requires services with a 'light' *OR* 'deviceorientation'
+        // profile; No profiles are specified here for AND filtering, but OR
+        // filtering is performed in the demo contents.
+        profiles: [],
+        path: '/acceleration-light'
       }
     }
   };
