@@ -20,6 +20,11 @@
    * ダイアログ。
    */
   var modalDialog;
+  
+  /**
+   * AngularJSフィルター・コンポーネント
+   */
+  var filter;
 
   /**
    * 操作を行うライト一覧。
@@ -41,17 +46,6 @@
   var sendStateFlag = false;
 
   /**
-   * 指定されたxy座標の色を取得する。
-   * 
-   * @param x x座標
-   * @param y y座標
-   * @returns {String} 色データ (FFFFFF形式)
-   */
-  function getColor(x, y) {
-    return "FFFFFF";
-  }
-
-  /**
    * 色情報をFFFFFF形式の文字列に変換する。
    * 
    * @param r 赤色成分(0-255)
@@ -59,7 +53,7 @@
    * @param b 青色成分(0-255)
    * @returns {String} 色情報
    */
-  function convertColor(r, g, b) {
+  function createColor(r, g, b) {
     return convert10To16(r) + convert10To16(g) + convert10To16(b);
   }
 
@@ -270,9 +264,10 @@
   /**
    * エラーダイアログを表示する。
    * 
-   * @param title ダイアログのタイトル
+   * @param $scope スコープ
+   * @param isDeviceOrientation trueであればdeviceorientation、falseであればlightプロファイル。
    */
-  function testDialog(title) {
+  function testDialog($scope, isDeviceOrientation) {
     if (isShowDialog) {
       return;
     }
@@ -283,26 +278,8 @@
       controller: 'ModalInstanceCtrl2',
       size: 'lg',
       resolve: {
-        'title': function() {
-          return title;
-        },
-        'message': function() {
-          return 'サービスを選択してください';
-        },
-        'services': function() {
-//          demoWeb.discoverDevices({
-//            onsuccess:function(services) {
-//            },
-//            onerror:function() {
-//            });
-          var arr = [];
-          for (var i = 0; i < 15; ++i) {
-            arr.push({name:i});
-          }
-          return arr;
-        },
-        'emptyText': function() {
-          return 'サービスが見つかりませんでした';
+        'isDeviceOrientation': function() {
+          return isDeviceOrientation;
         }
       }
     });
@@ -311,43 +288,12 @@
     });
   }
 
-  /**
-   * ライトの設定を画面に設定する。
-   * 
-   * @param $scope スコープ
-   * @param lights ライト一覧
-   */
-  function setLightDevices($scope, lights) {
-    lightList = lights;
-    if (lightList.length == 1) {
-      $scope.deviceName = lightList[0].name;
-      turnOnLights(true)
-      return true;
-    } else if (lightList.length > 1) {
-      $scope.deviceName = lightList[0].name + " その他 (" + (lightList.length - 1) + ")";
-      turnOnLights(true)
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  /**
-   * ライトを検索して登録する。
-   */
-  function discoverLights($scope, $location, lightService) {
-    lightService.discover(demoClient, {
-      oncomplete: function(lights) {
-        if (setLightDevices($scope, lights)) {
-          $scope.$apply();
-        }
-      },
-      onerror: function(errorCode, errorMessage) {
-        $location.path('/error/' + errorCode);
-      }
+  function filterServices(services, targetScope) {
+    return filter('filter')(services, function(value, index, array) {
+      return value.scopes.indexOf(targetScope) != -1;
     });
   }
-  
+
   function registerDeviceOrientation($scope, client, device) {
     moniteringState = STATE_REGISTER;
     client.addEventListener({
@@ -399,9 +345,10 @@
     });
   }
 
-  var AccelerationLightController = function ($scope, $modal, $window, $location, deviceService, demoWebClient, lightService) {
-    demoClient = demoWebClient;
+  var AccelerationLightController = function ($scope, $modal, $window, $location, $filter, demoWebClient, deviceService) {
     modalDialog = $modal;
+    filter = $filter;
+    demoClient = demoWebClient;
 
     $scope.title = '加速度 + ライト';
 
@@ -409,7 +356,7 @@
 //      discoverLights($scope, $location, lightService);
 //    }
 
-    $scope.addPairText = '追加';
+    // Navigation bar
     $scope.settingAll = function() {
       demoClient.discoverPlugins({
         onsuccess: function(plugins) {
@@ -425,6 +372,11 @@
         }
       });
     }
+
+    $scope.addPairText = '追加';
+
+    $scope.pairs = ["aaa"];
+    
     $scope.discoverLight = function() {
       $location.path('/light/select');
     }
@@ -435,24 +387,43 @@
       $location.path('/');
     };
     
-    $scope.testDialog = function(title) {
-      testDialog(title);
+    $scope.testDialog = function(scope, isDeviceOrientation) {
+      testDialog(scope, isDeviceOrientation);
     }
   };
 
   angular.module('demoweb')
     .controller('AccelerationLightController', 
-      ['$scope', '$modal', '$window', '$location', 'deviceService', 'lightService', AccelerationLightController]);
+      ['$scope', '$modal', '$window', '$location', '$filter', 'demoWebClient', 'deviceService', AccelerationLightController]);
   
-  angular.module('demoweb').controller('ModalInstanceCtrl2', function ($scope, $modalInstance, title, message, services, emptyText) {
-    $scope.title = title;
-    $scope.message = message;
-    $scope.services = services;
-    $scope.emptyText = emptyText;
+  angular.module('demoweb').controller('ModalInstanceCtrl2', function ($scope, $modalInstance, isDeviceOrientation) {
+    $scope.title = isDeviceOrientation ?
+      'DeviceOrientationサービス' : 'Lightサービス';
+    $scope.message = 'サービスを選択してください';
+    $scope.getServices = function() {
+      return filterServices(demoClient.lastKnownDevices,
+                            isDeviceOrientation ? 'deviceorientation' : 'light');
+    };
+    $scope.refresh = function() {
+      demoClient.discoverDevices({
+        onsuccess: function(services) {
+          $scope.service = filterServices(services,
+                                          isDeviceOrientation ?
+                                          'deviceorientation' : 'light');
+          $scope.$apply();
+        },
+        onerror: function() {
+          // エラー表示させる
+        }
+      });
+    };
+    $scope.refreshText = '再検索';
+    $scope.emptyText = 'サービスが見つかりませんでした';
     $scope.ok = function () {
       $modalInstance.close(true);
     };
     $scope.cancel = function() {
+//      $modalInstance.dismiss('cancel');
       $modalInstance.close(false);
     };
   });
