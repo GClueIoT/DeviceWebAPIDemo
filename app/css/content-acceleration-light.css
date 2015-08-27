@@ -1,0 +1,46 @@
+.common-bg-color {
+  background-color: #49B4DC;
+}
+
+.common-btn {
+  border-style: none;
+  background-color: #49B4DC;
+  color: #ffffff;
+}
+
+.pair .pair-top {
+  height: 40px;
+  padding: 5px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  border: 1px solid #49B4DC;
+}
+
+.pair .pair-bottom {
+  padding: 10px;
+  padding: 5px;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  border: 1px solid #49B4DC;
+  border-top-style: none;
+}
+
+.pair .pair-row {
+  margin: 5px;
+}
+
+.pair .pair-row * {
+  line-height: 30px; height: 30px;
+}
+
+.pair .pair-row .pair-row-left {
+  float: left;
+  width: 100px;
+  margin-right: 30px;
+}
+
+.pair .pair-row .pair-row-right {
+  padding: 1px 5px;
+  overflow: auto;
+  border: 1px solid #49B4DC; 
+}

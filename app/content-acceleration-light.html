@@ -5,22 +5,38 @@
 </nav>
 
 <content>
-  <div id="light-container" align="center">
+  <div id="light-container" align="center" style="margin: 5px;">
     <button id="add-pair" type="button" class="btn btn-default" ng-click="testDialog($scope, true)">加速度サービス選択 テスト</button>
     <button id="add-pair" type="button" class="btn btn-default" ng-click="testDialog($scope, false)">ライトサービス選択 テスト</button>
   </div>
   
   <ul class="list-group" ng-if="pairs.length > 0" style="height: 300px; overflow-y: scroll; margin: 0px;">
     <li class="list-group-item" ng-repeat="pair in pairs">
-      {{pair}}
+      <div class="pair">
+        <div class="pair-top">
+          <span style="line-height: 28px;">{{pair}}</span>
+          <button class="btn btn-primary" style="float: right; font-size: 11px;">開始</button>
+          <button class="btn btn-danger" style="float: right; margin-right: 10px; font-size: 11px;">削除</button>
+        </div>
+        <div class="pair-bottom">
+          <div class="pair-row">
+            <span class="pair-row-left">加速度センサ</span>
+            <div class="pair-row-right">aaa</div>
+          </div>
+          <div class="pair-row">
+            <span class="pair-row-left">ライト</span>
+            <div class="pair-row-right">aaa</div>
+          </div>
+        </div>
+      </div>
     </li>
   </ul>
   <div ng-if="pairs.length == 0" align="center">
     加速度とライトのサービスのペアリングを追加してください。
   </div>
   
-  <button type="button" class="btn btn-default" style="background-color: #49B4DC; position: fixed; width: 98%; height: 50px; padding: 5px; margin: 5px 1%; bottom: 0;">
-      <span class="glyphicon glyphicon-plus" style="text-align: center; line-height: 20px; height: 50px; position: absolute; left: 0px; top: 0px; width: 100%; padding: 15px; font-size: 18px; color: #ffffff; z-index: 1;">{{addPairText}}</span>
+  <button type="button" class="btn btn-primary" style="position: fixed; width: 98%; height: 50px; padding: 5px; margin: 5px 1%; bottom: 0;">
+      <span class="glyphicon glyphicon-plus" style="text-align: center; line-height: 20px; height: 50px; position: absolute; left: 0px; top: 0px; width: 100%; padding: 15px; font-size: 18px; z-index: 1;">{{addPairText}}</span>
   </button>
 </content>
 
