@@ -309,11 +309,12 @@
   // ##########################################################################################
   //
 
-  var Pair = function (name, deviceOrientationService, lightService, status) {
+  var Pair = function (name) {
     this.name = name;
-    this.deviceOrientationService = deviceOrientationService;
-    this.lightService = lightService;
-    this.status = status;
+    this.deviceOrientationService = null;
+    this.lightService = null;
+    this.interval = 1;
+    this.status = 'stopped';
   };
 
   //
@@ -364,7 +365,7 @@
       });
     };
 
-    $scope.pairs = [new Pair('aaa', null, null, 'stopped')];
+    $scope.pairs = [new Pair('aaa')];
 
     $scope.discoverLight = function () {
       $location.path('/light/select');
@@ -405,6 +406,7 @@
         $scope.deviceOrientationService = pair.deviceOrientationService;
         $scope.lightService = pair.lightService;
         $scope.pairStatus = pair.status;
+        $scope.pairInterval = pair.interval;
       };
 
       /**
@@ -480,14 +482,6 @@
         //});
 
         $scope.pairStatus = 'stopped';
-      };
-
-      /**
-       * 加速度イベントを取得してからライトに対する更新リクエストをリクエストキューに追加するまでに要する最低限インターバルを設定する。
-       * @param {Number} interval インターバル（ミリ秒）
-       */
-      var setMinimumUpdateInterval = function (interval) {
-
       };
 
       $scope.showServiceSelectionDialog = function (isDeviceOrientation) {

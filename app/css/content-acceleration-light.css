@@ -51,10 +51,15 @@
   float: left;
   width: 100px;
   margin-right: 30px;
+  font-size: 12px;
 }
 
-.pair .pair-row .pair-row-right {
+.pair .pair-row .pair-row-right-select {
   padding: 1px 5px;
   overflow: auto;
   border: 1px solid #49B4DC;
+}
+
+.pair .pair-row .pair-row-right-range {
+  overflow: auto;
 }

@@ -78,11 +78,11 @@
           加速度センサ
         </span>
 
-        <div class="pair-row-right" ng-if="deviceOrientationService != null"
+        <div class="pair-row-right-select" ng-if="deviceOrientationService != null"
              ng-click="showServiceSelectionDialog(true)">
           {{deviceOrientationService.name}}
         </div>
-        <div class="pair-row-right common-dark-text-disabled" ng-if="deviceOrientationService == null"
+        <div class="pair-row-right-select common-dark-text-disabled" ng-if="deviceOrientationService == null"
              ng-click="showServiceSelectionDialog(true)">
           {{serviceNotSpecifiedText}}
         </div>
@@ -92,14 +92,29 @@
           ライト
         </span>
 
-        <div class="pair-row-right" ng-if="lightService != null" ng-click="showServiceSelectionDialog(true)">
+        <div class="pair-row-right-select" ng-if="lightService != null" ng-click="showServiceSelectionDialog(true)">
           {{lightService.name}}
         </div>
-        <div class="pair-row-right common-dark-text-disabled" ng-if="lightService == null"
+        <div class="pair-row-right-select common-dark-text-disabled" ng-if="lightService == null"
              ng-click="showServiceSelectionDialog(false)">
           {{serviceNotSpecifiedText}}
         </div>
       </div>
+
+
+      <div class="pair-row">
+        <span class="pair-row-left">
+          更新インターバル
+        </span>
+
+        <div style=" width: 40px; float: left;" class="ng-binding">{{pairInterval}} 秒</div>
+        <form class="pair-row-right-range">
+          <!-- Implicit instantiation of $scope in a subscope (casued by ngRepeat?) prevents access to
+           pairInterval of PairController. Using $parent here for quick fix. -->
+          <input type="range" min="0.5" max="10" step="0.1" ng-model="$parent.pairInterval" style="width: 100%;"/>
+        </form>
+      </div>
+
     </div>
   </div>
 </script>
