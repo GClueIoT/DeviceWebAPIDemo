@@ -294,63 +294,26 @@
     });
   }
 
-  function registerDeviceOrientation($scope, client, device) {
-    moniteringState = STATE_REGISTER;
-    client.addEventListener({
-      "method": "PUT",
-      "profile": "deviceorientation",
-      "attribute": "ondeviceorientation ",
-      "serviceId": device.id,
-      "params": {},
-      "onevent": function(event) {
-        var json = JSON.parse(event);
-        var params = calcLightParamsFromAcceleration(json.orientation.acceleration);
-//        var state = getHeartRateState(json.heartRate);
-//        if (state != hrState) {
-//          hrState = state;
-//          $scope.heart_image = "./img/heartrate/HeartBeat" + state + ".png";
-//        }
-//        $scope.heartrate = json.heartRate;
-        $scope.$apply();
-      },
-      "onsuccess": function() {
-        moniteringState = STATE_START;
-        hrState = -1;
-        $scope.button = "停止";
-        $scope.$apply();
-      },
-      "onerror": function(errorCode, errorMessage) {
-        moniteringState = STATE_NONE;
-        showErrorDialog($modal, '心拍数の取得開始に失敗しました。');
-      }
-    });
-  }
-
-  function unregisterDeviceOrientation($scope, client, device) {
-    moniteringState = STATE_UNREGISTER;
-    client.removeEventListener({
-      "method": "DELETE",
-      "profile": "deviceorientation",
-      "attribute": "ondeviceorientation ",
-      "serviceId": device.id,
-      "params": {},
-      "onsuccess": function() {
-        moniteringState = STATE_NONE;
-        $scope.button = "開始";
-        $scope.$apply();
-      },
-      "onerror": function(errorCode, errorMessage) {
-        moniteringState = STATE_NONE;
-      }
-    });
-  }
-
   var AccelerationLightController = function ($scope, $modal, $window, $location, $filter, demoWebClient, deviceService) {
     modalDialog = $modal;
     filter = $filter;
     demoClient = demoWebClient;
 
+    //
+    // Strings
+    //
+
     $scope.title = '加速度 + ライト';
+
+    $scope.pairStartText = '開始';
+
+    $scope.pairStopText = '停止';
+
+    $scope.pairRemoveText = '削除';
+
+    $scope.serviceNotSpecifiedText = 'サービスが選択されていません';
+
+    $scope.addPairText = '追加';
 
 //    if (!setLightDevices($scope, lightService.lights)) {
 //      discoverLights($scope, $location, lightService);
@@ -373,10 +336,8 @@
       });
     };
 
-    $scope.addPairText = '追加';
+    $scope.pairs = [new Pair('aaa')];
 
-    $scope.pairs = ["aaa"];
-    
     $scope.discoverLight = function () {
       $location.path('/light/select');
     };
@@ -391,6 +352,153 @@
       testDialog(scope, isDeviceOrientation);
     }
   };
+
+  //
+  // ##########################################################################################
+  //      Classes
+  // ##########################################################################################
+  //
+
+  //
+  // ------------------------------------------------------------------------------------------
+  //      Private
+  // ------------------------------------------------------------------------------------------
+  //
+
+  var Pair;
+  (function () {
+
+    var _privateStore = {
+      eventState: 'stopped'
+    };
+
+    // Constructor
+    Pair = function (name) {
+      _privateStore._name = name;
+    };
+
+    /**
+     * ペアのリストからこのペアを削除する。
+     * @param {Array} list ペアのリスト
+     */
+    Pair.prototype.removePair = function (list) {
+      var index = list.indexOf(this);
+      if (index != -1) {
+        list.splice(index, 1);
+      }
+    };
+
+    Pair.prototype.getName = function () {
+      return _privateStore._name;
+    };
+
+    Pair.prototype.setName = function (name) {
+      _privateStore._name = name;
+    };
+
+    Pair.prototype.getDeviceOrientationService = function () {
+      return typeof _privateStore._deviceOrientationService !== 'undefined' ?
+        _privateStore._deviceOrientationService : null;
+    };
+
+    Pair.prototype.setDeviceOrientationService = function (service) {
+      _privateStore._deviceOrientationService = service;
+    };
+
+    Pair.prototype.getLightService = function () {
+      return typeof _privateStore._lightService !== 'undefined' ?
+        _privateStore._lightService : null;
+    };
+
+    Pair.prototype.setLightService = function (service) {
+      _privateStore._lightService = service;
+    };
+
+    /**
+     * ペアの加速度とライト連携を開始する。
+     */
+    Pair.prototype.start = function () {
+
+    };
+
+    /**
+     * ペアの加速度とライト連携を停止する。
+     */
+    Pair.prototype.stop = function () {
+
+    };
+
+    Pair.prototype.activateDeviceOrientationEvent = function () {
+      if (typeof _privateStore._deviceOrientationService === 'undefined' ||
+        _privateStore._eventState == 'registering' || _privateStore._eventState == 'unregistering') {
+        return;
+      }
+      _privateStore._eventState = 'registering';
+      demoClient.addEventListener({
+        "method": "PUT",
+        "profile": "deviceorientation",
+        "attribute": "ondeviceorientation",
+        "serviceId": _privateStore._deviceOrientationService.id,
+        "params": {},
+        "onevent": function (event) {
+          var json = JSON.parse(event);
+          var params = calcLightParamsFromAcceleration(json.orientation.acceleration);
+//        var state = getHeartRateState(json.heartRate);
+//        if (state != hrState) {
+//          hrState = state;
+//          $scope.heart_image = "./img/heartrate/HeartBeat" + state + ".png";
+//        }
+//        $scope.heartrate = json.heartRate;
+          $scope.$apply();
+        },
+        "onsuccess": function () {
+          _privateStore._eventState = 'started';
+          $scope.$apply();
+        },
+        "onerror": function (errorCode, errorMessage) {
+          //pairState.eventState = 'stopped';
+          showErrorDialog($modal, '加速度イベントの配信開始に失敗しました');
+        }
+      });
+    };
+
+    Pair.prototype.deactivateDeviceOrientationEvent = function () {
+      if (_privateStore._eventState == 'registering' || _privateStore._eventState == 'unregistering') {
+        return;
+      }
+      _privateStore._eventState = 'unregistering';
+      demoClient.removeEventListener({
+        "method": "DELETE",
+        "profile": "deviceorientation",
+        "attribute": "ondeviceorientation",
+        "serviceId": _privateStore._deviceOrientationService.id,
+        "params": {},
+        "onsuccess": function () {
+          pairState.eventState = 'stopped';
+          $scope.$apply();
+        },
+        "onerror": function (errorCode, errorMessage) {
+          //pairState.eventState = STATE_NONE;
+        }
+      });
+    };
+
+    /**
+     * @return {Boolean} イベント配信中のときはtrue、そうでなければfalse
+     */
+    Pair.prototype.isDeviceOrientationEventActive = function () {
+      return typeof _privateStore._eventState !== 'undefined' && _privateStore._eventState == 'started';
+    };
+
+    /**
+     * 加速度イベントを取得してからライトに対する更新リクエストをリクエストキューに追加するまでに要する最低限インターバルを設定する。
+     * @param {Number} interval インターバル（ミリ秒）
+     */
+    Pair.prototype.setMinimumUpdateInterval = function (interval) {
+
+    };
+
+  })();
 
   //
   // ##########################################################################################

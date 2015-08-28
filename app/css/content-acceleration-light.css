@@ -2,10 +2,19 @@
   background-color: #49B4DC;
 }
 
+.common-dark-text-disabled {
+  color: #BFBFBF;
+}
+
 .common-btn {
-  border-style: none;
   background-color: #49B4DC;
   color: #ffffff;
+}
+
+/* Bootstrap override (button-primary disabled) */
+.btn-primary.disabled, .btn-primary.disabled.active, .btn-primary.disabled.focus, .btn-primary.disabled:active, .btn-primary.disabled:focus, .btn-primary.disabled:hover, .btn-primary[disabled], .btn-primary[disabled].active, .btn-primary[disabled].focus, .btn-primary[disabled]:active, .btn-primary[disabled]:focus, .btn-primary[disabled]:hover, fieldset[disabled] .btn-primary, fieldset[disabled] .btn-primary.active, fieldset[disabled] .btn-primary.focus, fieldset[disabled] .btn-primary:active, fieldset[disabled] .btn-primary:focus, fieldset[disabled] .btn-primary:hover {
+  background-color: #BDD1E2;
+  border-color: #2e6da4;
 }
 
 .pair .pair-top {
@@ -16,9 +25,13 @@
   border: 1px solid #49B4DC;
 }
 
+.pair .pair-top button {
+  min-width: 75px;
+  font-size: 11px;
+}
+
 .pair .pair-bottom {
-  padding: 10px;
-  padding: 5px;
+  padding: 8px;
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 10px;
   border: 1px solid #49B4DC;
