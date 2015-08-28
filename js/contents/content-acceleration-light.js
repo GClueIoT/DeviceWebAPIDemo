@@ -5,12 +5,12 @@
    * キュー上に保持できるリクエスト上限。
    */
   var MAX_REQUEST_QUEUE = 10;
-  
+
   /**
    * ライトを操作するリクエストを格納するキュー。
    */
   var requestQueue = [];
-  
+
   /**
    * Device Web API Managerにアクセスするためのインスタンス。
    */
@@ -20,7 +20,7 @@
    * ダイアログ。
    */
   var modalDialog;
-  
+
   /**
    * AngularJSフィルター・コンポーネント
    */
@@ -47,7 +47,7 @@
 
   /**
    * 色情報をFFFFFF形式の文字列に変換する。
-   * 
+   *
    * @param r 赤色成分(0-255)
    * @param g 緑色成分(0-255)
    * @param b 青色成分(0-255)
@@ -75,7 +75,7 @@
 
   /**
    * ライトの命令を追加する。
-   * 
+   *
    * @param power 電源 (true: 点灯、false: 消灯)
    * @param color 色データ (FFFFFF形式)
    * @param brightness 明度 (0-100)
@@ -95,7 +95,7 @@
 
   /**
    * ライトの色を設定する。
-   * 
+   *
    * @param req リクエスト
    * @param callback コールバック
    */
@@ -105,7 +105,7 @@
       var light = lightList[i];
       if (req.power) {
         ++count;
-        sendLightColor(light.serviceId, light.light.lightId, req.selectColor, req.selectBrightness, function() {
+        sendLightColor(light.serviceId, light.light.lightId, req.selectColor, req.selectBrightness, function () {
           --count;
           if (count == 0) {
             callback();
@@ -113,7 +113,7 @@
         });
       } else {
         ++count;
-        sendTurnOff(light.serviceId, light.light.lightId, function() {
+        sendTurnOff(light.serviceId, light.light.lightId, function () {
           --count;
           if (count == 0) {
             callback();
@@ -125,9 +125,9 @@
 
   /**
    * リクエストを追加する。
-   * 
+   *
    * 上限数を超えるリクエストが溜まっている場合には最初のリクエストから削除する。
-   * 
+   *
    * @param request リクエスト
    */
   function addRequest(request) {
@@ -148,10 +148,10 @@
     }
 
     var request = requestQueue[0];
-    setLightColor(request, function() {
+    setLightColor(request, function () {
       requestQueue.splice(0, 1);
       sendStateFlag = false;
-      setTimeout(function() {
+      setTimeout(function () {
         sendRequest();
       }, 400);
     });
@@ -174,9 +174,9 @@
       "params": {
         "lightId": lightId,
         "color": color,
-        "brightness": brightness,
+        "brightness": brightness
       },
-      "onerror": function(id, errorCode, errorMessage) {
+      "onerror": function (id, errorCode, errorMessage) {
         showErrorDialogWebAPI();
       },
       "oncomplete": callback
@@ -185,7 +185,7 @@
 
   /**
    * 消灯の命令を送信する。
-   * 
+   *
    * @param serviceId サービスID
    * @param lightId ライトID
    * @returns
@@ -196,9 +196,9 @@
       "profile": "light",
       "devices": [serviceId],
       "params": {
-        "lightId": lightId,
+        "lightId": lightId
       },
-      "onerror": function(id, errorCode, errorMessage) {
+      "onerror": function (id, errorCode, errorMessage) {
         showErrorDialogWebAPI();
       },
       "oncomplete": callback
@@ -207,7 +207,7 @@
 
   /**
    * ライトを点灯する。
-   * 
+   *
    * @param force trueの場合は強制的に点灯する
    */
   function turnOnLights(force) {
@@ -225,7 +225,7 @@
 
   /**
    * ライトを消灯する。
-   * 
+   *
    * @param force trueの場合は強制的に消灯する
    */
   function turnOffLights(force) {
@@ -238,7 +238,7 @@
 
   /**
    * ライトが設定されているか確認する。
-   * 
+   *
    * @return ライトが設定されている場合はtrue、それ以外はfalse
    */
   function checkLights() {
@@ -263,7 +263,7 @@
 
   /**
    * エラーダイアログを表示する。
-   * 
+   *
    * @param $scope スコープ
    * @param isDeviceOrientation trueであればdeviceorientation、falseであればlightプロファイル。
    */
@@ -278,7 +278,7 @@
       controller: 'ModalInstanceCtrl2',
       size: 'lg',
       resolve: {
-        'isDeviceOrientation': function() {
+        'isDeviceOrientation': function () {
           return isDeviceOrientation;
         }
       }
@@ -289,7 +289,7 @@
   }
 
   function filterServices(services, targetScope) {
-    return filter('filter')(services, function(value, index, array) {
+    return filter('filter')(services, function (value, index, array) {
       return value.scopes.indexOf(targetScope) != -1;
     });
   }
@@ -357,62 +357,68 @@
 //    }
 
     // Navigation bar
-    $scope.settingAll = function() {
+    $scope.settingAll = function () {
       demoClient.discoverPlugins({
-        onsuccess: function(plugins) {
-          $scope.$apply(function() {
+        onsuccess: function (plugins) {
+          $scope.$apply(function () {
             $location.path('/settings/acceleration_light');
           });
         },
 
-        onerror: function(errorCode, errorMessage) {
-          $scope.$apply(function() {
+        onerror: function (errorCode, errorMessage) {
+          $scope.$apply(function () {
             $location.path('/error/' + errorCode);
           });
         }
       });
-    }
+    };
 
     $scope.addPairText = '追加';
 
     $scope.pairs = ["aaa"];
     
-    $scope.discoverLight = function() {
+    $scope.discoverLight = function () {
       $location.path('/light/select');
-    }
-    $scope.addPair = function() {
+    };
+    $scope.addPair = function () {
       turnOnLights(false);
-    }
-    $scope.back = function() {
+    };
+    $scope.back = function () {
       $location.path('/');
     };
-    
-    $scope.testDialog = function(scope, isDeviceOrientation) {
+
+    $scope.testDialog = function (scope, isDeviceOrientation) {
       testDialog(scope, isDeviceOrientation);
     }
   };
 
+  //
+  // ##########################################################################################
+  //      Modules
+  // ##########################################################################################
+  //
+
   angular.module('demoweb')
-    .controller('AccelerationLightController', 
-      ['$scope', '$modal', '$window', '$location', '$filter', 'demoWebClient', 'deviceService', AccelerationLightController]);
-  
+    .controller('AccelerationLightController',
+    ['$scope', '$modal', '$window', '$location', '$filter', 'demoWebClient', 'deviceService', AccelerationLightController]);
+
   angular.module('demoweb').controller('ModalInstanceCtrl2', function ($scope, $modalInstance, isDeviceOrientation) {
     $scope.title = isDeviceOrientation ?
       'DeviceOrientationサービス' : 'Lightサービス';
     $scope.message = 'サービスを選択してください';
-    $scope.getServices = function() {
+    $scope.getServices = function () {
       return filterServices(demoClient.lastKnownDevices,
-                            isDeviceOrientation ? 'deviceorientation' : 'light');
+        isDeviceOrientation ? 'deviceorientation' : 'light');
     };
-    $scope.refresh = function() {
+    $scope.refresh = function () {
       demoClient.discoverDevices({
-        onsuccess: function(services) {
+        onsuccess: function (services) {
           $scope.service = filterServices(services,
-                                          isDeviceOrientation ?
-                                          'deviceorientation' : 'light');
+            isDeviceOrientation ?
+              'deviceorientation' : 'light');
           $scope.$apply();
         },
-        onerror: function() {
+        onerror: function () {
           // エラー表示させる
         }
       });
@@ -422,7 +428,7 @@
     $scope.ok = function () {
       $modalInstance.close(true);
     };
-    $scope.cancel = function() {
+    $scope.cancel = function () {
 //      $modalInstance.dismiss('cancel');
       $modalInstance.close(false);
     };

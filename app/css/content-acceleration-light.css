@@ -30,7 +30,8 @@
 }
 
 .pair .pair-row * {
-  line-height: 30px; height: 30px;
+  line-height: 30px;
+  height: 30px;
 }
 
 .pair .pair-row .pair-row-left {
@@ -42,5 +43,5 @@
 .pair .pair-row .pair-row-right {
   padding: 1px 5px;
   overflow: auto;
-  border: 1px solid #49B4DC; 
+  border: 1px solid #49B4DC;
 }
