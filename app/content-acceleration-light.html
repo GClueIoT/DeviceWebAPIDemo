@@ -6,11 +6,6 @@
 </nav>
 
 <content>
-  <div id="light-container" align="center" style="margin: 5px;">
-    <button type="button" class="btn btn-default" ng-click="testDialog($scope, true)">加速度サービス選択 テスト</button>
-    <button type="button" class="btn btn-default" ng-click="testDialog($scope, false)">ライトサービス選択 テスト</button>
-  </div>
-
   <ul class="list-group" ng-if="pairs.length > 0" style="height: 300px; overflow-y: scroll; margin: 0px;">
     <li class="list-group-item" ng-repeat="pair in pairs" ng-include=" 'pair.html' " ng-controller="PairController"
         ng-init="init(pair)">
@@ -42,12 +37,12 @@
     <button type="button" class="btn btn-default" style="width: 100%; margin: 5px 5px 15px 5px;">
       <span class="glyphicon glyphicon-refresh" style="font-size: 12px;" ng-click="refresh()">{{refreshText}}</span>
     </button>
-    <ul class="list-group" ng-if="getServices().length > 0" style="height: 300px; overflow-y: scroll; margin: 0;">
-      <li class="list-group-item" ng-repeat="service in getServices()">
+    <ul class="list-group" ng-if="services.length > 0" style="height: 300px; overflow-y: scroll; margin: 0;">
+      <li class="list-group-item" ng-repeat="service in services" ng-click="ok(services[$index])">
         {{service.name}}
       </li>
     </ul>
-    <div ng-if="getServices().length == 0" style="text-align: center;">
+    <div ng-if="services.length == 0" style="text-align: center;">
       {{emptyText}}
     </div>
   </div>
@@ -83,10 +78,12 @@
           加速度センサ
         </span>
 
-        <div class="pair-row-right" ng-if="deviceOrientationService != null">
+        <div class="pair-row-right" ng-if="deviceOrientationService != null"
+             ng-click="showServiceSelectionDialog(true)">
           {{deviceOrientationService.name}}
         </div>
-        <div class="pair-row-right common-dark-text-disabled" ng-if="deviceOrientationService == null">
+        <div class="pair-row-right common-dark-text-disabled" ng-if="deviceOrientationService == null"
+             ng-click="showServiceSelectionDialog(true)">
           {{serviceNotSpecifiedText}}
         </div>
       </div>
@@ -95,10 +92,11 @@
           ライト
         </span>
 
-        <div class="pair-row-right" ng-if="lightService != null">
+        <div class="pair-row-right" ng-if="lightService != null" ng-click="showServiceSelectionDialog(true)">
           {{lightService.name}}
         </div>
-        <div class="pair-row-right common-dark-text-disabled" ng-if="lightService == null">
+        <div class="pair-row-right common-dark-text-disabled" ng-if="lightService == null"
+             ng-click="showServiceSelectionDialog(false)">
           {{serviceNotSpecifiedText}}
         </div>
       </div>

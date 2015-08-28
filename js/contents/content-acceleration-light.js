@@ -264,10 +264,10 @@
   /**
    * エラーダイアログを表示する。
    *
-   * @param $scope スコープ
    * @param isDeviceOrientation trueであればdeviceorientation、falseであればlightプロファイル。
+   * @param callback コールバック
    */
-  function testDialog($scope, isDeviceOrientation) {
+  function showServiceSelectionDialog(isDeviceOrientation, callback) {
     if (isShowDialog) {
       return;
     }
@@ -275,7 +275,7 @@
 
     var modalInstance = modalDialog.open({
       templateUrl: 'dialog-service-select.html',
-      controller: 'ModalInstanceCtrl2',
+      controller: 'ModalServiceSelectCtrl',
       size: 'lg',
       resolve: {
         'isDeviceOrientation': function () {
@@ -285,6 +285,15 @@
     });
     modalInstance.result.then(function (result) {
       isShowDialog = false;
+      if (result.success) {
+        if (callback.onsuccess) {
+          callback.onsuccess(result.service);
+        }
+      } else {
+        if (callback.onerror) {
+          callback.onerror();
+        }
+      }
     });
   }
 
@@ -367,10 +376,6 @@
       $location.path('/');
     };
 
-    $scope.testDialog = function (scope, isDeviceOrientation) {
-      testDialog(scope, isDeviceOrientation);
-    }
-
   };
   angular.module('demoweb')
     .controller('AccelerationLightController',
@@ -401,12 +406,6 @@
         $scope.lightService = pair.lightService;
         $scope.pairStatus = pair.status;
       };
-
-
-      $scope.testDialog = function (scope, isDeviceOrientation) {
-        testDialog(scope, isDeviceOrientation);
-      }
-
 
       /**
        * ペアの加速度とライト連携を開始する。
@@ -491,22 +490,32 @@
 
       };
 
+      $scope.showServiceSelectionDialog = function (isDeviceOrientation) {
+        showServiceSelectionDialog(isDeviceOrientation, {
+          onsuccess: function (service) {
+            if (isDeviceOrientation) {
+              $scope.deviceOrientationService = service;
+            } else {
+              $scope.lightService = service;
+            }
+          }
+        });
+      };
+
     }]);
 
 
-  angular.module('demoweb').controller('ModalInstanceCtrl2',
+  angular.module('demoweb').controller('ModalServiceSelectCtrl',
     function ($scope, $modalInstance, isDeviceOrientation) {
       $scope.title = isDeviceOrientation ?
         'DeviceOrientationサービス' : 'Lightサービス';
       $scope.message = 'サービスを選択してください';
-      $scope.getServices = function () {
-        return filterServices(demoClient.lastKnownDevices,
-          isDeviceOrientation ? 'deviceorientation' : 'light');
-      };
+      $scope.services = filterServices(demoClient.lastKnownDevices,
+        isDeviceOrientation ? 'deviceorientation' : 'light');
       $scope.refresh = function () {
         demoClient.discoverDevices({
           onsuccess: function (services) {
-            $scope.service = filterServices(services,
+            $scope.services = filterServices(services,
               isDeviceOrientation ?
                 'deviceorientation' : 'light');
             $scope.$apply();
@@ -518,12 +527,11 @@
       };
       $scope.refreshText = '再検索';
       $scope.emptyText = 'サービスが見つかりませんでした';
-      $scope.ok = function () {
-        $modalInstance.close(true);
+      $scope.ok = function (service) {
+        $modalInstance.close({success: true, service: service});
       };
       $scope.cancel = function () {
-//      $modalInstance.dismiss('cancel');
-        $modalInstance.close(false);
+        $modalInstance.close({success: false});
       };
     });
 
