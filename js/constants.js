@@ -14,7 +14,8 @@
       'health',
       'humandetect',
       'remote_controller',
-      'kadecot'
+      'kadecot',
+      'deviceorientation'
     ],
 
     manager: {
@@ -30,6 +31,11 @@
     },
 
     plugins: [
+      {
+        packageName: "org.deviceconnect.android.deviceplugin.host",
+        name: "host",
+        supports: ['deviceorientation']
+      },
       {
         packageName: "org.deviceconnect.android.deviceplugin.hue",
         name: "hue",
