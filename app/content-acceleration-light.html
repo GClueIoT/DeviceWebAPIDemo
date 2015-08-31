@@ -58,11 +58,11 @@
       <span style="line-height: 28px;">
         {{pairName}}
       </span>
-      <!--<button class="btn btn-primary" style="float: right;"-->
-      <!--ng-disabled="deviceOrientationService == null || lightService == null"-->
-      <!--ng-if="!pairActive" ng-click="activatePair()">-->
       <button class="btn btn-primary" style="float: right;"
+              ng-disabled="deviceOrientationService == null || lightService == null"
               ng-if="!pairActive" ng-click="activatePair()">
+        <!--<button class="btn btn-primary" style="float: right;"-->
+        <!--ng-if="!pairActive" ng-click="activatePair()">-->
         {{pairStartText}}
       </button>
       <button class="btn btn-primary" style="float: right;" ng-if="pairActive" ng-click="deactivatePair()">
@@ -111,7 +111,7 @@
         <form class="pair-row-right-range">
           <!-- Implicit instantiation of $scope in a subscope (casued by ngRepeat?) prevents access to
            pairInterval of PairController. Using $parent here for quick fix. -->
-          <input type="range" min="0.5" max="10" step="0.1" ng-model="$parent.pairInterval" style="width: 100%;"/>
+          <input type="range" min="0.1" max="10" step="0.1" ng-model="$parent.pairInterval" style="width: 100%;"/>
         </form>
       </div>
 

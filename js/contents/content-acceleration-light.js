@@ -76,51 +76,23 @@
   /**
    * ライトの命令を追加する。
    *
+   * @param serviceId
    * @param power 電源 (true: 点灯、false: 消灯)
    * @param color 色データ (FFFFFF形式)
    * @param brightness 明度 (0-100)
    */
-  function addLightCommand(power, color, brightness) {
-    if (!checkLights() || sendStateFlag) {
+  function addLightCommand(serviceId, power, color, brightness) {
+    if (sendStateFlag) {
       return;
     }
     sendStateFlag = true;
 
     addRequest({
+      serviceId: serviceId,
       power: power,
-      selectColor: color,
-      selectBrightness: brightness
+      color: color,
+      brightness: brightness
     });
-  }
-
-  /**
-   * ライトの色を設定する。
-   *
-   * @param req リクエスト
-   * @param callback コールバック
-   */
-  function setLightColor(req, callback) {
-    var count = 0;
-    for (var i = 0; i < lightList.length; ++i) {
-      var light = lightList[i];
-      if (req.power) {
-        ++count;
-        sendLightColor(light.serviceId, light.light.lightId, req.selectColor, req.selectBrightness, function () {
-          --count;
-          if (count == 0) {
-            callback();
-          }
-        });
-      } else {
-        ++count;
-        sendTurnOff(light.serviceId, light.light.lightId, function () {
-          --count;
-          if (count == 0) {
-            callback();
-          }
-        });
-      }
-    }
   }
 
   /**
@@ -136,6 +108,9 @@
       sendRequest();
     } else if (requestQueue.length > MAX_REQUEST_QUEUE) {
       requestQueue.splice(0, 1);
+
+      // DEBUG
+      console.log("Queue overflowed");
     }
   }
 
@@ -148,12 +123,53 @@
     }
 
     var request = requestQueue[0];
-    setLightColor(request, function () {
+    sendLightCommand(request, function () {
       requestQueue.splice(0, 1);
       sendStateFlag = false;
       setTimeout(function () {
         sendRequest();
       }, 400);
+    });
+  }
+
+  /**
+   * ライトの色を設定する。
+   *
+   * @param req リクエスト
+   * @param callback コールバック
+   */
+  function sendLightCommand(req, callback) {
+    demoClient.request({
+      "method": "GET",
+      "profile": "light",
+      "devices": [req.serviceId],
+      "onsuccess": function (id, json) {
+        if (json.lights) {
+          var count = json.lights.length;
+          for (var i = 0; i < json.lights.length; ++i) {
+            var light = json.lights[i];
+            if (req.power) {
+              sendLightColor(id, light.lightId, req.color, req.brightness, function (result) {
+                --count;
+                if (count == 0) {
+                  callback();
+                }
+              });
+            } else {
+              sendLightTurnOff(id, light.lightId, function (result) {
+                --count;
+                if (count == 0) {
+                  callback();
+                }
+              });
+            }
+          }
+        }
+      },
+      "onerror": function (id, errorCode, errorMessage) {
+        callback();
+        showErrorDialogWebAPI();
+      }
     });
   }
 
@@ -177,9 +193,12 @@
         "brightness": brightness
       },
       "onerror": function (id, errorCode, errorMessage) {
+        callback(false);
         showErrorDialogWebAPI();
       },
-      "oncomplete": callback
+      "oncomplete": function () {
+        callback(true);
+      }
     });
   }
 
@@ -190,7 +209,7 @@
    * @param lightId ライトID
    * @returns
    */
-  function sendTurnOff(serviceId, lightId, callback) {
+  function sendLightTurnOff(serviceId, lightId, callback) {
     demoClient.request({
       "method": "DELETE",
       "profile": "light",
@@ -199,50 +218,13 @@
         "lightId": lightId
       },
       "onerror": function (id, errorCode, errorMessage) {
+        callback(false);
         showErrorDialogWebAPI();
       },
-      "oncomplete": callback
+      "oncomplete": function () {
+        callback(true);
+      }
     });
-  }
-
-  /**
-   * ライトを点灯する。
-   *
-   * @param force trueの場合は強制的に点灯する
-   */
-  function turnOnLights(force) {
-    if (!checkLights()) {
-      showErrorDialogNoLights();
-      return;
-    }
-
-    if (!lightPower || force) {
-      lightPower = true;
-      sendStateFlag = false;
-      addLightCommand(true);
-    }
-  }
-
-  /**
-   * ライトを消灯する。
-   *
-   * @param force trueの場合は強制的に消灯する
-   */
-  function turnOffLights(force) {
-    if (lightPower || force) {
-      lightPower = false;
-      sendStateFlag = false;
-      addLightCommand(false);
-    }
-  }
-
-  /**
-   * ライトが設定されているか確認する。
-   *
-   * @return ライトが設定されている場合はtrue、それ以外はfalse
-   */
-  function checkLights() {
-    return (lightList && lightList.length > 0);
   }
 
   /**
@@ -297,9 +279,16 @@
     });
   }
 
-  function filterServices(services, targetScope) {
+  /**
+   * 指定されたサービス群から特定プロファイルをサポートするサービス群を取得する。
+   *
+   * @param services サービス
+   * @param {String} targetProfile プロファイル名
+   * @returns {*} 特定プロファイルをサポートするサービス群
+   */
+  function filterServices(services, targetProfile) {
     return filter('filter')(services, function (value, index, array) {
-      return value.scopes.indexOf(targetScope) != -1;
+      return value.scopes.indexOf(targetProfile) != -1;
     });
   }
 
@@ -313,7 +302,7 @@
     this.name = name;
     this.deviceOrientationService = null;
     this.lightService = null;
-    this.interval = 1;
+    this.interval = 0.5;
     this.status = 'stopped';
   };
 
@@ -343,10 +332,6 @@
     $scope.serviceNotSpecifiedText = 'サービスが選択されていません';
 
     $scope.addPairText = '追加';
-
-//    if (!setLightDevices($scope, lightService.lights)) {
-//      discoverLights($scope, $location, lightService);
-//    }
 
     // Navigation bar
     $scope.settingAll = function () {
@@ -387,6 +372,8 @@
     .controller('PairController',
     ['$scope', function ($scope) {
 
+      var lastTime = Date.now();
+
       //
       // Functions
       //
@@ -426,62 +413,97 @@
       };
 
       var activateDeviceOrientationEvent = function () {
-//      if (typeof _privateStore._deviceOrientationService === 'undefined' ||
-//        _privateStore.eventState == 'registering' || _privateStore.eventState == 'unregistering') {
-//        return;
-//      }
-//      _privateStore.eventState = 'registering';
-//      demoClient.addEventListener({
-//        "method": "PUT",
-//        "profile": "deviceorientation",
-//        "attribute": "ondeviceorientation",
-//        "serviceId": _privateStore._deviceOrientationService.id,
-//        "params": {},
-//        "onevent": function (event) {
-//          var json = JSON.parse(event);
-//          var params = calcLightParamsFromAcceleration(json.orientation.acceleration);
-////        var state = getHeartRateState(json.heartRate);
-////        if (state != hrState) {
-////          hrState = state;
-////          $scope.heart_image = "./img/heartrate/HeartBeat" + state + ".png";
-////        }
-////        _privateStore.scope.heartrate = json.heartRate;
-//          _privateStore.scope.$apply();
-//        },
-//        "onsuccess": function () {
-//          _privateStore.eventState = 'started';
-//          _privateStore.scope.$apply();
-//        },
-//        "onerror": function (errorCode, errorMessage) {
-//          //_pairState.eventState = 'stopped';
-//          showErrorDialog($modal, '加速度イベントの配信開始に失敗しました');
-//        }
-//      });
+        if (typeof $scope.deviceOrientationService === 'undefined' ||
+          $scope.pairStatus == 'registering' || $scope.pairStatus == 'unregistering') {
+          return;
+        }
+        $scope.pairStatus = 'registering';
+        demoClient.addEventListener({
+          "method": "PUT",
+          "profile": "deviceorientation",
+          "attribute": "ondeviceorientation",
+          "serviceId": $scope.deviceOrientationService.id,
+          "params": {},
+          "onevent": function (event) {
+            if (Date.now() - lastTime > $scope.pairInterval * 1000) {
+              var json = JSON.parse(event);
+              var params = calcLightParamsFromAcceleration(json.orientation.acceleration);
+              addLightCommand($scope.lightService.id, true, params.color, params.brightness);
 
-        $scope.pairStatus = 'started';
+              lastTime = Date.now();
+
+              //console.log("params: {color:" + params.color + ", brightness:" + params.brightness + "}");
+            }
+          },
+          "onsuccess": function () {
+            $scope.pairStatus = 'started';
+            $scope.$apply();
+          },
+          "onerror": function (errorCode, errorMessage) {
+            //$scope.pairStatus = 'stopped';
+            showErrorDialog($modal, '加速度イベントの配信開始に失敗しました');
+          }
+        });
+
+        //// DEBUG
+        //$scope.pairActive = true;
+        //
+        //var toggle = true;
+        //var run;
+        //run = function () {
+        //  addLightCommand($scope.lightService.id, toggle, "ff0000", 1);
+        //  toggle = !toggle;
+        //  setTimeout(run, $scope.pairInterval * 1000.0);
+        //};
+        //run();
+
       };
 
       var deactivateDeviceOrientationEvent = function () {
-        //if (_privateStore.eventState == 'registering' || _privateStore.eventState == 'unregistering') {
-        //  return;
-        //}
-        //_privateStore.eventState = 'unregistering';
-        //demoClient.removeEventListener({
-        //  "method": "DELETE",
-        //  "profile": "deviceorientation",
-        //  "attribute": "ondeviceorientation",
-        //  "serviceId": _privateStore._deviceOrientationService.id,
-        //  "params": {},
-        //  "onsuccess": function () {
-        //    _privateStore.eventState = 'stopped';
-        //    _privateStore.scope.$apply();
-        //  },
-        //  "onerror": function (errorCode, errorMessage) {
-        //    //_privateStore.eventState = STATE_NONE;
-        //  }
-        //});
+        if ($scope.pairStatus == 'registering' || $scope.pairStatus == 'unregistering') {
+          return;
+        }
+        $scope.pairStatus = 'unregistering';
+        demoClient.removeEventListener({
+          "method": "DELETE",
+          "profile": "deviceorientation",
+          "attribute": "ondeviceorientation",
+          "serviceId": $scope.deviceOrientationService.id,
+          "params": {},
+          "onsuccess": function () {
+            $scope.pairStatus = 'stopped';
+            $scope.$apply();
+          },
+          "onerror": function (errorCode, errorMessage) {
+            //$scope.pairStatus = 'stopped';
+          }
+        });
 
-        $scope.pairStatus = 'stopped';
+        //// DEBUG
+        //$scope.pairActive = false;
+        //addLightCommand($scope.lightService.id, true, "000000", 1);
+      };
+
+      /**
+       * 加速度データからライトデータを計算する。
+       *
+       * @param {Object} acceleration 加速度データ
+       * @param {Number} acceleration.x x軸方向の加速度
+       * @param {Number} acceleration.y y軸方向の加速度
+       * @param {Number} acceleration.z z軸方向の加速度
+       * @return {Object} ライトデータ
+       */
+      var calcLightParamsFromAcceleration = function (acceleration) {
+        var MAX_ACCELERATION_VALUE = 25.0;
+        var r = Math.floor(Math.min(Math.abs(acceleration.x), MAX_ACCELERATION_VALUE) * 255.0 / MAX_ACCELERATION_VALUE);
+        var g = Math.floor(Math.min(Math.abs(acceleration.y), MAX_ACCELERATION_VALUE) * 255.0 / MAX_ACCELERATION_VALUE);
+        var b = Math.floor(Math.min(Math.abs(acceleration.z), MAX_ACCELERATION_VALUE) * 255.0 / MAX_ACCELERATION_VALUE);
+        var color = createColor(r, g, b);
+        var brightness = Math.max(r, g, b) / 255.0;
+        return {
+          color: color,
+          brightness: brightness
+        };
       };
 
       $scope.showServiceSelectionDialog = function (isDeviceOrientation) {
