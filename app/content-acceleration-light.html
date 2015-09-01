@@ -5,22 +5,22 @@
   <div class="navbar-title">{{title}}</div>
 </nav>
 
-<content>
-  <ul class="list-group" ng-if="pairs.length > 0" style="height: 300px; overflow-y: scroll; margin: 0px;">
+<content id="acceleration-light">
+  <ul class="list-group" ng-if="pairs.length > 0" style="overflow-y: scroll; margin: 0px;">
     <li class="list-group-item" ng-repeat="pair in pairs" ng-include=" 'pair.html' " ng-controller="PairController"
         ng-init="init(pair)">
   </ul>
-  <div ng-if="pairs.length == 0" align="center">
+  <div ng-if="pairs.length == 0" align="center" style="font-size: 18px; padding: 20px;">
     加速度とライトのサービスのペアリングを追加してください
   </div>
+</content>
 
-  <button type="button" class="btn btn-primary"
-          style="position: fixed; width: 98%; height: 50px; padding: 5px; margin: 5px 1%; bottom: 0;">
+<button type="button" class="btn btn-primary"
+        style="position: fixed; width: 98%; height: 50px; padding: 5px; margin: 5px 1%; bottom: 0;">
     <span class="glyphicon glyphicon-plus"
           style="text-align: center; height: 50px; position: absolute; left: 0px; top: 0px; width: 100%; padding: 15px; font-size: 18px; z-index: 1;"
-          ng-click="">{{addPairText}}</span>
-  </button>
-</content>
+          ng-click="addPair()">{{addPairText}}</span>
+</button>
 
 
 <!-- ##################### -->
@@ -55,9 +55,9 @@
 <script type="text/ng-template" id="pair.html">
   <div class="pair">
     <div class="pair-top">
-      <span style="line-height: 28px;">
-        {{pairName}}
-      </span>
+      <!--<span style="line-height: 28px;">-->
+      <!--{{pairName}}-->
+      <!--</span>-->
       <button class="btn btn-primary" style="float: right;"
               ng-disabled="deviceOrientationService == null || lightService == null"
               ng-if="!pairActive" ng-click="activatePair()">
@@ -68,7 +68,7 @@
       <button class="btn btn-primary" style="float: right;" ng-if="pairActive" ng-click="deactivatePair()">
         {{pairStopText}}
       </button>
-      <button class="btn btn-danger" style="float: right; margin-right: 30px;">
+      <button class="btn btn-danger" style="float: right; margin-right: 30px;" ng-click="removePair()">
         {{pairRemoveText}}
       </button>
     </div>
@@ -107,7 +107,7 @@
           更新インターバル
         </span>
 
-        <div style=" width: 40px; float: left;" class="ng-binding">{{pairInterval}} 秒</div>
+        <div style=" width: 40px; float: left; margin-right: 8px;" class="ng-binding">{{pairInterval}} 秒</div>
         <form class="pair-row-right-range">
           <!-- Implicit instantiation of $scope in a subscope (casued by ngRepeat?) prevents access to
            pairInterval of PairController. Using $parent here for quick fix. -->

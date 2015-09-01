@@ -11,6 +11,11 @@
   color: #ffffff;
 }
 
+#acceleration-light {
+  bottom: 60px;
+  overflow: scroll;
+}
+
 /* Bootstrap override (button-primary disabled) */
 .btn-primary.disabled, .btn-primary.disabled.active, .btn-primary.disabled.focus, .btn-primary.disabled:active, .btn-primary.disabled:focus, .btn-primary.disabled:hover, .btn-primary[disabled], .btn-primary[disabled].active, .btn-primary[disabled].focus, .btn-primary[disabled]:active, .btn-primary[disabled]:focus, .btn-primary[disabled]:hover, fieldset[disabled] .btn-primary, fieldset[disabled] .btn-primary.active, fieldset[disabled] .btn-primary.focus, fieldset[disabled] .btn-primary:active, fieldset[disabled] .btn-primary:focus, fieldset[disabled] .btn-primary:hover {
   background-color: #BDD1E2;
@@ -43,8 +48,8 @@
 }
 
 .pair .pair-row * {
-  line-height: 30px;
-  height: 30px;
+  line-height: 40px;
+  height: 40px;
 }
 
 .pair .pair-row .pair-row-left {
@@ -56,7 +61,7 @@
 
 .pair .pair-row .pair-row-right-select {
   padding: 1px 5px;
-  overflow: auto;
+  overflow: hidden;
   border: 1px solid #49B4DC;
 }
 

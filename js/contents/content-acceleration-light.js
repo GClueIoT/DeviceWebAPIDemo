@@ -74,6 +74,93 @@
   }
 
   /**
+   * 加速度データからライトデータを計算する。
+   *
+   * @param {Object} acceleration 加速度データ
+   * @param {Number} acceleration.x x軸方向の加速度
+   * @param {Number} acceleration.y y軸方向の加速度
+   * @param {Number} acceleration.z z軸方向の加速度
+   * @return {Object} ライトデータ
+   */
+  function calcLightParamsFromAcceleration(acceleration) {
+    var MAX_ACCELERATION_VALUE = 25.0;
+    var r = Math.floor(Math.min(Math.abs(acceleration.x), MAX_ACCELERATION_VALUE) * 255.0 / MAX_ACCELERATION_VALUE);
+    var g = Math.floor(Math.min(Math.abs(acceleration.y), MAX_ACCELERATION_VALUE) * 255.0 / MAX_ACCELERATION_VALUE);
+    var b = Math.floor(Math.min(Math.abs(acceleration.z), MAX_ACCELERATION_VALUE) * 255.0 / MAX_ACCELERATION_VALUE);
+    var color = createColor(r, g, b);
+    var brightness = Math.max(r, g, b) / 255.0;
+    return {
+      color: color,
+      brightness: brightness
+    };
+  }
+
+  /**
+   * 通信エラーを通知するダイアログを表示する。
+   */
+  function showErrorDialogWebAPI() {
+    showErrorDialog('エラー', '通信に失敗しました。');
+  }
+
+  /**
+   * ライトが設定されていないことを通知するダイアログを表示する。
+   */
+  function showErrorDialogNoLights() {
+    showErrorDialog('エラー', 'ライトが設定されていません。');
+  }
+
+  var isShowDialog = false;
+
+  /**
+   * エラーダイアログを表示する。
+   *
+   * @param isDeviceOrientation trueであればdeviceorientation、falseであればlightプロファイル。
+   * @param callback コールバック
+   */
+  function showServiceSelectionDialog(isDeviceOrientation, callback) {
+    if (isShowDialog) {
+      return;
+    }
+    isShowDialog = true;
+
+    var modalInstance = modalDialog.open({
+      templateUrl: 'dialog-service-select.html',
+      controller: 'ModalServiceSelectCtrl',
+      size: 'lg',
+      resolve: {
+        'isDeviceOrientation': function () {
+          return isDeviceOrientation;
+        }
+      }
+    });
+    modalInstance.result.then(function (result) {
+      isShowDialog = false;
+      if (result.success) {
+        if (callback.onsuccess) {
+          callback.onsuccess(result.service);
+        }
+      } else {
+        if (callback.onerror) {
+          callback.onerror();
+        }
+      }
+    });
+  }
+
+  /**
+   * 指定されたサービス群から特定プロファイルをサポートするサービス群を取得する。
+   *
+   * @param services サービス
+   * @param {String} targetProfile プロファイル名
+   * @returns {*} 特定プロファイルをサポートするサービス群
+   */
+  function filterServices(services, targetProfile) {
+    return filter('filter')(services, function (value, index, array) {
+      return value.scopes.indexOf(targetProfile) != -1;
+    });
+  }
+
+  /**
    * ライトの命令を追加する。
    *
    * @param serviceId
@@ -227,71 +314,6 @@
     });
   }
 
-  /**
-   * 通信エラーを通知するダイアログを表示する。
-   */
-  function showErrorDialogWebAPI() {
-    showErrorDialog('エラー', '通信に失敗しました。');
-  }
-
-  /**
-   * ライトが設定されていないことを通知するダイアログを表示する。
-   */
-  function showErrorDialogNoLights() {
-    showErrorDialog('エラー', 'ライトが設定されていません。');
-  }
-
-  var isShowDialog = false;
-
-  /**
-   * エラーダイアログを表示する。
-   *
-   * @param isDeviceOrientation trueであればdeviceorientation、falseであればlightプロファイル。
-   * @param callback コールバック
-   */
-  function showServiceSelectionDialog(isDeviceOrientation, callback) {
-    if (isShowDialog) {
-      return;
-    }
-    isShowDialog = true;
-
-    var modalInstance = modalDialog.open({
-      templateUrl: 'dialog-service-select.html',
-      controller: 'ModalServiceSelectCtrl',
-      size: 'lg',
-      resolve: {
-        'isDeviceOrientation': function () {
-          return isDeviceOrientation;
-        }
-      }
-    });
-    modalInstance.result.then(function (result) {
-      isShowDialog = false;
-      if (result.success) {
-        if (callback.onsuccess) {
-          callback.onsuccess(result.service);
-        }
-      } else {
-        if (callback.onerror) {
-          callback.onerror();
-        }
-      }
-    });
-  }
-
-  /**
-   * 指定されたサービス群から特定プロファイルをサポートするサービス群を取得する。
-   *
-   * @param services サービス
-   * @param {String} targetProfile プロファイル名
-   * @returns {*} 特定プロファイルをサポートするサービス群
-   */
-  function filterServices(services, targetProfile) {
-    return filter('filter')(services, function (value, index, array) {
-      return value.scopes.indexOf(targetProfile) != -1;
-    });
-  }
-
   //
   // ##########################################################################################
   //      Classes
@@ -350,13 +372,13 @@
       });
     };
 
-    $scope.pairs = [new Pair('aaa')];
+    $scope.pairs = [new Pair(null)];
 
     $scope.discoverLight = function () {
       $location.path('/light/select');
     };
     $scope.addPair = function () {
-      turnOnLights(false);
+      $scope.pairs.push(new Pair(null));
     };
     $scope.back = function () {
       $location.path('/');
@@ -414,7 +436,7 @@
 
       var activateDeviceOrientationEvent = function () {
         if (typeof $scope.deviceOrientationService === 'undefined' ||
-          $scope.pairStatus == 'registering' || $scope.pairStatus == 'unregistering') {
+          $scope.pairStatus == 'started' || $scope.pairStatus == 'registering' || $scope.pairStatus == 'unregistering') {
           return;
         }
         $scope.pairStatus = 'registering';
@@ -460,7 +482,8 @@
       };
 
       var deactivateDeviceOrientationEvent = function () {
-        if ($scope.pairStatus == 'registering' || $scope.pairStatus == 'unregistering') {
+        if (typeof $scope.deviceOrientationService === 'undefined' ||
+          $scope.pairStatus == 'stopped' || $scope.pairStatus == 'registering' || $scope.pairStatus == 'unregistering') {
           return;
         }
         $scope.pairStatus = 'unregistering';
@@ -484,28 +507,6 @@
         //addLightCommand($scope.lightService.id, true, "000000", 1);
       };
 
-      /**
-       * 加速度データからライトデータを計算する。
-       *
-       * @param {Object} acceleration 加速度データ
-       * @param {Number} acceleration.x x軸方向の加速度
-       * @param {Number} acceleration.y y軸方向の加速度
-       * @param {Number} acceleration.z z軸方向の加速度
-       * @return {Object} ライトデータ
-       */
-      var calcLightParamsFromAcceleration = function (acceleration) {
-        var MAX_ACCELERATION_VALUE = 25.0;
-        var r = Math.floor(Math.min(Math.abs(acceleration.x), MAX_ACCELERATION_VALUE) * 255.0 / MAX_ACCELERATION_VALUE);
-        var g = Math.floor(Math.min(Math.abs(acceleration.y), MAX_ACCELERATION_VALUE) * 255.0 / MAX_ACCELERATION_VALUE);
-        var b = Math.floor(Math.min(Math.abs(acceleration.z), MAX_ACCELERATION_VALUE) * 255.0 / MAX_ACCELERATION_VALUE);
-        var color = createColor(r, g, b);
-        var brightness = Math.max(r, g, b) / 255.0;
-        return {
-          color: color,
-          brightness: brightness
-        };
-      };
-
       $scope.showServiceSelectionDialog = function (isDeviceOrientation) {
         showServiceSelectionDialog(isDeviceOrientation, {
           onsuccess: function (service) {
@@ -516,6 +517,14 @@
             }
           }
         });
+      };
+
+      $scope.removePair = function () {
+        var index = $scope.$parent.pairs.indexOf($scope.pair);
+        if (index != -1) {
+          $scope.deactivatePair();
+          $scope.$parent.pairs.splice(index, 1);
+        }
       };
 
     }]);
