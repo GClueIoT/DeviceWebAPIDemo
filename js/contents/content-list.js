@@ -21,7 +21,7 @@
   };
   var accelerationLightDemo = {
       name: 'accelerationLight',
-      img: 'img/Appli_light.png',
+      img: 'img/App_Acceleration_Light.png',
       title: '加速度 + ライト'
   };
 
