@@ -12,6 +12,13 @@
   var requestQueue = [];
 
   /**
+   * キューのbusyフラグ。
+   * ライトを操作するリクエストがキューに追加された際、即座にリクエストを処理できない場合、trueとなる。
+   * @type {boolean}
+   */
+  var requestQueueBusy = false;
+
+  /**
    * Device Web API Managerにアクセスするためのインスタンス。
    */
   var demoClient;
@@ -198,7 +205,7 @@
    */
   function addRequest(request) {
     requestQueue.push(request);
-    if (requestQueue.length == 1) {
+    if (requestQueue.length == 1 && !requestQueueBusy) {
       sendRequest();
     } else if (requestQueue.length > MAX_REQUEST_QUEUE) {
       requestQueue.splice(0, 1);
@@ -213,7 +220,10 @@
    */
   function sendRequest() {
     if (requestQueue.length == 0) {
+      requestQueueBusy = false;
       return;
+    } else {
+      requestQueueBusy = true;
     }
 
     var request = requestQueue[0];
@@ -461,13 +471,21 @@
         console.log("deactivatePair");
         deactivateDeviceOrientationEvent();
 
-        // Send a turn-off command without queueing.
-        // Queueing is skipped because the command queue might removes this command in order to push a newer command.
-        sendLightCommand({
-          serviceId: $scope.lightService.id,
-          power: false
-        }, function () {
-        });
+        // 確実ではないが、キューがあふれて消灯リクエストが削除されないよう、キューが空になるのを待ってからリクエストを追加する。
+        var turnoff = function() {
+          addLightCommand($scope.lightService.id, false);
+        };
+        var waitFunc;
+        waitFunc = function() {
+          setTimeout(function () {
+            if (requestQueue.length == 0) {
+              turnoff();
+            } else {
+              waitFunc();
+            }
+          }, 500);
+        };
+        waitFunc();
       };
 
       var activateDeviceOrientationEvent = function () {
