@@ -62,6 +62,16 @@
         supports: ['remote_controller']
       },
       {
+        packageName: "org.deviceconnect.android.deviceplugin.pebble",
+        name: "Pebble",
+        supports: ['deviceorientation']
+      },
+      {
+        packageName: "org.deviceconnect.android.deviceplugin.sw",
+        name: "Sony Smart Watch",
+        supports: ['deviceorientation']
+      },
+      {
         packageName: "com.sonycsl.Kadecot",
         name: "Kadecot",
         supports: ['kadecot']
