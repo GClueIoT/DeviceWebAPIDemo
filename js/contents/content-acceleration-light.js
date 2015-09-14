@@ -27,16 +27,6 @@
   var filter;
 
   /**
-   * 操作を行うライト一覧。
-   */
-  var lightList = [];
-
-  /**
-   * ライトの電源状態.
-   */
-  var lightPower = false;
-
-  /**
    * 送信状態を保持する。
    * <ul>
    * <li> true: 送信中
@@ -44,6 +34,8 @@
    * </ul>
    */
   var sendStateFlag = false;
+
+  var isShowDialog = false;
 
   /**
    * 色情報をFFFFFF形式の文字列に変換する。
@@ -101,15 +93,6 @@
   function showErrorDialogWebAPI() {
     showErrorDialog('エラー', '通信に失敗しました。');
   }
-
-  /**
-   * ライトが設定されていないことを通知するダイアログを表示する。
-   */
-  function showErrorDialogNoLights() {
-    showErrorDialog('エラー', 'ライトが設定されていません。');
-  }
-
-  var isShowDialog = false;
 
   /**
    * エラーダイアログを表示する。
