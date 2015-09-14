@@ -389,6 +389,8 @@
 
     $scope.addPairText = '追加';
 
+    $scope.pairs = [new Pair(null)];
+
     // Navigation bar
     $scope.settingAll = function () {
       demoClient.discoverPlugins({
@@ -405,8 +407,6 @@
         }
       });
     };
-
-    $scope.pairs = [new Pair(null)];
 
     $scope.discoverLight = function () {
       $location.path('/light/select');
@@ -521,18 +521,6 @@
           }
         });
 
-        //// DEBUG
-        //$scope.pairActive = true;
-        //
-        //var toggle = true;
-        //var run;
-        //run = function () {
-        //  addLightCommand($scope.lightService.id, toggle, "ff0000", 1);
-        //  toggle = !toggle;
-        //  setTimeout(run, $scope.pairInterval * 1000.0);
-        //};
-        //run();
-
       };
 
       var deactivateDeviceOrientationEvent = function () {
@@ -556,9 +544,6 @@
           }
         });
 
-        //// DEBUG
-        //$scope.pairActive = false;
-        //addLightCommand($scope.lightService.id, true, "000000", 1);
       };
 
       $scope.showServiceSelectionDialog = function (isDeviceOrientation) {
