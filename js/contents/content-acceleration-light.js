@@ -298,6 +298,27 @@
     });
   }
 
+  /**
+   * 同期的にDeviceOrientationイベントを取得する。
+   *
+   * @param serviceId サービスID
+   */
+  function sendDeviceOrientationGet(serviceId, callback) {
+    demoClient.request({
+      "method": "GET",
+      "profile": "deviceorientation",
+      "attribute": "ondeviceorientation",
+      "devices": [serviceId],
+      "onerror": function (id, errorCode, errorMessage) {
+        callback.onerror();
+        showErrorDialogWebAPI();
+      },
+      "onsuccess": function (id, json) {
+        callback.onsuccess(id, json);
+      }
+    });
+  }
+
   //
   // ##########################################################################################
   //      Classes
@@ -433,7 +454,7 @@
           "onevent": function (event) {
             if (Date.now() - lastTime > $scope.pairInterval * 1000) {
               var json = JSON.parse(event);
-              var params = calcLightParamsFromAcceleration(json.orientation.acceleration);
+              var params = calcLightParamsFromAcceleration(json.orientation.accelerationIncludingGravity);
               addLightCommand($scope.lightService.id, true, params.color, params.brightness);
 
               lastTime = Date.now();
@@ -518,15 +539,71 @@
     function ($scope, $modalInstance, isDeviceOrientation) {
       $scope.title = isDeviceOrientation ?
         'DeviceOrientationサービス' : 'Lightサービス';
-      $scope.message = 'サービスを選択してください';
-      $scope.services = filterServices(demoClient.lastKnownDevices,
-        isDeviceOrientation ? 'deviceorientation' : 'light');
+      $scope.message = isDeviceOrientation ? '重力を含めた加速度を取得できるサービスを選択してください' : 'サービスを選択してください';
+
+      var deviceOrientationFiltering = function(services, doApply) {
+        var tmpServices = filterServices(services, 'deviceorientation');
+        var isAsync = false;
+        var result = [];
+        var searchFunc;
+        searchFunc = function (index) {
+          if (index < tmpServices.length) {
+            sendDeviceOrientationGet(tmpServices[index].id, {
+              onsuccess: function (id, json) {
+                var acceleration =
+                    json.orientation.accelerationIncludingGravity;
+                if (typeof acceleration != "undefined") {
+                  // Android Host dirty hack
+                  // Android Host device plugin always returns {x:0,y:0,z:0} for acceleration.
+                  //if (acceleration.x != 0 || acceleration.y != 0 || acceleration.z != 0) {
+                  result.push(tmpServices[index]);
+                  //}
+                }
+                isAsync = true;
+                searchFunc(++index);
+              },
+              onerror: function () {
+                isAsync = true;
+                searchFunc(++index);
+              }
+            });
+          } else {
+            $scope.services = result;
+            if (isAsync) {
+              $scope.$apply();
+            }
+          }
+        };
+        searchFunc(0);
+      };
+
+      if (isDeviceOrientation) {
+        // 重力を含めた加速度が取得できるサービスの見返す。
+
+        demoClient.discoverDevices({
+          onsuccess: function (services) {
+            deviceOrientationFiltering(services);
+          },
+          onerror: function () {
+            deviceOrientationFiltering([]);
+          }
+        });
+        //deviceOrientationFiltering(demoClient.lastKnownDevices);
+      } else {
+        $scope.services = filterServices(demoClient.lastKnownDevices, 'light');
+      }
+
       $scope.refresh = function () {
         demoClient.discoverDevices({
           onsuccess: function (services) {
-            $scope.services = filterServices(services,
-              isDeviceOrientation ?
-                'deviceorientation' : 'light');
+            if (isDeviceOrientation) {
+              // 重力を含めた加速度が取得できるサービスの見返す。
+
+              deviceOrientationFiltering(services);
+            } else {
+              $scope.services = filterServices(services, 'light');
+            }
+
             $scope.$apply();
           },
           onerror: function () {
