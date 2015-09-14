@@ -89,10 +89,33 @@
   }
 
   /**
-   * 通信エラーを通知するダイアログを表示する。
+   * エラーダイアログを表示する。
+   *
+   * @param title ダイアログのタイトル
+   * @param message ダイアログのメッセージ
    */
-  function showErrorDialogWebAPI() {
-    showErrorDialog('エラー', '通信に失敗しました。');
+  function showErrorDialog(title, message) {
+    if (isShowDialog) {
+      return;
+    }
+    isShowDialog = true;
+
+    var modalInstance = modalDialog.open({
+      templateUrl: 'error-dialog-light.html',
+      controller: 'ModalInstanceCtrl',
+      size: 'lg',
+      resolve: {
+        'title': function() {
+          return title;
+        },
+        'message': function() {
+          return message;
+        }
+      }
+    });
+    modalInstance.result.then(function (result) {
+      isShowDialog = false;
+    });
   }
 
   /**
@@ -239,7 +262,6 @@
       },
       "onerror": function (id, errorCode, errorMessage) {
         callback();
-        showErrorDialogWebAPI();
       }
     });
   }
@@ -265,7 +287,6 @@
       },
       "onerror": function (id, errorCode, errorMessage) {
         callback(false);
-        showErrorDialogWebAPI();
       },
       "oncomplete": function () {
         callback(true);
@@ -290,7 +311,6 @@
       },
       "onerror": function (id, errorCode, errorMessage) {
         callback(false);
-        showErrorDialogWebAPI();
       },
       "oncomplete": function () {
         callback(true);
@@ -311,7 +331,6 @@
       "devices": [serviceId],
       "onerror": function (id, errorCode, errorMessage) {
         callback.onerror();
-        showErrorDialogWebAPI();
       },
       "onsuccess": function (id, json) {
         callback.onsuccess(id, json);
