@@ -405,6 +405,10 @@
       // Functions
       //
 
+      $scope.$on("$destroy", function handler() {
+        $scope.deactivatePair()
+      });
+
       $scope.init = function (pair) {
         $scope.pair = pair;
 
@@ -437,6 +441,14 @@
       $scope.deactivatePair = function () {
         console.log("deactivatePair");
         deactivateDeviceOrientationEvent();
+
+        // Send a turn-off command without queueing.
+        // Queueing is skipped because the command queue might removes this command in order to push a newer command.
+        sendLightCommand({
+          serviceId: $scope.lightService.id,
+          power: false
+        }, function () {
+        });
       };
 
       var activateDeviceOrientationEvent = function () {
