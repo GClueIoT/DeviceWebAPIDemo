@@ -75,10 +75,11 @@
    * @return {Object} ライトデータ
    */
   function calcLightParamsFromAcceleration(acceleration) {
-    var MAX_ACCELERATION_VALUE = 25.0;
-    var r = Math.floor(Math.min(Math.abs(acceleration.x), MAX_ACCELERATION_VALUE) * 255.0 / MAX_ACCELERATION_VALUE);
-    var g = Math.floor(Math.min(Math.abs(acceleration.y), MAX_ACCELERATION_VALUE) * 255.0 / MAX_ACCELERATION_VALUE);
-    var b = Math.floor(Math.min(Math.abs(acceleration.z), MAX_ACCELERATION_VALUE) * 255.0 / MAX_ACCELERATION_VALUE);
+    var MIN_ACCELERATION_VALUE = 2.0;
+    var MAX_ACCELERATION_VALUE = 20.0;
+    var r = Math.floor(Math.min(Math.max(Math.abs(acceleration.x), MIN_ACCELERATION_VALUE), MAX_ACCELERATION_VALUE) * 255.0 / MAX_ACCELERATION_VALUE);
+    var g = Math.floor(Math.min(Math.max(Math.abs(acceleration.y), MIN_ACCELERATION_VALUE), MAX_ACCELERATION_VALUE) * 255.0 / MAX_ACCELERATION_VALUE);
+    var b = Math.floor(Math.min(Math.max(Math.abs(acceleration.z), MIN_ACCELERATION_VALUE), MAX_ACCELERATION_VALUE) * 255.0 / MAX_ACCELERATION_VALUE);
     var color = createColor(r, g, b);
     var brightness = Math.max(r, g, b) / 255.0;
     return {
