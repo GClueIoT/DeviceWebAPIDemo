@@ -518,8 +518,7 @@
             $scope.$apply();
           },
           "onerror": function (errorCode, errorMessage) {
-            //$scope.pairStatus = 'stopped';
-            showErrorDialog($modal, '加速度イベントの配信開始に失敗しました');
+            showErrorDialog('エラー', '加速度イベントの配信開始に失敗しました');
           }
         });
 
