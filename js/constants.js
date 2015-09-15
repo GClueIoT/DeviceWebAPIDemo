@@ -72,6 +72,11 @@
         supports: ['deviceorientation']
       },
       {
+        packageName: "org.deviceconnect.android.deviceplugin.alljoyn",
+        name: "AllJoyn",
+        supports: ['light']
+      },
+      {
         packageName: "com.sonycsl.Kadecot",
         name: "Kadecot",
         supports: ['kadecot']
