@@ -473,7 +473,9 @@
 
         // 確実ではないが、キューがあふれて消灯リクエストが削除されないよう、キューが半分になるのを待ってからリクエストを追加する。
         var turnoff = function() {
-          addLightCommand($scope.lightService.id, false);
+          if ($scope.lightService != null) {
+            addLightCommand($scope.lightService.id, false);
+          }
         };
         var waitFunc;
         waitFunc = function() {
