@@ -4,7 +4,7 @@
   /**
    * キュー上に保持できるリクエスト上限。
    */
-  var MAX_REQUEST_QUEUE = 10;
+  var MAX_REQUEST_QUEUE = 50;
 
   /**
    * ライトを操作するリクエストを格納するキュー。
@@ -471,14 +471,14 @@
         console.log("deactivatePair");
         deactivateDeviceOrientationEvent();
 
-        // 確実ではないが、キューがあふれて消灯リクエストが削除されないよう、キューが空になるのを待ってからリクエストを追加する。
+        // 確実ではないが、キューがあふれて消灯リクエストが削除されないよう、キューが半分になるのを待ってからリクエストを追加する。
         var turnoff = function() {
           addLightCommand($scope.lightService.id, false);
         };
         var waitFunc;
         waitFunc = function() {
           setTimeout(function () {
-            if (requestQueue.length == 0) {
+            if (requestQueue.length < MAX_REQUEST_QUEUE / 2) {
               turnoff();
             } else {
               waitFunc();
