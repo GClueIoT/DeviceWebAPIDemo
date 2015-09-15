@@ -541,7 +541,7 @@
             $scope.$apply();
           },
           "onerror": function (errorCode, errorMessage) {
-            //$scope.pairStatus = 'stopped';
+            $scope.pairStatus = 'stopped';
           }
         });
 
