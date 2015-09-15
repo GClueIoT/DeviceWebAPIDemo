@@ -562,6 +562,7 @@
       $scope.removePair = function () {
         var index = $scope.$parent.pairs.indexOf($scope.pair);
         if (index != -1) {
+          $scope.deactivatePair();
           $scope.$parent.pairs.splice(index, 1);
         }
       };
