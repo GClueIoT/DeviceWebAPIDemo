@@ -469,25 +469,27 @@
        */
       $scope.deactivatePair = function () {
         console.log("deactivatePair");
-        deactivateDeviceOrientationEvent();
-
-        // 確実ではないが、キューがあふれて消灯リクエストが削除されないよう、キューが半分になるのを待ってからリクエストを追加する。
-        var turnoff = function() {
-          if ($scope.lightService != null) {
-            addLightCommand($scope.lightService.id, false);
+        deactivateDeviceOrientationEvent({
+          onsuccess: function () {
+            // 確実ではないが、キューがあふれて消灯リクエストが削除されないよう、キューが半分になるのを待ってからリクエストを追加する。
+            var turnoff = function () {
+              if ($scope.lightService != null) {
+                addLightCommand($scope.lightService.id, false);
+              }
+            };
+            var waitFunc;
+            waitFunc = function () {
+              setTimeout(function () {
+                if (requestQueue.length < MAX_REQUEST_QUEUE / 2) {
+                  turnoff();
+                } else {
+                  waitFunc();
+                }
+              }, 500);
+            };
+            waitFunc();
           }
-        };
-        var waitFunc;
-        waitFunc = function() {
-          setTimeout(function () {
-            if (requestQueue.length < MAX_REQUEST_QUEUE / 2) {
-              turnoff();
-            } else {
-              waitFunc();
-            }
-          }, 500);
-        };
-        waitFunc();
+        });
       };
 
       var activateDeviceOrientationEvent = function () {
@@ -503,7 +505,7 @@
           "serviceId": $scope.deviceOrientationService.id,
           "params": {},
           "onevent": function (event) {
-            if (Date.now() - lastTime > $scope.pairInterval * 1000) {
+            if (Date.now() - lastTime > $scope.pairInterval * 1000 && $scope.pairStatus == 'started') {
               var json = JSON.parse(event);
               var params = calcLightParamsFromAcceleration(json.orientation.accelerationIncludingGravity);
               addLightCommand($scope.lightService.id, true, params.color, params.brightness);
@@ -524,7 +526,7 @@
 
       };
 
-      var deactivateDeviceOrientationEvent = function () {
+      var deactivateDeviceOrientationEvent = function (callback) {
         if (typeof $scope.deviceOrientationService === 'undefined' ||
           $scope.pairStatus == 'stopped' || $scope.pairStatus == 'registering' || $scope.pairStatus == 'unregistering') {
           return;
@@ -539,10 +541,16 @@
           "onsuccess": function () {
             $scope.pairStatus = 'stopped';
             $scope.$apply();
+            if (typeof callback.onsuccess == 'function') {
+              callback.onsuccess();
+            }
           },
           "onerror": function (errorCode, errorMessage) {
             $scope.pairStatus = 'stopped';
             $scope.$apply();
+            if (typeof callback.onerror == 'function') {
+              callback.onerror();
+            }
           }
         });
 
