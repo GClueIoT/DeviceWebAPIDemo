@@ -187,6 +187,7 @@
    */
   function addLightCommand(serviceId, power, color, brightness, forceAdd) {
     if (sendStateFlag && (typeof forceAdd != 'boolean' || !forceAdd)) {
+      //console.log("addLightCommand waiting result, ignoring");
       return;
     }
     sendStateFlag = true;
@@ -213,8 +214,7 @@
     } else if (requestQueue.length > MAX_REQUEST_QUEUE) {
       requestQueue.splice(0, 1);
 
-      // DEBUG
-      console.log("Queue overflowed");
+      console.log("WARNING: Queue overflowed.");
     }
   }
 
@@ -256,6 +256,7 @@
           for (var i = 0; i < json.lights.length; ++i) {
             var light = json.lights[i];
             if (req.power) {
+              //console.log("" + new Date().now + ": do turn-on: " + requestQueue.length);
               sendLightColor(id, light.lightId, req.color, req.brightness, function (result) {
                 --count;
                 if (count == 0) {
@@ -263,7 +264,9 @@
                 }
               });
             } else {
+              //console.log("" + new Date().now + ": do turn-off: " + requestQueue.length);
               sendLightTurnOff(id, light.lightId, function (result) {
+                //console.log("result: " + result);
                 --count;
                 if (count == 0) {
                   callback();
@@ -426,11 +429,11 @@
     this.removePairControllerScope = function (scopeArg, callbackArg) {
       var index = self.pairControllerScopes.indexOf(scopeArg);
       if (index != -1) {
-        console.log('removePairControllerScope scope found');
+        //console.log('removePairControllerScope scope found');
         if (this.pairControllerScopes.length <= 1) {
           deactivateDeviceOrientationEvent(scopeArg, {
             onsuccess: function () {
-              console.log('removePairControllerScope event unregister success');
+              //console.log('removePairControllerScope event unregister success');
               self.pairControllerScopes.splice(index, 1);
               addLightCommand(scopeArg.lightService.id, false, null, null, true);
               if (typeof callbackArg.onsuccess == 'function') {
@@ -438,7 +441,7 @@
               }
             },
             onerror: function () {
-              console.log('removePairControllerScope event unregister error');
+              //console.log('removePairControllerScope event unregister error');
               if (typeof callbackArg.onerror == 'function') {
                 callbackArg.onerror();
               }
@@ -446,13 +449,13 @@
             }
           });
         } else {
-          console.log('removePairControllerScope unregister not needed');
+          //console.log('removePairControllerScope unregister not needed');
           if (typeof callbackArg.onsuccess == 'function') {
             callbackArg.onsuccess();
           }
         }
       } else {
-        console.log('removePairControllerScope scope not found');
+        //console.log('removePairControllerScope scope not found');
         this.pairControllerScopes.splice(index, 1);
         if (typeof callbackArg.onsuccess == 'function') {
           callbackArg.onsuccess();
@@ -588,7 +591,7 @@
        * ペアの加速度とライト連携を開始する。
        */
       $scope.activatePair = function () {
-        console.log("activatePair");
+        //console.log("activatePair");
 
         var callback = {
           onsuccess: function () {
@@ -625,7 +628,7 @@
        * ペアの加速度とライト連携を停止する。
        */
       $scope.deactivatePair = function () {
-        console.log("deactivatePair");
+        //console.log("deactivatePair");
 
         for (var i = 0; i < deviceOrientationServices.length; ++i) {
           var service = deviceOrientationServices[i];
@@ -635,13 +638,13 @@
             $scope.pairStatus = 'unregistering';
             service.removePairControllerScope($scope, {
               onsuccess: function () {
-                console.log('removePairControllerScope success');
+                //console.log('removePairControllerScope success');
                 $scope.$applyAsync(function () {
                   $scope.pairStatus = 'stopped';
                 });
               },
               onerror: function () {
-                console.log('removePairControllerScope error');
+                //console.log('removePairControllerScope error');
                 $scope.$applyAsync(function () {
                   $scope.pairStatus = oldStatus;
                 });
