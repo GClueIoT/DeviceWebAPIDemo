@@ -108,7 +108,7 @@
     isShowDialog = true;
 
     var modalInstance = modalDialog.open({
-      templateUrl: 'error-dialog-light.html',
+      templateUrl: 'error-dialog.html',
       controller: 'ModalInstanceCtrl',
       size: 'lg',
       resolve: {
