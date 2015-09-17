@@ -181,9 +181,10 @@
    * @param power 電源 (true: 点灯、false: 消灯)
    * @param color 色データ (FFFFFF形式)
    * @param brightness 明度 (0-100)
+   * @param forceAdd 命令が無視されずにキューに追加するようにするフラグ
    */
-  function addLightCommand(serviceId, power, color, brightness) {
-    if (sendStateFlag) {
+  function addLightCommand(serviceId, power, color, brightness, forceAdd) {
+    if (sendStateFlag && (typeof forceAdd != 'boolean' || !forceAdd)) {
       return;
     }
     sendStateFlag = true;
