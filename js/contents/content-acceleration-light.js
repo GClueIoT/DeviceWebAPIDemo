@@ -18,6 +18,8 @@
    */
   var requestQueueBusy = false;
 
+  var deviceOrientationServices = [];
+
   /**
    * Device Web API Managerにアクセスするためのインスタンス。
    */
@@ -355,6 +357,131 @@
   // ##########################################################################################
   //
 
+  var DeviceOrientationService = function (scope, callback) {
+    var self = this;
+
+    this.id = scope.deviceOrientationService.id;
+    this.pairControllerScopes = [];
+    this.addPairControllerScope = function (scopeArg, callbackArg) {
+      if (this.pairControllerScopes.indexOf(scopeArg) == -1) {
+        if (this.pairControllerScopes.length == 0) {
+          activateDeviceOrientationEvent(scopeArg, {
+            onsuccess: function () {
+              self.pairControllerScopes.push(scopeArg);
+              if (typeof callbackArg.onsuccess == 'function') {
+                callbackArg.onsuccess();
+              }
+            },
+            onerror: function () {
+              if (typeof callbackArg.onerror == 'function') {
+                callbackArg.onerror();
+              }
+            }
+          });
+        } else {
+          if (typeof callbackArg.onsuccess == 'function') {
+            callbackArg.onsuccess();
+          }
+        }
+      } else {
+        if (typeof callbackArg.onsuccess == 'function') {
+          callbackArg.onsuccess();
+        }
+      }
+    };
+    var activateDeviceOrientationEvent = function (scopeArg, callbackArg) {
+      demoClient.addEventListener({
+        "method": "PUT",
+        "profile": "deviceorientation",
+        "attribute": "ondeviceorientation",
+        "serviceId": scopeArg.deviceOrientationService.id,
+        "params": {},
+        "onevent": function (event) {
+          for (var i = 0; i < self.pairControllerScopes.length; ++i) {
+            var scopeItr = self.pairControllerScopes[i];
+            if (Date.now() - scopeItr.lastTime > scopeItr.pairInterval * 1000 && scopeItr.pairStatus == 'started') {
+              var json = JSON.parse(event);
+              var params = calcLightParamsFromAcceleration(json.orientation.accelerationIncludingGravity);
+              addLightCommand(scopeItr.lightService.id, true, params.color, params.brightness);
+
+              scopeItr.lastTime = Date.now();
+
+              //console.log("params: {color:" + params.color + ", brightness:" + params.brightness + "}");
+            }
+          }
+        },
+        "onsuccess": function () {
+          if (typeof callbackArg.onsuccess == 'function') {
+            callbackArg.onsuccess();
+          }
+        },
+        "onerror": function (errorCode, errorMessage) {
+          if (typeof callbackArg.onerror == 'function') {
+            callbackArg.onerror();
+          }
+          showErrorDialog('エラー', '加速度イベントの配信開始に失敗しました');
+        }
+      });
+    };
+    this.removePairControllerScope = function (scopeArg, callbackArg) {
+      var index = self.pairControllerScopes.indexOf(scopeArg);
+      if (index != -1) {
+        console.log('removePairControllerScope scope found');
+        if (this.pairControllerScopes.length <= 1) {
+          deactivateDeviceOrientationEvent(scopeArg, {
+            onsuccess: function () {
+              console.log('removePairControllerScope event unregister success');
+              self.pairControllerScopes.splice(index, 1);
+              addLightCommand(scopeArg.lightService.id, false, null, null, true);
+              if (typeof callbackArg.onsuccess == 'function') {
+                callbackArg.onsuccess();
+              }
+            },
+            onerror: function () {
+              console.log('removePairControllerScope event unregister error');
+              if (typeof callbackArg.onerror == 'function') {
+                callbackArg.onerror();
+              }
+              showErrorDialog('エラー', '加速度イベントの配信停止に失敗しました');
+            }
+          });
+        } else {
+          console.log('removePairControllerScope unregister not needed');
+          if (typeof callbackArg.onsuccess == 'function') {
+            callbackArg.onsuccess();
+          }
+        }
+      } else {
+        console.log('removePairControllerScope scope not found');
+        this.pairControllerScopes.splice(index, 1);
+        if (typeof callbackArg.onsuccess == 'function') {
+          callbackArg.onsuccess();
+        }
+      }
+    };
+    var deactivateDeviceOrientationEvent = function (scopeArg, callbackArg) {
+      demoClient.removeEventListener({
+        "method": "DELETE",
+        "profile": "deviceorientation",
+        "attribute": "ondeviceorientation",
+        "serviceId": scopeArg.deviceOrientationService.id,
+        "params": {},
+        "onsuccess": function () {
+          if (typeof callbackArg.onsuccess == 'function') {
+            callbackArg.onsuccess();
+          }
+        },
+        "onerror": function (errorCode, errorMessage) {
+          if (typeof callbackArg.onerror == 'function') {
+            callbackArg.onerror();
+          }
+        }
+      });
+    };
+
+    this.addPairControllerScope(scope, callback);
+  };
+
   var Pair = function (name) {
     this.name = name;
     this.deviceOrientationService = null;
@@ -429,7 +556,7 @@
     .controller('PairController',
     ['$scope', function ($scope) {
 
-      var lastTime = Date.now();
+      $scope.lastTime = Date.now();
 
       //
       // Functions
@@ -462,7 +589,36 @@
        */
       $scope.activatePair = function () {
         console.log("activatePair");
-        activateDeviceOrientationEvent();
+
+        var callback = {
+          onsuccess: function () {
+            //$scope.pairStatus = 'started';
+            //$scope.$apply();
+            $scope.$applyAsync(function() {
+              $scope.pairStatus = 'started';
+            });
+          },
+          onerror: function () {
+            //$scope.pairStatus = oldStatus;
+            //$scope.$apply();
+            $scope.$applyAsync(function() {
+              $scope.pairStatus = oldStatus;
+            });
+          }
+        };
+
+        for (var i = 0; i < deviceOrientationServices.length; ++i) {
+          var service = deviceOrientationServices[i];
+          if (service.id == $scope.deviceOrientationService.id && service.pairControllerScopes.indexOf($scope) == -1) {
+            var oldStatus = $scope.pairStatus;
+            $scope.pairStatus = 'registering';
+            service.addPairControllerScope($scope, callback);
+            return;
+          }
+        }
+
+        deviceOrientationServices.push(new DeviceOrientationService($scope, callback));
+        $scope.pairStatus = 'started';
       };
 
       /**
@@ -470,91 +626,29 @@
        */
       $scope.deactivatePair = function () {
         console.log("deactivatePair");
-        deactivateDeviceOrientationEvent({
-          onsuccess: function () {
-            // 確実ではないが、キューがあふれて消灯リクエストが削除されないよう、キューが半分になるのを待ってからリクエストを追加する。
-            var turnoff = function () {
-              if ($scope.lightService != null) {
-                addLightCommand($scope.lightService.id, false);
+
+        for (var i = 0; i < deviceOrientationServices.length; ++i) {
+          var service = deviceOrientationServices[i];
+          if (typeof $scope.deviceOrientationService != 'undefined' && service.id == $scope.deviceOrientationService.id
+              && service.pairControllerScopes.indexOf($scope) != -1) {
+            var oldStatus = $scope.pairStatus;
+            $scope.pairStatus = 'unregistering';
+            service.removePairControllerScope($scope, {
+              onsuccess: function () {
+                console.log('removePairControllerScope success');
+                $scope.$applyAsync(function () {
+                  $scope.pairStatus = 'stopped';
+                });
+              },
+              onerror: function () {
+                console.log('removePairControllerScope error');
+                $scope.$applyAsync(function () {
+                  $scope.pairStatus = oldStatus;
+                });
               }
-            };
-            var waitFunc;
-            waitFunc = function () {
-              setTimeout(function () {
-                if (requestQueue.length < MAX_REQUEST_QUEUE / 2) {
-                  turnoff();
-                } else {
-                  waitFunc();
-                }
-              }, 500);
-            };
-            waitFunc();
+            });
           }
-        });
-      };
-
-      var activateDeviceOrientationEvent = function () {
-        if (typeof $scope.deviceOrientationService === 'undefined' ||
-          $scope.pairStatus == 'started' || $scope.pairStatus == 'registering' || $scope.pairStatus == 'unregistering') {
-          return;
         }
-        $scope.pairStatus = 'registering';
-        demoClient.addEventListener({
-          "method": "PUT",
-          "profile": "deviceorientation",
-          "attribute": "ondeviceorientation",
-          "serviceId": $scope.deviceOrientationService.id,
-          "params": {},
-          "onevent": function (event) {
-            if (Date.now() - lastTime > $scope.pairInterval * 1000 && $scope.pairStatus == 'started') {
-              var json = JSON.parse(event);
-              var params = calcLightParamsFromAcceleration(json.orientation.accelerationIncludingGravity);
-              addLightCommand($scope.lightService.id, true, params.color, params.brightness);
-
-              lastTime = Date.now();
-
-              //console.log("params: {color:" + params.color + ", brightness:" + params.brightness + "}");
-            }
-          },
-          "onsuccess": function () {
-            $scope.pairStatus = 'started';
-            $scope.$apply();
-          },
-          "onerror": function (errorCode, errorMessage) {
-            showErrorDialog('エラー', '加速度イベントの配信開始に失敗しました');
-          }
-        });
-
-      };
-
-      var deactivateDeviceOrientationEvent = function (callback) {
-        if (typeof $scope.deviceOrientationService === 'undefined' ||
-          $scope.pairStatus == 'stopped' || $scope.pairStatus == 'registering' || $scope.pairStatus == 'unregistering') {
-          return;
-        }
-        $scope.pairStatus = 'unregistering';
-        demoClient.removeEventListener({
-          "method": "DELETE",
-          "profile": "deviceorientation",
-          "attribute": "ondeviceorientation",
-          "serviceId": $scope.deviceOrientationService.id,
-          "params": {},
-          "onsuccess": function () {
-            $scope.pairStatus = 'stopped';
-            $scope.$apply();
-            if (typeof callback.onsuccess == 'function') {
-              callback.onsuccess();
-            }
-          },
-          "onerror": function (errorCode, errorMessage) {
-            $scope.pairStatus = 'stopped';
-            $scope.$apply();
-            if (typeof callback.onerror == 'function') {
-              callback.onerror();
-            }
-          }
-        });
-
       };
 
       $scope.showServiceSelectionDialog = function (isDeviceOrientation) {
