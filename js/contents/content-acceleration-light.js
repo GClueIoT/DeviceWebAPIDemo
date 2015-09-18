@@ -646,7 +646,7 @@
 
         for (var i = 0; i < deviceOrientationServices.length; ++i) {
           var service = deviceOrientationServices[i];
-          if (typeof $scope.deviceOrientationService != 'undefined' && service.id == $scope.deviceOrientationService.id
+          if ($scope.deviceOrientationService != null && service.id == $scope.deviceOrientationService.id
               && service.pairControllerScopes.indexOf($scope) != -1) {
             var oldStatus = $scope.pairStatus;
             $scope.pairStatus = 'unregistering';
