@@ -394,6 +394,7 @@
             }
           });
         } else {
+          self.pairControllerScopes.push(scopeArg);
           if (typeof callbackArg.onsuccess == 'function') {
             callbackArg.onsuccess();
           }
@@ -462,13 +463,13 @@
           });
         } else {
           //console.log('removePairControllerScope unregister not needed');
+          this.pairControllerScopes.splice(index, 1);
           if (typeof callbackArg.onsuccess == 'function') {
             callbackArg.onsuccess();
           }
         }
       } else {
         //console.log('removePairControllerScope scope not found');
-        this.pairControllerScopes.splice(index, 1);
         if (typeof callbackArg.onsuccess == 'function') {
           callbackArg.onsuccess();
         }
