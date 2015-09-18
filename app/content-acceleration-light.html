@@ -48,8 +48,8 @@
   </div>
   <div class="modal-body">
     <div style="margin: 5px;">{{message}}</div>
-    <button type="button" class="btn btn-default" style="width: 100%; margin: 5px 5px 15px 5px;">
-      <span class="glyphicon glyphicon-refresh" style="font-size: 12px;" ng-click="refresh()">{{refreshText}}</span>
+    <button type="button" class="btn btn-default" style="width: 100%; margin: 5px 5px 15px 5px;" ng-click="refresh()">
+      <span class="glyphicon glyphicon-refresh" style="font-size: 12px;">{{refreshText}}</span>
     </button>
     <ul class="list-group" ng-if="services.length > 0" style="height: 100%; overflow-y: scroll; margin: 0;">
       <li class="list-group-item" ng-repeat="service in services" ng-click="ok(services[$index])">
