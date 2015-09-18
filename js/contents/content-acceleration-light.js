@@ -587,8 +587,10 @@
         $scope.$watch('pairStatus', function (newValue, oldValue) {
           if (newValue == 'started') {
             $scope.pairActive = true;
+            $scope.selectStyle = {'color':'#B2B2B2', 'background-color':'#DCDCDC'};
           } else if (newValue == 'stopped') {
             $scope.pairActive = false;
+            $scope.selectStyle = {};
           }
         });
 
@@ -667,15 +669,17 @@
       };
 
       $scope.showServiceSelectionDialog = function (isDeviceOrientation) {
-        showServiceSelectionDialog(isDeviceOrientation, {
-          onsuccess: function (service) {
-            if (isDeviceOrientation) {
-              $scope.deviceOrientationService = service;
-            } else {
-              $scope.lightService = service;
+        if (!$scope.pairActive) {
+          showServiceSelectionDialog(isDeviceOrientation, {
+            onsuccess: function (service) {
+              if (isDeviceOrientation) {
+                $scope.deviceOrientationService = service;
+              } else {
+                $scope.lightService = service;
+              }
             }
-          }
-        });
+          });
+        }
       };
 
       $scope.removePair = function () {
