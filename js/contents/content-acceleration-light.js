@@ -44,6 +44,11 @@
    */
   var sendStateFlag = false;
 
+  /**
+   * 送信レスポンスのタイムアウトID。
+   */
+  var sendTimeoutID;
+
   var isShowDialog = false;
 
   /**
@@ -192,6 +197,12 @@
     }
     sendStateFlag = true;
 
+    // DeviceConnectマネージャーが完全に沈黙した場合、一定時間後に新たな命令を受け入れるようにする。
+    sendTimeoutID = setTimeout(function() {
+      console.log("WARNING: Response timed out.");
+      sendStateFlag = false;
+    }, 30000);
+
     addRequest({
       serviceId: serviceId,
       power: power,
@@ -233,6 +244,7 @@
     sendLightCommand(request, function () {
       requestQueue.splice(0, 1);
       sendStateFlag = false;
+      clearTimeout(sendTimeoutID);
       setTimeout(function () {
         sendRequest();
       }, 400);
