@@ -45,34 +45,6 @@ angular.module('demoweb', ['ngRoute', 'ngSanitize', 'ui.bootstrap'])
       templateUrl: 'app/content-device-radio.html',
       controller: 'DeviceRadioController'
     })
-    .when('/light', {
-      templateUrl: 'app/content-light.html',
-        controller: 'LightController'
-    })
-    .when('/light/select', {
-      templateUrl: 'app/content-light-select.html',
-        controller: 'SelectLightController'
-    })
-    .when('/heartrate', {
-      templateUrl: 'app/content-heartrate.html',
-      controller: 'HeartRateController'
-    })
-    .when('/face', {
-      templateUrl: 'app/content-face.html',
-      controller: 'FaceController'
-    })
-    .when('/remote/controller', {
-      templateUrl: 'app/content-remote-controller.html',
-      controller: 'RemoteController'
-    })
-    .when('/remote', {
-      templateUrl: 'app/content-remote-select.html',
-      controller: 'RemoteSelectController'
-    })
-    .when('/remote/command', {
-      templateUrl: 'app/content-remote-command.html',
-      controller: 'RemoteCommandController'
-    })
     .when('/acceleration-light', {
       templateUrl: 'app/content-acceleration-light.html',
       controller: 'AccelerationLightController'

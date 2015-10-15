@@ -1,24 +1,4 @@
 (function() {
-  var lightDemo = {
-    name: 'light',
-    img: 'img/Appli_light.png',
-    title: 'ライト'
-  };
-  var heartRateDemo = {
-    name: 'heartrate',
-    img: 'img/Appli_Heart.png',
-    title: '心拍計'
-  };
-  var faceDemo = {
-    name: 'face',
-    img: 'img/Appli_Facial expression recognition.png',
-    title: '表情認識'
-  };
-  var remoteDemo = {
-      name: 'remote',
-      img: 'img/Appli_remocon.png',
-      title: 'リモコン'
-  };
   var accelerationLightDemo = {
       name: 'accelerationLight',
       img: 'img/App_Acceleration_Light.png',
@@ -40,13 +20,7 @@
       transition.scope = $scope;
 
       var demos = [];
-      demos.push(lightDemo);
-      demos.push(remoteDemo);
       demos.push(accelerationLightDemo);
-      if (!isIOS()) {
-        demos.push(heartRateDemo);
-        demos.push(faceDemo);
-      }
 
       var size = demos.length < 8 ? 4 : Math.ceil(demos.length / 2);
       var index = 0;
