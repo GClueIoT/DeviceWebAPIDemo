@@ -123,6 +123,10 @@
         return 'https://play.google.com/store/apps/details?id=' + demoConstants.manager.android.packageName;
       }
 
+      function createUriForIOS() {
+        return 'itms-apps://itunes.apple.com/app/id' + demoConstants.manager.ios.appId + '?ls=1&mt=8';
+      }
+
       function isIOS() {
         var ua = navigator.userAgent;
         if(/iPhone/.test(ua)) {

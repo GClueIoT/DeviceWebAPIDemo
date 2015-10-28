@@ -26,7 +26,8 @@
       },
       ios: {
         minVersion: '1.0.3',
-        appId: '994422987'
+        appId: '994422987',
+        name: 'Device Web API Browswer'
       }
     },
 
