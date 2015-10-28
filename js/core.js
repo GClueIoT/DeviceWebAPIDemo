@@ -510,8 +510,7 @@ var demoWeb = (function (parent) {
   Client.prototype.serviceInfomartion = function(service, callback) {
     var self = this;
 
-    dConnect.getSystemDeviceInfo(service.id, self.settings.accessToken, function(status, header, responseText) {
-      var json = JSON.parse(responseText);
+    dConnect.getSystemDeviceInfo(service.id, self.settings.accessToken, function(json) {
       if (json.result == 0) {
         service['scopes'] = json.supports;
         callback(service);
