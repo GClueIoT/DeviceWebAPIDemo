@@ -14,7 +14,8 @@
       'health',
       'humandetect',
       'remote_controller',
-      'kadecot'
+      'kadecot',
+      'deviceorientation'
     ],
 
     manager: {
@@ -30,6 +31,11 @@
     },
 
     plugins: [
+      {
+        packageName: "org.deviceconnect.android.deviceplugin.host",
+        name: "host",
+        supports: ['deviceorientation']
+      },
       {
         packageName: "org.deviceconnect.android.deviceplugin.hue",
         name: "hue",
@@ -56,6 +62,21 @@
         supports: ['remote_controller']
       },
       {
+        packageName: "org.deviceconnect.android.deviceplugin.pebble",
+        name: "Pebble",
+        supports: ['deviceorientation']
+      },
+      {
+        packageName: "org.deviceconnect.android.deviceplugin.sw",
+        name: "Sony Smart Watch",
+        supports: ['deviceorientation']
+      },
+      {
+        packageName: "org.deviceconnect.android.deviceplugin.alljoyn",
+        name: "AllJoyn",
+        supports: ['light']
+      },
+      {
         packageName: "com.sonycsl.Kadecot",
         name: "Kadecot",
         supports: ['kadecot']
@@ -78,6 +99,13 @@
       remote: {
         profiles: ['remote_controller'],
         path: '/remote'
+      },
+      accelerationLight: {
+        // This demo requires services with a 'light' *OR* 'deviceorientation'
+        // profile; No profiles are specified here for AND filtering, but OR
+        // filtering is performed in the demo contents.
+        profiles: [],
+        path: '/acceleration-light'
       }
     }
   };

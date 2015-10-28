@@ -73,6 +73,10 @@ angular.module('demoweb', ['ngRoute', 'ngSanitize', 'ui.bootstrap'])
       templateUrl: 'app/content-remote-command.html',
       controller: 'RemoteCommandController'
     })
+    .when('/acceleration-light', {
+      templateUrl: 'app/content-acceleration-light.html',
+      controller: 'AccelerationLightController'
+    })
     .when('/trial/manager/install', {
       templateUrl: 'trial/app/content-manager-install.html',
       controller: 'trialManagerInstallCtrl'

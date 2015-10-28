@@ -3,7 +3,7 @@
     name: 'light',
     img: 'img/Appli_light.png',
     title: 'ライト'
-  }
+  };
   var heartRateDemo = {
     name: 'heartrate',
     img: 'img/Appli_Heart.png',
@@ -18,7 +18,12 @@
       name: 'remote',
       img: 'img/Appli_remocon.png',
       title: 'リモコン'
-  }
+  };
+  var accelerationLightDemo = {
+      name: 'accelerationLight',
+      img: 'img/App_Acceleration_Light.png',
+      title: '加速度 + ライト'
+  };
 
   function isIOS() {
     var ua = navigator.userAgent;
@@ -36,17 +41,18 @@
 
       var demos = [];
       demos.push(lightDemo);
+      demos.push(remoteDemo);
+      demos.push(accelerationLightDemo);
       if (!isIOS()) {
         demos.push(heartRateDemo);
         demos.push(faceDemo);
       }
-      demos.push(remoteDemo);
 
       var size = demos.length < 8 ? 4 : Math.ceil(demos.length / 2);
       var index = 0;
-      for (var i = 0; i < size; i++) {
+      for (var i = 0; i < size; ++i) {
         var t = '<tr>';
-        for (var j = 0; j < 2; j++) {
+        for (var j = 0; j < 2; ++j) {
           if (index < demos.length) {
             t += '<td class="demo" ng-click="transit(\'' + demos[index].name + '\')">';
             t += '<img class="logo" src="' + demos[index].img + '">';
@@ -55,7 +61,7 @@
           } else {
             t += '<td class="nodemo"></td>';
           }
-          index++;
+          ++index;
         }
         t += '</tr>';
         $('.demo-list').append($compile(t)($scope));
@@ -75,10 +81,10 @@
               var profiles = demoConstants.demos[demoName].profiles,
                   scopes = service.scopes,
                   i, j, found;
-              for (i = 0; i < profiles.length; i++) {
+              for (i = 0; i < profiles.length; ++i) {
                 found = false;
                 loop:
-                for (j = 0; j < scopes.length; j++) {
+                for (j = 0; j < scopes.length; ++j) {
                   if (profiles[i] === scopes[j]) {
                     found = true;
                     break loop;

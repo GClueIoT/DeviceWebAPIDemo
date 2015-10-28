@@ -1,0 +1,135 @@
+<nav class="navbar navbar-default">
+  <!-- TODO: Show settings for services with Light or DeviceOrientation profile. -->
+  <!--<div class="btn-settings" ng-click="settingAll()"><img src="img/Gear_off.png"></div>-->
+  <img class="navbar-back" ng-click="back()" src="img/back.png">
+
+  <div class="navbar-title">{{title}}</div>
+</nav>
+
+<content id="acceleration-light">
+  <ul class="list-group" ng-if="pairs.length > 0" style="overflow-y: scroll; margin: 0px;">
+    <li class="list-group-item" ng-repeat="pair in pairs" ng-include=" 'pair.html' " ng-controller="PairController"
+        ng-init="init(pair)">
+  </ul>
+  <div ng-if="pairs.length == 0" align="center" style="font-size: 18px; padding: 20px;">
+    加速度とライトのサービスのペアリングを追加してください
+  </div>
+</content>
+
+<button type="button" class="btn btn-primary"
+        style="position: fixed; width: 98%; height: 50px; padding: 5px; margin: 5px 1%; bottom: 0;">
+    <span class="glyphicon glyphicon-plus"
+          style="text-align: center; height: 50px; position: absolute; left: 0px; top: 0px; width: 100%; padding: 15px; font-size: 18px; z-index: 1;"
+          ng-click="addPair()">{{addPairText}}</span>
+</button>
+
+
+<!-- ##################### -->
+<!--   Partial Templates   -->
+<!-- ##################### -->
+
+
+<script type="text/ng-template" id="error-dialog.html">
+  <div class="modal-header">
+    <h4 class="modal-title">{{title}}</h4>
+  </div>
+  <div class="modal-body">
+    {{message}}
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-primary" ng-click="ok()">OK</button>
+  </div>
+</script>
+
+
+<script type="text/ng-template" id="dialog-service-select.html">
+  <div class="modal-header" ng-if="title">
+    <h4 class="modal-title">{{title}}</h4>
+  </div>
+  <div class="modal-body">
+    <div style="margin: 5px;">{{message}}</div>
+    <button type="button" class="btn btn-default" style="width: 100%; margin: 5px 5px 15px 5px;" ng-click="refresh()">
+      <span class="glyphicon glyphicon-refresh" style="font-size: 12px;">{{refreshText}}</span>
+    </button>
+    <ul class="list-group" ng-if="services.length > 0" style="height: 100%; overflow-y: scroll; margin: 0;">
+      <li class="list-group-item" ng-repeat="service in services" ng-click="ok(services[$index])">
+        {{service.name}}
+      </li>
+    </ul>
+    <div ng-if="services.length == 0" style="text-align: center;">
+      {{emptyText}}
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-primary" ng-click="cancel()">CANCEL</button>
+  </div>
+</script>
+
+
+<script type="text/ng-template" id="pair.html">
+  <div class="pair">
+    <div class="pair-top">
+      <!--<span style="line-height: 28px;">-->
+      <!--{{pairName}}-->
+      <!--</span>-->
+      <button class="btn btn-primary" style="float: right;"
+              ng-disabled="deviceOrientationService == null || lightService == null"
+              ng-if="!pairActive" ng-click="activatePair()">
+        <!--<button class="btn btn-primary" style="float: right;"-->
+        <!--ng-if="!pairActive" ng-click="activatePair()">-->
+        {{pairStartText}}
+      </button>
+      <button class="btn btn-primary" style="float: right;" ng-if="pairActive" ng-click="deactivatePair()">
+        {{pairStopText}}
+      </button>
+      <button class="btn btn-danger" style="float: right; margin-right: 30px;" ng-click="removePair()">
+        {{pairRemoveText}}
+      </button>
+    </div>
+    <div class="pair-bottom">
+      <div class="pair-row">
+        <span class="pair-row-left">
+          加速度センサ
+        </span>
+
+        <div class="pair-row-right-select" ng-style="selectStyle" ng-if="deviceOrientationService != null"
+             ng-click="showServiceSelectionDialog(true)">
+          {{deviceOrientationService.name}}
+        </div>
+        <div class="pair-row-right-select common-dark-text-disabled" ng-if="deviceOrientationService == null"
+             ng-click="showServiceSelectionDialog(true)">
+          {{serviceNotSpecifiedText}}
+        </div>
+      </div>
+      <div class="pair-row">
+        <span class="pair-row-left">
+          ライト
+        </span>
+
+        <div class="pair-row-right-select" ng-style="selectStyle" ng-if="lightService != null"
+             ng-click="showServiceSelectionDialog(false)">
+          {{lightService.name}}
+        </div>
+        <div class="pair-row-right-select common-dark-text-disabled" ng-if="lightService == null"
+             ng-click="showServiceSelectionDialog(false)">
+          {{serviceNotSpecifiedText}}
+        </div>
+      </div>
+
+
+      <div class="pair-row">
+        <span class="pair-row-left">
+          更新インターバル
+        </span>
+
+        <div style=" width: 40px; float: left; margin-right: 8px;" class="ng-binding">{{pairInterval}} 秒</div>
+        <form class="pair-row-right-range">
+          <!-- Implicit instantiation of $scope in a subscope (casued by ngRepeat?) prevents access to
+           pairInterval of PairController. Using $parent here for quick fix. -->
+          <input type="range" min="0.1" max="10" step="0.1" ng-model="$parent.pairInterval" style="width: 100%;"/>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</script>
