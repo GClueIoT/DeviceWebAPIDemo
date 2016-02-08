@@ -197,10 +197,14 @@ var demoWeb = (function (parent) {
   };
 
   Client.prototype.openSettingWindow = function(opt) {
-    var builder = new dConnect.URIBuilder();
+    var self = this,
+        builder = new dConnect.URIBuilder();
     builder.setProfile('system');
     builder.setInterface('device');
     builder.setAttribute('wakeup');
+    if (self.settings.accessToken) {
+      builder.setAccessToken(self.settings.accessToken);
+    }
     builder.addParameter('pluginId', opt.pluginId);
 
     dConnect.put(builder.build(), null, null, opt.onsuccess, opt.onerror);
