@@ -54,6 +54,7 @@ var demoWeb = (function (parent) {
    * @memberof demoWeb
    */
   var Client = function(host) {
+    dConnect.setSSLEnabled(location.protocol === 'https:');
     if (host) {
       this.setHost(host);
     }
