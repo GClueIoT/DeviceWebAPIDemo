@@ -69,6 +69,7 @@
 
       $scope.title = 'デモ一覧';
       $scope.back = function() {
+        dConnect.stopManager('activity');
         $window.history.back();
       };
       $scope.transit = function(demoName) {
