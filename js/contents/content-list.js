@@ -70,7 +70,12 @@
       $scope.title = 'デモ一覧';
       $scope.back = function() {
         dConnect.stopManager('activity');
-        $window.history.back();
+
+        var refferer = document.referrer;
+        console.log('refferer: ' + refferer);
+        if (refferer !== undefined && refferer !== '') {
+          $window.location.href = refferer;
+        }
       };
       $scope.transit = function(demoName) {
         demoWebClient.discoverDevices({
