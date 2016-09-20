@@ -70,11 +70,12 @@
       $scope.title = 'デモ一覧';
       $scope.back = function() {
         dConnect.stopManager('activity');
-
         var refferer = document.referrer;
         console.log('refferer: ' + refferer);
         if (refferer !== undefined && refferer !== '') {
-          $window.location.href = refferer;
+          setTimeout(function() {
+              $window.location.href = refferer;
+          }, 100);
         }
       };
       $scope.transit = function(demoName) {
