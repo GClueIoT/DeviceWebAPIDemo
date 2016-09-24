@@ -69,7 +69,14 @@
 
       $scope.title = 'デモ一覧';
       $scope.back = function() {
-        $window.history.back();
+        dConnect.stopManager('activity');
+        var refferer = document.referrer;
+        console.log('refferer: ' + refferer);
+        if (refferer !== undefined && refferer !== '') {
+          setTimeout(function() {
+              $window.location.href = refferer;
+          }, 100);
+        }
       };
       $scope.transit = function(demoName) {
         demoWebClient.discoverDevices({

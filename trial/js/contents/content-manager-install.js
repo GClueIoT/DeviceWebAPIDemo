@@ -15,7 +15,7 @@
         $window.history.back();
       };
       $scope.urlScheme = function() {
-        dConnect.startManager();
+        dConnect.startManager('activity');
       };
     }]);
 })();

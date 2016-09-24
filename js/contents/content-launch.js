@@ -137,7 +137,7 @@
         }
       };
       $scope.back = function() {
-        $window.history.back();
+          $window.location.href = $window.location.href.replace("demo/#/launch", "") + "demo.html";
       };
 
       function createUriForIOS() {
